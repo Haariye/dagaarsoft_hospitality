@@ -1,0 +1,156 @@
+[
+  {
+    "doctype": "Custom Field",
+    "module": "DagaarSoft Hospitality",
+    "dt": "Sales Invoice",
+    "fieldname": "hotel_section",
+    "label": "Hotel Charge",
+    "fieldtype": "Section Break",
+    "insert_after": "remarks",
+    "collapsible": 1,
+    "collapsible_depends_on": "eval:doc.hotel_room"
+  },
+  {
+    "doctype": "Custom Field",
+    "module": "DagaarSoft Hospitality",
+    "dt": "Sales Invoice",
+    "fieldname": "hotel_room",
+    "label": "Room",
+    "fieldtype": "Link",
+    "options": "Room",
+    "insert_after": "hotel_section",
+    "in_list_view": 1,
+    "in_standard_filter": 1,
+    "description": "Select room to auto-populate Guest Stay, Folio and Billing Customer"
+  },
+  {
+    "doctype": "Custom Field",
+    "module": "DagaarSoft Hospitality",
+    "dt": "Sales Invoice",
+    "fieldname": "hotel_stay",
+    "label": "Guest Stay",
+    "fieldtype": "Link",
+    "options": "Guest Stay",
+    "insert_after": "hotel_room",
+    "read_only": 1,
+    "in_standard_filter": 1
+  },
+  {
+    "doctype": "Custom Field",
+    "module": "DagaarSoft Hospitality",
+    "dt": "Sales Invoice",
+    "fieldname": "hotel_col",
+    "fieldtype": "Column Break",
+    "insert_after": "hotel_stay"
+  },
+  {
+    "doctype": "Custom Field",
+    "module": "DagaarSoft Hospitality",
+    "dt": "Sales Invoice",
+    "fieldname": "hotel_folio",
+    "label": "Guest Folio",
+    "fieldtype": "Link",
+    "options": "Guest Folio",
+    "insert_after": "hotel_col",
+    "read_only": 1
+  },
+  {
+    "doctype": "Custom Field",
+    "module": "DagaarSoft Hospitality",
+    "dt": "Sales Invoice",
+    "fieldname": "hotel_guest_name",
+    "label": "Guest Name",
+    "fieldtype": "Data",
+    "insert_after": "hotel_folio",
+    "read_only": 1
+  },
+  {
+    "doctype": "Custom Field",
+    "module": "DagaarSoft Hospitality",
+    "dt": "POS Invoice",
+    "fieldname": "charge_to_room",
+    "label": "Charge to Room",
+    "fieldtype": "Check",
+    "insert_after": "customer",
+    "default": "0"
+  },
+  {
+    "doctype": "Custom Field",
+    "module": "DagaarSoft Hospitality",
+    "dt": "POS Invoice",
+    "fieldname": "room_number",
+    "label": "Room Number",
+    "fieldtype": "Link",
+    "options": "Room",
+    "insert_after": "charge_to_room",
+    "depends_on": "eval:doc.charge_to_room"
+  },
+  {
+    "doctype": "Custom Field",
+    "module": "DagaarSoft Hospitality",
+    "dt": "POS Invoice",
+    "fieldname": "guest_stay_ref",
+    "label": "Guest Stay",
+    "fieldtype": "Link",
+    "options": "Guest Stay",
+    "insert_after": "room_number",
+    "read_only": 1
+  },
+  {
+    "doctype": "Custom Field",
+    "module": "DagaarSoft Hospitality",
+    "dt": "Customer",
+    "fieldname": "loyalty_account",
+    "label": "Loyalty Account",
+    "fieldtype": "Link",
+    "options": "Loyalty Account",
+    "insert_after": "customer_details"
+  },
+  {
+    "doctype": "Custom Field",
+    "module": "DagaarSoft Hospitality",
+    "dt": "Customer",
+    "fieldname": "vip_status",
+    "label": "VIP Status",
+    "fieldtype": "Select",
+    "options": "\nVIP\nVVIP\nHonorary",
+    "insert_after": "loyalty_account"
+  },
+  {
+    "doctype": "Custom Field",
+    "module": "DagaarSoft Hospitality",
+    "dt": "Customer",
+    "fieldname": "id_type",
+    "label": "ID Type",
+    "fieldtype": "Select",
+    "options": "\nPassport\nNational ID\nDriving License",
+    "insert_after": "vip_status"
+  },
+  {
+    "doctype": "Custom Field",
+    "module": "DagaarSoft Hospitality",
+    "dt": "Customer",
+    "fieldname": "id_number",
+    "label": "ID Number",
+    "fieldtype": "Data",
+    "insert_after": "id_type"
+  },
+  {
+    "doctype": "Custom Field",
+    "module": "DagaarSoft Hospitality",
+    "dt": "Customer",
+    "fieldname": "id_document",
+    "label": "ID Document",
+    "fieldtype": "Attach",
+    "insert_after": "id_number"
+  },
+  {
+    "doctype": "Custom Field",
+    "module": "DagaarSoft Hospitality",
+    "dt": "Customer",
+    "fieldname": "nationality",
+    "label": "Nationality",
+    "fieldtype": "Data",
+    "insert_after": "id_document"
+  }
+]

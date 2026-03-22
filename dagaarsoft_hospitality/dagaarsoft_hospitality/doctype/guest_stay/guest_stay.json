@@ -1,0 +1,430 @@
+{
+  "actions": [],
+  "autoname": "naming_series:",
+  "creation": "2026-03-21 20:30:54.436207",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "naming_series",
+    "property",
+    "reservation",
+    "stay_status",
+    "col_1",
+    "customer",
+    "guest_name",
+    "room",
+    "room_type",
+    "sec_id",
+    "id_type",
+    "id_number",
+    "id_document",
+    "col_id1",
+    "nationality",
+    "date_of_birth",
+    "vip_status",
+    "sec_companions",
+    "companions",
+    "sec_dates",
+    "arrival_date",
+    "departure_date",
+    "num_nights",
+    "rate_plan",
+    "nightly_rate",
+    "col_2",
+    "actual_checkin",
+    "actual_checkout",
+    "checked_in_by",
+    "checked_out_by",
+    "sec_folio",
+    "guest_folio",
+    "billing_instruction",
+    "billing_customer",
+    "col_3",
+    "adults",
+    "children",
+    "meal_plan",
+    "sec_deposit",
+    "deposit_waived",
+    "deposit_waived_by",
+    "deposit_waiver_reason",
+    "col_dep",
+    "advance_deposit",
+    "sec_source",
+    "source",
+    "company_name",
+    "col_4",
+    "special_requests",
+    "internal_notes",
+    "amended_from"
+  ],
+  "fields": [
+    {
+      "fieldname": "naming_series",
+      "fieldtype": "Select",
+      "label": "Series",
+      "options": "STY-.YYYY.-.####",
+      "reqd": 1
+    },
+    {
+      "fieldname": "property",
+      "fieldtype": "Link",
+      "in_list_view": 1,
+      "label": "Property",
+      "options": "Property",
+      "reqd": 1
+    },
+    {
+      "fieldname": "reservation",
+      "fieldtype": "Link",
+      "label": "Reservation",
+      "options": "Reservation",
+      "read_only": 1
+    },
+    {
+      "default": "Expected",
+      "fieldname": "stay_status",
+      "fieldtype": "Select",
+      "in_list_view": 1,
+      "in_standard_filter": 1,
+      "label": "Status",
+      "options": "Expected\nChecked In\nChecked Out\nCancelled\nNo Show",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "col_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "customer",
+      "fieldtype": "Link",
+      "label": "Primary Guest",
+      "options": "Customer",
+      "reqd": 1
+    },
+    {
+      "fetch_from": "customer.customer_name",
+      "fieldname": "guest_name",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Guest Name"
+    },
+    {
+      "description": "Room is mandatory. Use room_type filter.",
+      "fieldname": "room",
+      "fieldtype": "Link",
+      "in_list_view": 1,
+      "label": "Room",
+      "options": "Room",
+      "reqd": 1
+    },
+    {
+      "fieldname": "room_type",
+      "fieldtype": "Link",
+      "label": "Room Type",
+      "options": "Room Type",
+      "reqd": 1
+    },
+    {
+      "fieldname": "sec_id",
+      "fieldtype": "Section Break",
+      "label": "Guest Identification"
+    },
+    {
+      "fieldname": "id_type",
+      "fieldtype": "Select",
+      "label": "ID Type",
+      "options": "Passport\nNational ID\nDriving License\nOther",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "id_number",
+      "fieldtype": "Data",
+      "label": "ID Number",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "id_document",
+      "fieldtype": "Attach",
+      "label": "ID Document Scan",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "col_id1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "nationality",
+      "fieldtype": "Data",
+      "label": "Nationality",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "date_of_birth",
+      "fieldtype": "Date",
+      "label": "Date of Birth",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "vip_status",
+      "fieldtype": "Select",
+      "label": "VIP Status",
+      "options": "\nVIP\nVVIP\nHonorary",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "sec_companions",
+      "fieldtype": "Section Break",
+      "label": "Additional Guests in Room"
+    },
+    {
+      "fieldname": "companions",
+      "fieldtype": "Table",
+      "label": "Companions",
+      "options": "Guest Companion",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "sec_dates",
+      "fieldtype": "Section Break",
+      "label": "Dates & Rate"
+    },
+    {
+      "fieldname": "arrival_date",
+      "fieldtype": "Date",
+      "in_list_view": 1,
+      "label": "Check-In",
+      "reqd": 1
+    },
+    {
+      "fieldname": "departure_date",
+      "fieldtype": "Date",
+      "in_list_view": 1,
+      "label": "Check-Out",
+      "reqd": 1
+    },
+    {
+      "fieldname": "num_nights",
+      "fieldtype": "Int",
+      "label": "Nights",
+      "read_only": 1,
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "rate_plan",
+      "fieldtype": "Link",
+      "label": "Rate Plan",
+      "options": "Rate Plan",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "nightly_rate",
+      "fieldtype": "Currency",
+      "label": "Nightly Rate",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "col_2",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "actual_checkin",
+      "fieldtype": "Datetime",
+      "label": "Actual Check-In",
+      "read_only": 1,
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "actual_checkout",
+      "fieldtype": "Datetime",
+      "label": "Actual Check-Out",
+      "read_only": 1,
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "checked_in_by",
+      "fieldtype": "Link",
+      "label": "Checked In By",
+      "options": "User",
+      "read_only": 1,
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "checked_out_by",
+      "fieldtype": "Link",
+      "label": "Checked Out By",
+      "options": "User",
+      "read_only": 1,
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "sec_folio",
+      "fieldtype": "Section Break",
+      "label": "Billing"
+    },
+    {
+      "fieldname": "guest_folio",
+      "fieldtype": "Link",
+      "label": "Guest Folio",
+      "options": "Guest Folio",
+      "read_only": 1,
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "billing_instruction",
+      "fieldtype": "Select",
+      "label": "Billing Instruction",
+      "options": "Charge to Room\nCharge to Company\nCharge to Travel Agent\nSplit Bill\nPrepaid",
+      "allow_on_submit": 1
+    },
+    {
+      "description": "If set, Sales Invoice will be created for this customer instead of the guest",
+      "fieldname": "billing_customer",
+      "fieldtype": "Link",
+      "label": "Bill To (if different)",
+      "options": "Customer",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "col_3",
+      "fieldtype": "Column Break"
+    },
+    {
+      "default": "1",
+      "fieldname": "adults",
+      "fieldtype": "Int",
+      "label": "Adults",
+      "allow_on_submit": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "children",
+      "fieldtype": "Int",
+      "label": "Children",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "meal_plan",
+      "fieldtype": "Select",
+      "label": "Meal Plan",
+      "options": "Room Only\nBed & Breakfast\nHalf Board\nFull Board\nAll Inclusive",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "sec_deposit",
+      "fieldtype": "Section Break",
+      "label": "Deposit Status"
+    },
+    {
+      "allow_on_submit": 1,
+      "default": "0",
+      "fieldname": "deposit_waived",
+      "fieldtype": "Check",
+      "label": "Deposit Waived",
+      "read_only": 1
+    },
+    {
+      "fieldname": "deposit_waived_by",
+      "fieldtype": "Link",
+      "label": "Waived By",
+      "options": "User",
+      "read_only": 1,
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "deposit_waiver_reason",
+      "fieldtype": "Data",
+      "label": "Waiver Reason",
+      "read_only": 1,
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "col_dep",
+      "fieldtype": "Column Break"
+    },
+    {
+      "allow_on_submit": 1,
+      "fieldname": "advance_deposit",
+      "fieldtype": "Link",
+      "label": "Advance Deposit",
+      "options": "Hotel Deposit"
+    },
+    {
+      "fieldname": "sec_source",
+      "fieldtype": "Section Break",
+      "label": "Source"
+    },
+    {
+      "fieldname": "source",
+      "fieldtype": "Select",
+      "label": "Source",
+      "options": "\nWalk-In\nOnline\nPhone\nTravel Agent\nCorporate\nOTA\nWeb Booking",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "company_name",
+      "fieldtype": "Data",
+      "label": "Company/Agency",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "col_4",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "special_requests",
+      "fieldtype": "Text",
+      "label": "Special Requests",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "internal_notes",
+      "fieldtype": "Text",
+      "label": "Internal Notes",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "amended_from",
+      "fieldtype": "Link",
+      "label": "Amended From",
+      "options": "Guest Stay",
+      "print_hide": 1
+    }
+  ],
+  "is_submittable": 1,
+  "links": [],
+  "modified": "2026-03-22 01:47:36.580576",
+  "modified_by": "Administrator",
+  "module": "DagaarSoft Hospitality",
+  "name": "Guest Stay",
+  "naming_rule": "By \"Naming Series\" field",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "amend": 1,
+      "cancel": 1,
+      "create": 1,
+      "delete": 1,
+      "read": 1,
+      "role": "Hotel Manager",
+      "submit": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "read": 1,
+      "role": "Hotel Receptionist",
+      "submit": 1,
+      "write": 1
+    },
+    {
+      "read": 1,
+      "role": "Hotel Cashier"
+    }
+  ],
+  "row_format": "Dynamic",
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": [],
+  "title_field": "guest_name",
+  "track_changes": 1
+}

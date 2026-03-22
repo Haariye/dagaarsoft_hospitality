@@ -1,0 +1,13 @@
+{
+  "name": "Restaurant POS",
+  "doctype": "Workspace",
+  "module": "DagaarSoft Hospitality",
+  "label": "Restaurant POS",
+  "icon": "🍽",
+  "links": [
+    {"type": "Link", "label": "New Order", "link_type": "DocType", "link_to": "Restaurant POS"},
+    {"type": "Link", "label": "Active Orders", "link_type": "DocType", "link_to": "Restaurant POS"},
+    {"type": "Link", "label": "Restaurant Tables", "link_type": "DocType", "link_to": "Restaurant Table"},
+    {"type": "Link", "label": "Outlets", "link_type": "DocType", "link_to": "Outlet"}
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "POS Sales Report",
+  "doctype": "Report",
+  "report_name": "POS Sales Report",
+  "ref_doctype": "Restaurant POS",
+  "report_type": "Script Report",
+  "module": "DagaarSoft Hospitality",
+  "is_standard": "Yes",
+  "filters": [
+    {
+      "fieldname": "from_date",
+      "label": "From Date",
+      "fieldtype": "Date"
+    },
+    {
+      "fieldname": "to_date",
+      "label": "To Date",
+      "fieldtype": "Date"
+    },
+    {
+      "fieldname": "property",
+      "label": "Property",
+      "fieldtype": "Link",
+      "options": "Property"
+    }
+  ]
+}

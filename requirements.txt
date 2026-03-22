@@ -1,0 +1,2 @@
+# No PyPI packages required beyond Frappe/ERPNext
+# frappe and erpnext are declared as required_apps in hooks.py

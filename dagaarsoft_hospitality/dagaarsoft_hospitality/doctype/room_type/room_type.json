@@ -1,0 +1,109 @@
+{
+  "name": "Room Type",
+  "doctype": "DocType",
+  "module": "DagaarSoft Hospitality",
+  "naming_rule": "By fieldname",
+  "autoname": "field:room_type_code",
+  "is_submittable": 0,
+  "track_changes": 1,
+  "fields": [
+    {
+      "fieldname": "room_type_code",
+      "fieldtype": "Data",
+      "label": "Room Type Code",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "room_type_name",
+      "fieldtype": "Data",
+      "label": "Room Type Name",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "property",
+      "fieldtype": "Link",
+      "label": "Property",
+      "options": "Property",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "col_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "max_occupancy",
+      "fieldtype": "Int",
+      "label": "Max Occupancy",
+      "reqd": 1
+    },
+    {
+      "fieldname": "bed_type",
+      "fieldtype": "Select",
+      "label": "Bed Type",
+      "options": "\nSingle\nDouble\nTwin\nKing\nQueen\nSuite\nBunk"
+    },
+    {
+      "fieldname": "room_size_sqm",
+      "fieldtype": "Float",
+      "label": "Room Size (sqm)"
+    },
+    {
+      "fieldname": "sec_rates",
+      "fieldtype": "Section Break",
+      "label": "Rates"
+    },
+    {
+      "fieldname": "rack_rate",
+      "fieldtype": "Currency",
+      "label": "Rack Rate"
+    },
+    {
+      "fieldname": "bar_rate",
+      "fieldtype": "Currency",
+      "label": "Best Available Rate"
+    },
+    {
+      "fieldname": "col_2",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "weekend_supplement",
+      "fieldtype": "Currency",
+      "label": "Weekend Supplement"
+    },
+    {
+      "fieldname": "extra_bed_rate",
+      "fieldtype": "Currency",
+      "label": "Extra Bed Rate"
+    },
+    {
+      "fieldname": "room_item",
+      "fieldtype": "Link",
+      "label": "ERPNext Charge Item",
+      "options": "Item"
+    },
+    {
+      "fieldname": "is_active",
+      "fieldtype": "Check",
+      "label": "Is Active",
+      "default": "1"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Hotel Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1
+    },
+    {
+      "role": "Hotel Receptionist",
+      "read": 1
+    }
+  ]
+}

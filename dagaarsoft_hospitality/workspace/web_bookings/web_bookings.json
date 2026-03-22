@@ -1,0 +1,13 @@
+{
+  "name": "Web Bookings",
+  "doctype": "Workspace",
+  "module": "DagaarSoft Hospitality",
+  "label": "Web Bookings",
+  "icon": "🌐",
+  "charts": [],
+  "links": [
+    {"type": "Link", "label": "Web Bookings", "link_type": "DocType", "link_to": "Web Booking"},
+    {"type": "Link", "label": "Pending", "link_type": "Report", "link_to": "Web Booking"},
+    {"type": "Link", "label": "Reservations", "link_type": "DocType", "link_to": "Reservation"}
+  ]
+}

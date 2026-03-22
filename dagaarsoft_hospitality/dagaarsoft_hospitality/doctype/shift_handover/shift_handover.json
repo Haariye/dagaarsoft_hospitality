@@ -1,0 +1,100 @@
+{
+  "name": "Shift Handover",
+  "doctype": "DocType",
+  "module": "DagaarSoft Hospitality",
+  "naming_rule": "By \"Naming Series\" field",
+  "autoname": "naming_series:",
+  "is_submittable": 1,
+  "fields": [
+    {
+      "fieldname": "naming_series",
+      "fieldtype": "Select",
+      "label": "Naming Series",
+      "options": "SHF-.YYYY.-.####\n",
+      "reqd": 1
+    },
+    {
+      "fieldname": "property",
+      "fieldtype": "Link",
+      "label": "Property",
+      "options": "Property",
+      "reqd": 1
+    },
+    {
+      "fieldname": "shift_date",
+      "fieldtype": "Date",
+      "label": "Shift Date",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "shift_type",
+      "fieldtype": "Select",
+      "label": "Shift",
+      "options": "Morning\nAfternoon\nNight",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "col_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "outgoing_staff",
+      "fieldtype": "Link",
+      "label": "Outgoing Staff",
+      "options": "User"
+    },
+    {
+      "fieldname": "incoming_staff",
+      "fieldtype": "Link",
+      "label": "Incoming Staff",
+      "options": "User"
+    },
+    {
+      "fieldname": "cash_float",
+      "fieldtype": "Currency",
+      "label": "Cash Float"
+    },
+    {
+      "fieldname": "arrivals_today",
+      "fieldtype": "Int",
+      "label": "Arrivals",
+      "read_only": 1
+    },
+    {
+      "fieldname": "departures_today",
+      "fieldtype": "Int",
+      "label": "Departures",
+      "read_only": 1
+    },
+    {
+      "fieldname": "inhouse_count",
+      "fieldtype": "Int",
+      "label": "In-House",
+      "read_only": 1
+    },
+    {
+      "fieldname": "handover_notes",
+      "fieldtype": "Text Editor",
+      "label": "Notes"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Hotel Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "submit": 1,
+      "cancel": 1
+    },
+    {
+      "role": "Hotel Receptionist",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "submit": 1
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "doctype": "Workspace",
+  "name": "Hotel Billing",
+  "label": "Hotel Billing",
+  "module": "DagaarSoft Hospitality",
+  "icon": "currency",
+  "is_standard": "Yes",
+  "public": 1,
+  "shortcuts": [
+    {"type":"DocType","label":"Guest Folio","link_to":"Guest Folio","color":"#ed8936"},
+    {"type":"DocType","label":"Sales Invoice","link_to":"Sales Invoice","color":"#48bb78"},
+    {"type":"DocType","label":"Payment Entry","link_to":"Payment Entry","color":"#4299e1"},
+    {"type":"DocType","label":"Hotel Deposit","link_to":"Hotel Deposit","color":"#9f7aea"},
+    {"type":"Report","label":"Folio Aging Report","link_to":"Folio Aging Report","color":"#e53e3e"},
+    {"type":"Report","label":"Daily Revenue Report","link_to":"Daily Revenue Report","color":"#276749"}
+  ],
+  "cards": [
+    {
+      "card_name": "Billing",
+      "label": "Billing",
+      "links": [
+        {"label":"Guest Folio","link_type":"DocType","link_to":"Guest Folio","type":"Link"},
+        {"label":"Hotel Deposit","link_type":"DocType","link_to":"Hotel Deposit","type":"Link"},
+        {"label":"Sales Invoice","link_type":"DocType","link_to":"Sales Invoice","type":"Link"},
+        {"label":"Payment Entry","link_type":"DocType","link_to":"Payment Entry","type":"Link"},
+        {"label":"Refund Request","link_type":"DocType","link_to":"Refund Request","type":"Link"}
+      ]
+    },
+    {
+      "card_name": "Reports",
+      "label": "Billing Reports",
+      "links": [
+        {"label":"Folio Aging Report","link_type":"Report","link_to":"Folio Aging Report","type":"Link"},
+        {"label":"Daily Revenue Report","link_type":"Report","link_to":"Daily Revenue Report","type":"Link"},
+        {"label":"Occupancy Report","link_type":"Report","link_to":"Occupancy Report","type":"Link"},
+        {"label":"Deposit Report","link_type":"Report","link_to":"Deposit Report","type":"Link"}
+      ]
+    }
+  ],
+  "roles": [{"role":"Hotel Manager"},{"role":"Hotel Cashier"}]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Guest Companion",
+  "doctype": "DocType",
+  "module": "DagaarSoft Hospitality",
+  "istable": 1,
+  "editable_grid": 1,
+  "fields": [
+    {"fieldname":"full_name","fieldtype":"Data","label":"Full Name","reqd":1,"in_list_view":1},
+    {"fieldname":"relation","fieldtype":"Select","label":"Relation","options":"Spouse\nChild\nParent\nSibling\nFriend\nColleague\nOther","in_list_view":1},
+    {"fieldname":"id_type","fieldtype":"Select","label":"ID Type","options":"Passport\nNational ID\nDriving License\nBirth Certificate","in_list_view":1},
+    {"fieldname":"id_number","fieldtype":"Data","label":"ID Number","in_list_view":1},
+    {"fieldname":"id_document","fieldtype":"Attach","label":"ID Scan/Photo"},
+    {"fieldname":"nationality","fieldtype":"Data","label":"Nationality"},
+    {"fieldname":"date_of_birth","fieldtype":"Date","label":"Date of Birth"},
+    {"fieldname":"phone","fieldtype":"Data","label":"Phone"}
+  ]
+}

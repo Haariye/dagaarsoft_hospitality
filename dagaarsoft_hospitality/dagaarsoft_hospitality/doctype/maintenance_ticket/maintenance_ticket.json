@@ -1,0 +1,124 @@
+{
+  "name": "Maintenance Ticket",
+  "doctype": "DocType",
+  "module": "DagaarSoft Hospitality",
+  "naming_rule": "By \"Naming Series\" field",
+  "autoname": "naming_series:",
+  "is_submittable": 1,
+  "fields": [
+    {
+      "fieldname": "naming_series",
+      "fieldtype": "Select",
+      "label": "Naming Series",
+      "options": "MNT-.YYYY.-.####\n",
+      "reqd": 1
+    },
+    {
+      "fieldname": "property",
+      "fieldtype": "Link",
+      "label": "Property",
+      "options": "Property",
+      "reqd": 1
+    },
+    {
+      "fieldname": "room",
+      "fieldtype": "Link",
+      "label": "Room",
+      "options": "Room"
+    },
+    {
+      "fieldname": "area",
+      "fieldtype": "Data",
+      "label": "Area / Location"
+    },
+    {
+      "fieldname": "col_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "severity",
+      "fieldtype": "Select",
+      "label": "Severity",
+      "options": "Low\nMedium\nHigh\nCritical",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "ticket_status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Open\nIn Progress\nResolved\nClosed\nEscalated",
+      "default": "Open",
+      "reqd": 1,
+      "in_list_view": 1,
+      "in_standard_filter": 1
+    },
+    {
+      "fieldname": "affects_room_usability",
+      "fieldtype": "Check",
+      "label": "Affects Room Usability"
+    },
+    {
+      "fieldname": "issue_description",
+      "fieldtype": "Text",
+      "label": "Issue Description",
+      "reqd": 1
+    },
+    {
+      "fieldname": "reported_by",
+      "fieldtype": "Link",
+      "label": "Reported By",
+      "options": "User"
+    },
+    {
+      "fieldname": "col_2",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "assigned_to",
+      "fieldtype": "Link",
+      "label": "Assigned To",
+      "options": "User"
+    },
+    {
+      "fieldname": "due_date",
+      "fieldtype": "Date",
+      "label": "Due Date"
+    },
+    {
+      "fieldname": "resolved_on",
+      "fieldtype": "Datetime",
+      "label": "Resolved On",
+      "read_only": 1
+    },
+    {
+      "fieldname": "resolution_notes",
+      "fieldtype": "Text",
+      "label": "Resolution Notes"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Hotel Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "submit": 1,
+      "cancel": 1
+    },
+    {
+      "role": "Maintenance Staff",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "submit": 1
+    },
+    {
+      "role": "Hotel Receptionist",
+      "read": 1,
+      "write": 1,
+      "create": 1
+    }
+  ]
+}

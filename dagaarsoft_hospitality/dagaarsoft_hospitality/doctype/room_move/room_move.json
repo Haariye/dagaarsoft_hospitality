@@ -1,0 +1,158 @@
+{
+  "name": "Room Move",
+  "doctype": "DocType",
+  "module": "DagaarSoft Hospitality",
+  "naming_rule": "By \"Naming Series\" field",
+  "autoname": "naming_series:",
+  "is_submittable": 1,
+  "fields": [
+    {
+      "fieldname": "naming_series",
+      "fieldtype": "Select",
+      "label": "Naming Series",
+      "options": "RMOV-.YYYY.-.####\n",
+      "reqd": 1
+    },
+    {
+      "fieldname": "property",
+      "fieldtype": "Link",
+      "label": "Property",
+      "options": "Property",
+      "reqd": 1
+    },
+    {
+      "fieldname": "guest_stay",
+      "fieldtype": "Link",
+      "label": "Guest Stay",
+      "options": "Guest Stay",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "customer",
+      "fieldtype": "Link",
+      "label": "Guest",
+      "options": "Customer",
+      "fetch_from": "guest_stay.customer",
+      "read_only": 1
+    },
+    {
+      "fieldname": "col_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "from_room",
+      "fieldtype": "Link",
+      "label": "From Room",
+      "options": "Room",
+      "reqd": 1,
+      "read_only": 1
+    },
+    {
+      "fieldname": "to_room",
+      "fieldtype": "Link",
+      "label": "To Room",
+      "options": "Room",
+      "reqd": 1
+    },
+    {
+      "fieldname": "move_date",
+      "fieldtype": "Datetime",
+      "label": "Move Date/Time",
+      "reqd": 1
+    },
+    {
+      "fieldname": "reason",
+      "fieldtype": "Select",
+      "label": "Reason",
+      "options": "\nGuest Request\nMaintenance\nUpgrade\nDowngrade\nOperational"
+    },
+    {
+      "fieldname": "notes",
+      "fieldtype": "Text",
+      "label": "Notes"
+    },
+    {
+      "fieldname": "folio_transferred",
+      "fieldtype": "Check",
+      "label": "Folio Transferred",
+      "read_only": 1
+    },
+    {
+      "fieldname": "old_nightly_rate",
+      "label": "Original Rate/Night",
+      "fieldtype": "Currency",
+      "read_only": 1
+    },
+    {
+      "fieldname": "new_nightly_rate",
+      "label": "New Room Rate/Night",
+      "fieldtype": "Currency",
+      "read_only": 1
+    },
+    {
+      "fieldname": "old_room_type",
+      "label": "Original Room Type",
+      "fieldtype": "Link",
+      "options": "Room Type",
+      "read_only": 1
+    },
+    {
+      "fieldname": "new_room_type",
+      "label": "New Room Type",
+      "fieldtype": "Link",
+      "options": "Room Type",
+      "read_only": 1
+    },
+    {
+      "fieldname": "remaining_nights",
+      "label": "Remaining Nights",
+      "fieldtype": "Int",
+      "read_only": 1
+    },
+    {
+      "fieldname": "rate_difference",
+      "label": "Rate Difference/Night",
+      "fieldtype": "Currency",
+      "read_only": 1,
+      "bold": 1
+    },
+    {
+      "fieldname": "total_billing_adjustment",
+      "label": "Total Billing Adjustment",
+      "fieldtype": "Currency",
+      "read_only": 1,
+      "bold": 1
+    },
+    {
+      "fieldname": "adjustment_type",
+      "label": "Adjustment Type",
+      "fieldtype": "Data",
+      "read_only": 1
+    },
+    {
+      "fieldname": "billing_posted",
+      "label": "Billing Posted",
+      "fieldtype": "Check",
+      "read_only": 1,
+      "default": "0"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Hotel Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "submit": 1,
+      "cancel": 1
+    },
+    {
+      "role": "Hotel Receptionist",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "submit": 1
+    }
+  ]
+}

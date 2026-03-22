@@ -1,0 +1,54 @@
+{
+  "name": "Folio Payment Line",
+  "doctype": "DocType",
+  "module": "DagaarSoft Hospitality",
+  "istable": 1,
+  "editable_grid": 1,
+  "fields": [
+    {
+      "fieldname": "payment_date",
+      "fieldtype": "Date",
+      "label": "Date",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "payment_mode",
+      "fieldtype": "Select",
+      "label": "Mode",
+      "options": "Cash\nCard\nBank Transfer\nOnline\nCity Ledger\nDeposit\nComplimentary",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "description",
+      "fieldtype": "Data",
+      "label": "Description",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "amount",
+      "fieldtype": "Currency",
+      "label": "Amount",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "reference_number",
+      "fieldtype": "Data",
+      "label": "Reference No."
+    },
+    {
+      "fieldname": "payment_entry",
+      "fieldtype": "Link",
+      "label": "Payment Entry",
+      "options": "Payment Entry",
+      "read_only": 1
+    },
+    {
+      "fieldname": "posted_by",
+      "fieldtype": "Link",
+      "label": "Posted By",
+      "options": "User",
+      "read_only": 1
+    }
+  ],
+  "permissions": []
+}

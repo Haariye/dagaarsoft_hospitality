@@ -1,0 +1,317 @@
+{
+  "actions": [],
+  "autoname": "naming_series:",
+  "creation": "2026-03-21 20:30:55.244551",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "naming_series",
+    "reservation_number",
+    "property",
+    "reservation_status",
+    "col_1",
+    "customer",
+    "arrival_date",
+    "departure_date",
+    "num_nights",
+    "sec_rooms",
+    "reservation_rooms",
+    "sec_details",
+    "adults",
+    "children",
+    "meal_plan",
+    "col_2",
+    "source",
+    "web_booking",
+    "rate_plan",
+    "vip_status",
+    "sec_deposit",
+    "deposit_amount",
+    "deposit_paid",
+    "col_3",
+    "hotel_deposit",
+    "deposit_status",
+    "sec_notes",
+    "special_requests",
+    "billing_instruction",
+    "col_4",
+    "confirmed_on",
+    "created_by_user",
+    "cancelled_by",
+    "cancellation_date",
+    "cancellation_reason",
+    "amended_from",
+    "billing_customer"
+  ],
+  "fields": [
+    {
+      "fieldname": "naming_series",
+      "fieldtype": "Select",
+      "label": "Series",
+      "options": "RES-.YYYY.-.####",
+      "reqd": 1
+    },
+    {
+      "fieldname": "reservation_number",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Reservation No.",
+      "read_only": 1
+    },
+    {
+      "fieldname": "property",
+      "fieldtype": "Link",
+      "label": "Property",
+      "options": "Property",
+      "reqd": 1
+    },
+    {
+      "default": "Draft",
+      "fieldname": "reservation_status",
+      "fieldtype": "Select",
+      "in_list_view": 1,
+      "in_standard_filter": 1,
+      "label": "Status",
+      "options": "Draft\nConfirmed\nChecked In\nChecked Out\nCancelled\nNo Show",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "col_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "customer",
+      "fieldtype": "Link",
+      "label": "Guest",
+      "options": "Customer",
+      "reqd": 1
+    },
+    {
+      "fieldname": "arrival_date",
+      "fieldtype": "Date",
+      "in_list_view": 1,
+      "label": "Arrival",
+      "reqd": 1
+    },
+    {
+      "fieldname": "departure_date",
+      "fieldtype": "Date",
+      "in_list_view": 1,
+      "label": "Departure",
+      "reqd": 1
+    },
+    {
+      "fieldname": "num_nights",
+      "fieldtype": "Int",
+      "label": "Nights",
+      "read_only": 1
+    },
+    {
+      "fieldname": "sec_rooms",
+      "fieldtype": "Section Break",
+      "label": "Rooms"
+    },
+    {
+      "fieldname": "reservation_rooms",
+      "fieldtype": "Table",
+      "label": "Rooms",
+      "options": "Reservation Room Line"
+    },
+    {
+      "fieldname": "sec_details",
+      "fieldtype": "Section Break",
+      "label": "Stay Details"
+    },
+    {
+      "default": "1",
+      "fieldname": "adults",
+      "fieldtype": "Int",
+      "label": "Adults"
+    },
+    {
+      "default": "0",
+      "fieldname": "children",
+      "fieldtype": "Int",
+      "label": "Children"
+    },
+    {
+      "fieldname": "meal_plan",
+      "fieldtype": "Select",
+      "label": "Meal Plan",
+      "options": "Room Only\nBed & Breakfast\nHalf Board\nFull Board\nAll Inclusive"
+    },
+    {
+      "fieldname": "col_2",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "source",
+      "fieldtype": "Select",
+      "label": "Booking Source",
+      "options": "\nWalk-In\nOnline\nPhone\nTravel Agent\nCorporate\nOTA\nWeb Booking"
+    },
+    {
+      "fieldname": "web_booking",
+      "fieldtype": "Link",
+      "label": "Web Booking Ref",
+      "options": "Web Booking",
+      "read_only": 1
+    },
+    {
+      "fieldname": "rate_plan",
+      "fieldtype": "Link",
+      "label": "Rate Plan",
+      "options": "Rate Plan",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "vip_status",
+      "fieldtype": "Select",
+      "label": "VIP Status",
+      "options": "\nVIP\nVVIP\nHonorary",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "sec_deposit",
+      "fieldtype": "Section Break",
+      "label": "Deposit"
+    },
+    {
+      "fieldname": "deposit_amount",
+      "fieldtype": "Currency",
+      "label": "Deposit Amount"
+    },
+    {
+      "allow_on_submit": 1,
+      "fieldname": "deposit_paid",
+      "fieldtype": "Currency",
+      "label": "Deposit Paid",
+      "read_only": 1
+    },
+    {
+      "fieldname": "col_3",
+      "fieldtype": "Column Break"
+    },
+    {
+      "allow_on_submit": 1,
+      "fieldname": "hotel_deposit",
+      "fieldtype": "Link",
+      "label": "Deposit Record",
+      "options": "Hotel Deposit"
+    },
+    {
+      "allow_on_submit": 1,
+      "default": "Not Required",
+      "fieldname": "deposit_status",
+      "fieldtype": "Select",
+      "label": "Deposit Status",
+      "options": "Not Required\nPending\nPartially Paid\nPaid"
+    },
+    {
+      "fieldname": "sec_notes",
+      "fieldtype": "Section Break",
+      "label": "Notes & Audit"
+    },
+    {
+      "fieldname": "special_requests",
+      "fieldtype": "Text",
+      "label": "Special Requests",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "billing_instruction",
+      "fieldtype": "Select",
+      "label": "Billing Instruction",
+      "options": "Charge to Room\nCharge to Company\nCharge to Travel Agent\nSplit Bill\nPrepaid",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "col_4",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "confirmed_on",
+      "fieldtype": "Datetime",
+      "label": "Confirmed On",
+      "read_only": 1
+    },
+    {
+      "fieldname": "created_by_user",
+      "fieldtype": "Link",
+      "label": "Created By",
+      "options": "User",
+      "read_only": 1
+    },
+    {
+      "fieldname": "cancelled_by",
+      "fieldtype": "Link",
+      "label": "Cancelled By",
+      "options": "User",
+      "read_only": 1
+    },
+    {
+      "fieldname": "cancellation_date",
+      "fieldtype": "Datetime",
+      "label": "Cancelled On",
+      "read_only": 1
+    },
+    {
+      "fieldname": "cancellation_reason",
+      "fieldtype": "Data",
+      "label": "Cancellation Reason",
+      "allow_on_submit": 1
+    },
+    {
+      "fieldname": "amended_from",
+      "fieldtype": "Link",
+      "label": "Amended From",
+      "options": "Reservation",
+      "print_hide": 1
+    },
+    {
+      "fieldname": "billing_customer",
+      "label": "Bill To (if different)",
+      "fieldtype": "Link",
+      "options": "Customer",
+      "insert_after": "billing_instruction",
+      "description": "If set, invoice goes to this customer (company/travel agent)",
+      "allow_on_submit": 1
+    }
+  ],
+  "is_submittable": 1,
+  "links": [],
+  "modified": "2026-03-22 01:44:07.256783",
+  "modified_by": "Administrator",
+  "module": "DagaarSoft Hospitality",
+  "name": "Reservation",
+  "naming_rule": "By \"Naming Series\" field",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "amend": 1,
+      "cancel": 1,
+      "create": 1,
+      "delete": 1,
+      "read": 1,
+      "role": "Hotel Manager",
+      "submit": 1,
+      "write": 1
+    },
+    {
+      "create": 1,
+      "read": 1,
+      "role": "Hotel Receptionist",
+      "submit": 1,
+      "write": 1
+    },
+    {
+      "read": 1,
+      "role": "Hotel Cashier"
+    }
+  ],
+  "row_format": "Dynamic",
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": [],
+  "track_changes": 1
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Web Booking Report",
+  "doctype": "Report",
+  "report_name": "Web Booking Report",
+  "ref_doctype": "Web Booking",
+  "report_type": "Script Report",
+  "module": "DagaarSoft Hospitality",
+  "is_standard": "Yes"
+}

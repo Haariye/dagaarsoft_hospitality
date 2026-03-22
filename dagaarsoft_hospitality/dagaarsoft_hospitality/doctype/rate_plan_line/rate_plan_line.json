@@ -1,0 +1,15 @@
+{
+  "name": "Rate Plan Line",
+  "doctype": "DocType",
+  "module": "DagaarSoft Hospitality",
+  "istable": 1,
+  "editable_grid": 1,
+  "fields": [
+    {"fieldname":"room_type","fieldtype":"Link","label":"Room Type","options":"Room Type","reqd":1,"in_list_view":1},
+    {"fieldname":"room_type_name","fieldtype":"Data","label":"Room Type Name","fetch_from":"room_type.room_type_name","read_only":1,"in_list_view":1},
+    {"fieldname":"rate","fieldtype":"Currency","label":"Rate/Night","reqd":1,"in_list_view":1},
+    {"fieldname":"weekend_rate","fieldtype":"Currency","label":"Weekend Rate"},
+    {"fieldname":"meal_plan","fieldtype":"Select","label":"Meal Plan",
+      "options":"\nRoom Only\nBed & Breakfast\nHalf Board\nFull Board\nAll Inclusive"}
+  ]
+}

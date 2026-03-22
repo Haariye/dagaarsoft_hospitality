@@ -1,0 +1,92 @@
+{
+  "doctype": "DocType",
+  "name": "Hospitality Settings",
+  "module": "DagaarSoft Hospitality",
+  "issingle": 1,
+  "engine": "InnoDB",
+  "field_order": [
+    "hotel_property",
+    "default_rate_plan",
+    "deposit_required",
+    "default_deposit_mode_of_payment",
+    "cascade_cancel_linked_transactions",
+    "manager_override_role",
+    "allow_posa_room_charge",
+    "section_permissions",
+    "rate_override_role",
+    "discount_role"
+  ],
+  "fields": [
+    {
+      "fieldname": "hotel_property",
+      "label": "Default Property",
+      "fieldtype": "Link",
+      "options": "Property"
+    },
+    {
+      "fieldname": "default_rate_plan",
+      "label": "Default Rate Plan",
+      "fieldtype": "Link",
+      "options": "Rate Plan"
+    },
+    {
+      "fieldname": "deposit_required",
+      "label": "Deposit Required",
+      "fieldtype": "Check",
+      "default": "1"
+    },
+    {
+      "fieldname": "default_deposit_mode_of_payment",
+      "label": "Default Deposit Mode of Payment",
+      "fieldtype": "Link",
+      "options": "Mode of Payment"
+    },
+    {
+      "fieldname": "cascade_cancel_linked_transactions",
+      "label": "Cascade Cancel Linked Transactions",
+      "fieldtype": "Check",
+      "default": "1"
+    },
+    {
+      "fieldname": "manager_override_role",
+      "label": "Manager Override Role",
+      "fieldtype": "Link",
+      "options": "Role",
+      "default": "Hotel Manager"
+    },
+    {
+      "fieldname": "allow_posa_room_charge",
+      "label": "Allow POSAwesome Room Charges",
+      "fieldtype": "Check",
+      "default": "1"
+    },
+    {
+      "fieldname": "section_permissions",
+      "label": "Permissions & Defaults",
+      "fieldtype": "Section Break"
+    },
+    {
+      "fieldname": "rate_override_role",
+      "label": "Rate Override Role",
+      "fieldtype": "Link",
+      "options": "Role",
+      "default": "Hotel Manager"
+    },
+    {
+      "fieldname": "discount_role",
+      "label": "Discount Role",
+      "fieldtype": "Link",
+      "options": "Role",
+      "default": "Hotel Manager"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1
+    }
+  ]
+}

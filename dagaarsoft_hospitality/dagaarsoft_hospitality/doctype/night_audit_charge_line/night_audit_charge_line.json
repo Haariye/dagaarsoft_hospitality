@@ -1,0 +1,13 @@
+{
+  "name": "Night Audit Charge Line",
+  "doctype": "DocType",
+  "module": "DagaarSoft Hospitality",
+  "istable": 1,
+  "fields": [
+    {"fieldname":"room","fieldtype":"Link","label":"Room","options":"Room","in_list_view":1},
+    {"fieldname":"guest_name","fieldtype":"Data","label":"Guest","in_list_view":1},
+    {"fieldname":"folio","fieldtype":"Link","label":"Folio","options":"Guest Folio","in_list_view":1},
+    {"fieldname":"nightly_rate","fieldtype":"Currency","label":"Rate","in_list_view":1},
+    {"fieldname":"already_charged","fieldtype":"Check","label":"Already Charged","read_only":1}
+  ]
+}

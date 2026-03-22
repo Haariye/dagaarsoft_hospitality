@@ -1,0 +1,40 @@
+{
+  "name": "Minibar Consumption Item",
+  "doctype": "DocType",
+  "module": "DagaarSoft Hospitality",
+  "istable": 1,
+  "editable_grid": 1,
+  "fields": [
+    {
+      "fieldname": "item_name",
+      "fieldtype": "Data",
+      "label": "Item",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "qty",
+      "fieldtype": "Int",
+      "label": "Qty",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "item",
+      "fieldtype": "Link",
+      "label": "ERPNext Item",
+      "options": "Item"
+    },
+    {
+      "fieldname": "rate",
+      "fieldtype": "Currency",
+      "label": "Rate",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "amount",
+      "fieldtype": "Currency",
+      "label": "Amount",
+      "in_list_view": 1
+    }
+  ],
+  "permissions": []
+}

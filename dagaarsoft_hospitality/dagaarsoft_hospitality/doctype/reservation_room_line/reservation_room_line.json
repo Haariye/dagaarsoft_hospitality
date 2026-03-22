@@ -1,0 +1,69 @@
+{
+  "name": "Reservation Room Line",
+  "doctype": "DocType",
+  "module": "DagaarSoft Hospitality",
+  "istable": 1,
+  "editable_grid": 1,
+  "fields": [
+    {
+      "fieldname": "room_type",
+      "fieldtype": "Link",
+      "label": "Room Type",
+      "options": "Room Type",
+      "reqd": 1,
+      "in_list_view": 1,
+      "get_query": "function(doc) { return { filters: { property: doc.property } }; }"
+    },
+    {
+      "fieldname": "room",
+      "fieldtype": "Link",
+      "label": "Preferred Room",
+      "options": "Room",
+      "reqd": 1,
+      "in_list_view": 1,
+      "get_query": "function(doc, cdt, cdn) { let row=locals[cdt][cdn]; return { filters: { property: doc.property, room_type: row.room_type, is_active:1, is_out_of_order:0 } }; }"
+    },
+    {
+      "fieldname": "room_status",
+      "fieldtype": "Data",
+      "label": "Room Status",
+      "fetch_from": "room.room_status",
+      "read_only": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "adults",
+      "fieldtype": "Int",
+      "label": "Adults",
+      "default": "1",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "children",
+      "fieldtype": "Int",
+      "label": "Children",
+      "default": "0"
+    },
+    {
+      "fieldname": "rate",
+      "fieldtype": "Currency",
+      "label": "Rate/Night",
+      "in_list_view": 1,
+      "read_only": 0,
+      "bold": 1,
+      "description": "Auto-fetched from Rate Plan or BAR rate"
+    },
+    {
+      "fieldname": "rate_plan",
+      "fieldtype": "Link",
+      "label": "Rate Plan",
+      "options": "Rate Plan",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "notes",
+      "fieldtype": "Small Text",
+      "label": "Notes"
+    }
+  ]
+}

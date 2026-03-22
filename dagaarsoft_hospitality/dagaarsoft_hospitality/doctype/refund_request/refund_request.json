@@ -1,0 +1,104 @@
+{
+  "name": "Refund Request",
+  "doctype": "DocType",
+  "module": "DagaarSoft Hospitality",
+  "naming_rule": "By \"Naming Series\" field",
+  "autoname": "naming_series:",
+  "is_submittable": 1,
+  "fields": [
+    {
+      "fieldname": "naming_series",
+      "fieldtype": "Select",
+      "label": "Naming Series",
+      "options": "RFD-.YYYY.-.####\n",
+      "reqd": 1
+    },
+    {
+      "fieldname": "property",
+      "fieldtype": "Link",
+      "label": "Property",
+      "options": "Property",
+      "reqd": 1
+    },
+    {
+      "fieldname": "guest_stay",
+      "fieldtype": "Link",
+      "label": "Guest Stay",
+      "options": "Guest Stay",
+      "reqd": false,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "room",
+      "fieldtype": "Link",
+      "label": "Room",
+      "options": "Room"
+    },
+    {
+      "fieldname": "guest_folio",
+      "fieldtype": "Link",
+      "label": "Guest Folio",
+      "options": "Guest Folio",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "guest_stay",
+      "fieldtype": "Link",
+      "label": "Guest Stay",
+      "options": "Guest Stay",
+      "fetch_from": "guest_folio.guest_stay",
+      "read_only": 1
+    },
+    {
+      "fieldname": "col_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "refund_amount",
+      "fieldtype": "Currency",
+      "label": "Refund Amount",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "refund_reason",
+      "fieldtype": "Select",
+      "label": "Reason",
+      "options": "\nCancellation\nOvercharge\nService Complaint\nOverbooking\nOther",
+      "reqd": 1
+    },
+    {
+      "fieldname": "refund_method",
+      "fieldtype": "Select",
+      "label": "Refund Method",
+      "options": "Original Payment Method\nCash\nBank Transfer\nCredit Note",
+      "reqd": 1
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Pending Approval\nApproved\nProcessed\nRejected",
+      "default": "Pending Approval",
+      "in_list_view": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Hotel Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "submit": 1,
+      "cancel": 1
+    },
+    {
+      "role": "Hotel Receptionist",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "submit": 1
+    }
+  ]
+}

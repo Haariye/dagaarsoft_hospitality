@@ -1,0 +1,232 @@
+{% extends "templates/web.html" %}
+{% block title %}Book Your Room{% endblock %}
+{% block page_content %}
+<div style="max-width:700px;margin:40px auto;padding:0 20px;font-family:'Segoe UI',Arial,sans-serif">
+
+  <!-- Header -->
+  <div style="text-align:center;margin-bottom:30px">
+    <h1 style="color:#2c5282;font-size:2.2rem;margin-bottom:8px">Book Your Stay</h1>
+    <p style="color:#718096">Reserve your room online — instant confirmation</p>
+  </div>
+
+  <!-- Step 1: Search -->
+  <div id="step-1" class="step-card" style="background:white;border-radius:12px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,0.08);margin-bottom:20px">
+    <h2 style="color:#2d3748;font-size:1.3rem;margin-bottom:20px">📅 Select Your Dates</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <label style="display:block;font-size:13px;color:#4a5568;margin-bottom:6px;font-weight:600">Check-In Date</label>
+        <input type="date" id="arrival_date" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px">
+      </div>
+      <div>
+        <label style="display:block;font-size:13px;color:#4a5568;margin-bottom:6px;font-weight:600">Check-Out Date</label>
+        <input type="date" id="departure_date" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px">
+      </div>
+      <div>
+        <label style="display:block;font-size:13px;color:#4a5568;margin-bottom:6px;font-weight:600">Adults</label>
+        <select id="adults" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px">
+          <option value="1">1 Adult</option>
+          <option value="2" selected>2 Adults</option>
+          <option value="3">3 Adults</option>
+          <option value="4">4 Adults</option>
+        </select>
+      </div>
+      <div>
+        <label style="display:block;font-size:13px;color:#4a5568;margin-bottom:6px;font-weight:600">Children</label>
+        <select id="children" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px">
+          <option value="0" selected>No Children</option>
+          <option value="1">1 Child</option>
+          <option value="2">2 Children</option>
+          <option value="3">3 Children</option>
+        </select>
+      </div>
+    </div>
+    <button onclick="searchRooms()" style="width:100%;margin-top:20px;padding:14px;background:#2b6cb0;color:white;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer">
+      🔍 Search Available Rooms
+    </button>
+  </div>
+
+  <!-- Step 2: Room Selection -->
+  <div id="step-2" style="display:none">
+    <h2 style="color:#2d3748;font-size:1.3rem;margin-bottom:16px">🛏 Available Rooms</h2>
+    <div id="rooms-list"></div>
+  </div>
+
+  <!-- Step 3: Guest Details -->
+  <div id="step-3" style="display:none;background:white;border-radius:12px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,0.08)">
+    <h2 style="color:#2d3748;font-size:1.3rem;margin-bottom:20px">👤 Your Information</h2>
+    <div id="booking-summary" style="background:#ebf8ff;padding:14px;border-radius:8px;margin-bottom:20px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <label style="display:block;font-size:13px;color:#4a5568;margin-bottom:6px;font-weight:600">First Name *</label>
+        <input type="text" id="first_name" placeholder="First Name" style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px">
+      </div>
+      <div>
+        <label style="display:block;font-size:13px;color:#4a5568;margin-bottom:6px;font-weight:600">Last Name *</label>
+        <input type="text" id="last_name" placeholder="Last Name" style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px">
+      </div>
+      <div>
+        <label style="display:block;font-size:13px;color:#4a5568;margin-bottom:6px;font-weight:600">Email *</label>
+        <input type="email" id="email" placeholder="your@email.com" style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px">
+      </div>
+      <div>
+        <label style="display:block;font-size:13px;color:#4a5568;margin-bottom:6px;font-weight:600">Phone *</label>
+        <input type="tel" id="phone" placeholder="+1 234 567 8900" style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px">
+      </div>
+      <div style="grid-column:1/-1">
+        <label style="display:block;font-size:13px;color:#4a5568;margin-bottom:6px;font-weight:600">Meal Plan</label>
+        <select id="meal_plan" style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px">
+          <option>Room Only</option>
+          <option>Bed &amp; Breakfast</option>
+          <option>Half Board</option>
+          <option>Full Board</option>
+        </select>
+      </div>
+      <div style="grid-column:1/-1">
+        <label style="display:block;font-size:13px;color:#4a5568;margin-bottom:6px;font-weight:600">Special Requests</label>
+        <textarea id="special_requests" rows="3" placeholder="Any special requests or accessibility needs..." 
+          style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px"></textarea>
+      </div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:12px">
+      <button onclick="document.getElementById('step-2').style.display='block';document.getElementById('step-3').style.display='none'"
+        style="flex:1;padding:12px;background:#e2e8f0;color:#4a5568;border:none;border-radius:8px;font-size:14px;cursor:pointer">
+        ← Back
+      </button>
+      <button onclick="submitBooking()" id="submit-btn"
+        style="flex:2;padding:14px;background:#2b6cb0;color:white;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer">
+        ✅ Confirm Booking
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 4: Confirmation -->
+  <div id="step-4" style="display:none;background:white;border-radius:12px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,0.08);text-align:center">
+    <div style="font-size:64px;margin-bottom:16px">✅</div>
+    <h2 style="color:#276749;font-size:1.5rem">Booking Confirmed!</h2>
+    <p style="color:#718096;margin-bottom:20px">A confirmation email has been sent to your email address.</p>
+    <div id="conf-details" style="background:#f0fff4;padding:20px;border-radius:8px;text-align:left;margin-bottom:20px"></div>
+    <p style="color:#4a5568;font-size:13px">Your Booking Reference: <strong id="booking-ref" style="color:#2b6cb0;font-size:16px"></strong></p>
+  </div>
+
+  <div id="error-msg" style="display:none;background:#fff5f5;color:#c53030;padding:14px;border-radius:8px;margin-top:16px"></div>
+</div>
+
+<script>
+let selectedRoom = null;
+let propertyName = "{{ frappe.db.get_value('Property', {'is_active': 1}, 'name') or '' }}";
+
+// Set min dates
+document.getElementById('arrival_date').min = new Date().toISOString().split('T')[0];
+document.getElementById('departure_date').min = new Date(Date.now()+86400000).toISOString().split('T')[0];
+
+document.getElementById('arrival_date').addEventListener('change', function() {
+    let d = new Date(this.value);
+    d.setDate(d.getDate() + 1);
+    document.getElementById('departure_date').min = d.toISOString().split('T')[0];
+});
+
+function searchRooms() {
+    let arr = document.getElementById('arrival_date').value;
+    let dep = document.getElementById('departure_date').value;
+    if (!arr || !dep) { showError("Please select both dates."); return; }
+    if (!propertyName) { showError("No property configured for online booking."); return; }
+
+    document.getElementById('step-2').style.display = 'none';
+    fetch('/api/method/dagaarsoft_hospitality.dagaarsoft_hospitality.doctype.web_booking.web_booking.get_room_types_for_property?property_name=' + encodeURIComponent(propertyName))
+        .then(r => r.json())
+        .then(data => {
+            let types = data.message || [];
+            let nights = Math.round((new Date(dep) - new Date(arr)) / 86400000);
+            let html = '';
+            types.forEach(t => {
+                html += `
+                <div class="room-card" style="background:white;border:2px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:16px;display:flex;gap:20px;align-items:center;cursor:pointer;transition:border-color 0.2s"
+                  onclick="selectRoom('${t.name}', ${t.bar_rate||0})"
+                  onmouseover="this.style.borderColor='#4299e1'" onmouseout="this.style.borderColor='#e2e8f0'">
+                  <div style="flex:1">
+                    <h3 style="margin:0 0 6px;color:#2d3748">${t.room_type_name || t.name}</h3>
+                    <p style="color:#718096;font-size:13px;margin:0 0 8px">${t.description || ''}</p>
+                    <div style="display:flex;gap:12px;font-size:12px;color:#718096">
+                      ${t.bed_type ? `<span>🛏 ${t.bed_type}</span>` : ''}
+                      ${t.max_occupancy ? `<span>👥 Max ${t.max_occupancy} guests</span>` : ''}
+                    </div>
+                  </div>
+                  <div style="text-align:right;min-width:140px">
+                    <div style="font-size:22px;font-weight:bold;color:#2b6cb0">${fmt(t.bar_rate||0)}</div>
+                    <div style="font-size:12px;color:#718096">per night</div>
+                    <div style="font-size:14px;color:#276749;font-weight:600;margin-top:4px">${fmt((t.bar_rate||0)*nights)} total</div>
+                    <div style="font-size:11px;color:#718096">${nights} night${nights!==1?'s':''}</div>
+                    <button style="margin-top:10px;padding:8px 20px;background:#2b6cb0;color:white;border:none;border-radius:6px;font-size:13px;cursor:pointer">
+                      Select
+                    </button>
+                  </div>
+                </div>`;
+            });
+            if (!html) html = '<p style="text-align:center;color:#718096;padding:20px">No rooms available for selected dates.</p>';
+            document.getElementById('rooms-list').innerHTML = html;
+            document.getElementById('step-2').style.display = 'block';
+            clearError();
+        }).catch(e => showError("Error checking availability: " + e.message));
+}
+
+function selectRoom(roomType, rate) {
+    selectedRoom = { room_type: roomType, rate: rate };
+    let arr = document.getElementById('arrival_date').value;
+    let dep = document.getElementById('departure_date').value;
+    let nights = Math.round((new Date(dep) - new Date(arr)) / 86400000);
+    document.getElementById('booking-summary').innerHTML = `
+      <strong>🛏 ${roomType}</strong> &nbsp;|&nbsp; 
+      📅 ${arr} → ${dep} (${nights} nights) &nbsp;|&nbsp;
+      <span style="color:#2b6cb0;font-weight:bold">${fmt(rate * nights)} total</span>`;
+    document.getElementById('step-3').style.display = 'block';
+    document.getElementById('step-3').scrollIntoView({behavior:'smooth'});
+}
+
+function submitBooking() {
+    let btn = document.getElementById('submit-btn');
+    btn.disabled = true; btn.textContent = "Processing...";
+    let data = {
+        property: propertyName,
+        guest_first_name: document.getElementById('first_name').value,
+        guest_last_name: document.getElementById('last_name').value,
+        guest_email: document.getElementById('email').value,
+        guest_phone: document.getElementById('phone').value,
+        room_type: selectedRoom.room_type,
+        arrival_date: document.getElementById('arrival_date').value,
+        departure_date: document.getElementById('departure_date').value,
+        adults: document.getElementById('adults').value,
+        children: document.getElementById('children').value,
+        meal_plan: document.getElementById('meal_plan').value,
+        special_requests: document.getElementById('special_requests').value
+    };
+    if (!data.guest_first_name || !data.guest_last_name || !data.guest_email || !data.guest_phone) {
+        showError("Please fill in all required fields."); btn.disabled=false; btn.textContent="✅ Confirm Booking"; return;
+    }
+    fetch('/api/method/dagaarsoft_hospitality.dagaarsoft_hospitality.doctype.web_booking.web_booking.submit_web_booking', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json','X-Frappe-CSRF-Token': frappe && frappe.csrf_token || ''},
+        body: JSON.stringify({ data: JSON.stringify(data) })
+    }).then(r => r.json()).then(res => {
+        if (res.exc) { showError("Error: " + (res.exc_type || "Please try again.")); btn.disabled=false; btn.textContent="✅ Confirm Booking"; return; }
+        let b = res.message;
+        document.getElementById('booking-ref').textContent = b.token;
+        let nights = Math.round((new Date(data.departure_date) - new Date(data.arrival_date)) / 86400000);
+        document.getElementById('conf-details').innerHTML = `
+          <table style="width:100%;border-collapse:collapse">
+            <tr><td style="padding:6px;color:#718096">Guest</td><td style="padding:6px;font-weight:500">${data.guest_first_name} ${data.guest_last_name}</td></tr>
+            <tr style="background:#f9f9f9"><td style="padding:6px;color:#718096">Room</td><td style="padding:6px;font-weight:500">${selectedRoom.room_type}</td></tr>
+            <tr><td style="padding:6px;color:#718096">Check-In</td><td style="padding:6px">${data.arrival_date}</td></tr>
+            <tr style="background:#f9f9f9"><td style="padding:6px;color:#718096">Check-Out</td><td style="padding:6px">${data.departure_date}</td></tr>
+            <tr><td style="padding:6px;color:#718096">Nights</td><td style="padding:6px">${nights}</td></tr>
+            <tr style="background:#f9f9f9"><td style="padding:6px;color:#718096">Total</td><td style="padding:6px;font-weight:bold;color:#2b6cb0">${fmt(b.total_amount)}</td></tr>
+          </table>`;
+        ['step-1','step-2','step-3','error-msg'].forEach(id => document.getElementById(id).style.display='none');
+        document.getElementById('step-4').style.display = 'block';
+    }).catch(e => { showError("Connection error. Please try again."); btn.disabled=false; btn.textContent="✅ Confirm Booking"; });
+}
+
+function fmt(v) { return parseFloat(v||0).toLocaleString('en',{minimumFractionDigits:2,style:'currency',currency:'USD'}); }
+function showError(msg) { let e=document.getElementById('error-msg'); e.textContent=msg; e.style.display='block'; }
+function clearError() { document.getElementById('error-msg').style.display='none'; }
+</script>
+{% endblock %}

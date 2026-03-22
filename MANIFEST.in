@@ -1,0 +1,2 @@
+include *.md *.txt *.py
+recursive-include dagaarsoft_hospitality *.py *.json *.js *.css *.html *.md *.txt

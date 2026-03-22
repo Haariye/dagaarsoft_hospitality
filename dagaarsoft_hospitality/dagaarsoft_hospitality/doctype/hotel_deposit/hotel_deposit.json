@@ -1,0 +1,41 @@
+{
+  "name": "Hotel Deposit",
+  "doctype": "DocType",
+  "module": "DagaarSoft Hospitality",
+  "naming_rule": "By \"Naming Series\" field",
+  "autoname": "naming_series:",
+  "is_submittable": 1,
+  "track_changes": 1,
+  "fields": [
+    {"fieldname":"naming_series","fieldtype":"Select","label":"Series","options":"DEP-.YYYY.-.####\n","reqd":1},
+    {"fieldname":"property","fieldtype":"Link","label":"Property","options":"Property","reqd":1},
+    {"fieldname":"reservation","fieldtype":"Link","label":"Reservation","options":"Reservation"},
+    {"fieldname":"guest_stay","fieldtype":"Link","label":"Guest Stay","options":"Guest Stay"},
+    {"fieldname":"col1","fieldtype":"Column Break"},
+    {"fieldname":"customer","fieldtype":"Link","label":"Guest/Customer","options":"Customer","reqd":1},
+    {"fieldname":"deposit_date","fieldtype":"Date","label":"Deposit Date","reqd":1,"default":"Today"},
+    {"fieldname":"deposit_status","fieldtype":"Select","label":"Status",
+      "options":"Draft\nReceived\nApplied\nRefunded\nForfeited","default":"Draft","in_list_view":1},
+    {"fieldname":"sec_amount","fieldtype":"Section Break","label":"Amount Details"},
+    {"fieldname":"deposit_amount","fieldtype":"Currency","label":"Deposit Amount","reqd":1},
+    {"fieldname":"applied_amount","fieldtype":"Currency","label":"Applied to Invoice","read_only":1,"default":"0"},
+    {"fieldname":"refund_amount","fieldtype":"Currency","label":"Refunded Amount","read_only":1,"default":"0"},
+    {"fieldname":"balance_deposit","fieldtype":"Currency","label":"Available Balance","read_only":1},
+    {"fieldname":"col2","fieldtype":"Column Break"},
+    {"fieldname":"payment_mode","fieldtype":"Select","label":"Payment Mode",
+      "options":"Cash\nCard\nBank Transfer\nOnline\nCheque","reqd":1},
+    {"fieldname":"reference_number","fieldtype":"Data","label":"Reference / Receipt No"},
+    {"fieldname":"received_by","fieldtype":"Link","label":"Received By","options":"User","read_only":1},
+    {"fieldname":"sec_erp","fieldtype":"Section Break","label":"ERPNext Links"},
+    {"fieldname":"payment_entry","fieldtype":"Link","label":"Advance Payment Entry","options":"Payment Entry","read_only":1},
+    {"fieldname":"applied_to_invoice","fieldtype":"Link","label":"Applied to Invoice","options":"Sales Invoice","read_only":1},
+    {"fieldname":"col3","fieldtype":"Column Break"},
+    {"fieldname":"notes","fieldtype":"Text","label":"Notes"},
+    {"fieldname":"amended_from","fieldtype":"Link","label":"Amended From","options":"Hotel Deposit","print_hide":1}
+  ],
+  "permissions": [
+    {"role":"Hotel Manager","read":1,"write":1,"create":1,"submit":1,"cancel":1,"amend":1,"delete":1},
+    {"role":"Hotel Receptionist","read":1,"write":1,"create":1,"submit":1},
+    {"role":"Hotel Cashier","read":1,"write":1,"submit":1}
+  ]
+}
