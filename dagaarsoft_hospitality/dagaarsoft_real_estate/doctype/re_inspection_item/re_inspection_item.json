@@ -1,0 +1,17 @@
+{
+  "name": "RE Inspection Item",
+  "doctype": "DocType",
+  "module": "DagaarSoft Real Estate",
+  "istable": 1,
+  "editable_grid": 1,
+  "fields": [
+    {"fieldname":"area","fieldtype":"Data","label":"Area / Room","reqd":1,"in_list_view":1},
+    {"fieldname":"item","fieldtype":"Data","label":"Item","reqd":1,"in_list_view":1},
+    {"fieldname":"condition","fieldtype":"Select","label":"Condition",
+     "options":"Excellent\nGood\nFair\nPoor\nDamaged\nMissing","in_list_view":1},
+    {"fieldname":"notes","fieldtype":"Small Text","label":"Notes","in_list_view":1},
+    {"fieldname":"photo","fieldtype":"Attach Image","label":"Photo"},
+    {"fieldname":"repair_needed","fieldtype":"Check","label":"Repair Needed","default":"0"},
+    {"fieldname":"estimated_repair_cost","fieldtype":"Currency","label":"Repair Est."}
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "RE Viewing Schedule",
+  "doctype": "DocType",
+  "module": "DagaarSoft Real Estate",
+  "engine": "InnoDB",
+  "autoname": "naming_series:",
+  "fields": [
+    {"fieldname":"naming_series","fieldtype":"Select","label":"Series","options":"REVIEW-.YYYY.-.####","reqd":1},
+    {"fieldname":"property","fieldtype":"Link","label":"Property","options":"RE Property","reqd":1,"in_list_view":1},
+    {"fieldname":"unit","fieldtype":"Link","label":"Unit","options":"RE Unit","reqd":1,"in_list_view":1},
+    {"fieldname":"prospect_name","fieldtype":"Data","label":"Prospect Name","reqd":1,"in_list_view":1},
+    {"fieldname":"phone","fieldtype":"Data","label":"Phone","options":"Phone"},
+    {"fieldname":"email","fieldtype":"Data","label":"Email","options":"Email"},
+    {"fieldname":"col1","fieldtype":"Column Break"},
+    {"fieldname":"viewing_date","fieldtype":"Datetime","label":"Viewing Date","reqd":1,"in_list_view":1},
+    {"fieldname":"status","fieldtype":"Select","label":"Status",
+     "options":"Scheduled\nCompleted\nCancelled\nNo Show\nInterested\nNot Interested",
+     "default":"Scheduled","in_list_view":1},
+    {"fieldname":"agent","fieldtype":"Link","label":"Shown By","options":"User"},
+    {"fieldname":"notes","fieldtype":"Text","label":"Notes"}
+  ],
+  "permissions": [{"role":"Hotel Manager","read":1,"write":1,"create":1,"delete":1},
+                  {"role":"Hotel Receptionist","read":1,"write":1,"create":1}],
+  "track_changes": 1
+}

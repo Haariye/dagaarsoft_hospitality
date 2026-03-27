@@ -73,12 +73,24 @@ def create_sales_invoice_from_folio(folio_name, submit=False, discount_pct=0,
                                      discount_amount=0, bill_to_override=None):
     folio = frappe.get_doc("Guest Folio", folio_name)
 
-    # FIX 5: Prevent duplicate invoices for same folio
-    if folio.sales_invoice and frappe.db.exists("Sales Invoice", folio.sales_invoice):
-        si_status = frappe.db.get_value("Sales Invoice", folio.sales_invoice, "docstatus")
-        if si_status in (0, 1):
-            frappe.throw(_("Invoice {0} already exists for this Folio. Cancel it first.").format(
-                folio.sales_invoice))
+    # Prevent duplicate: only block if a live (draft or submitted) SI exists
+    # If SI was deleted or cancelled, clear the stale reference and continue
+    if folio.sales_invoice:
+        if not frappe.db.exists("Sales Invoice", folio.sales_invoice):
+            # SI was deleted — clear stale reference
+            frappe.db.set_value("Guest Folio", folio_name, {
+                "sales_invoice": "", "sales_invoice_status": ""}, update_modified=False)
+            folio.sales_invoice = ""
+        else:
+            si_status = frappe.db.get_value("Sales Invoice", folio.sales_invoice, "docstatus")
+            if si_status == 2:
+                # SI was cancelled — clear stale reference
+                frappe.db.set_value("Guest Folio", folio_name, {
+                    "sales_invoice": "", "sales_invoice_status": "Cancelled"}, update_modified=False)
+                folio.sales_invoice = ""
+            elif si_status in (0, 1):
+                frappe.throw(_("Invoice {0} already exists. Cancel it first.").format(
+                    folio.sales_invoice))
 
     invoice_to = bill_to_override or folio.billing_customer or folio.customer
     if not invoice_to:
@@ -167,7 +179,15 @@ def create_sales_invoice_from_folio(folio_name, submit=False, discount_pct=0,
 
     si.set_missing_values()
     si.calculate_taxes_and_totals()
+    # Set AFTER set_missing_values but BEFORE insert — saved in the INSERT itself
+    si.hotel_billing_instruction = "Folio Invoice"
     si.insert(ignore_permissions=True)
+
+    frappe.db.set_value("Guest Folio", folio_name, {
+        "sales_invoice": si.name,
+        "sales_invoice_status": "Draft"
+    }, update_modified=False)
+    frappe.db.commit()  # flush so marker is visible when on_submit fires
 
     if submit:
         si.submit()
@@ -175,12 +195,11 @@ def create_sales_invoice_from_folio(folio_name, submit=False, discount_pct=0,
         for c in room_charges + other_charges:
             frappe.db.set_value("Folio Charge Line", c.name, "is_billed", 1)
         _auto_apply_deposits(invoice_to, si.name, folio)
+        # Sync final status after submit
+        frappe.db.set_value("Guest Folio", folio_name, {
+            "sales_invoice_status": si.status
+        }, update_modified=False)
 
-    # FIX 11: Immediately sync folio status
-    frappe.db.set_value("Guest Folio", folio_name, {
-        "sales_invoice": si.name,
-        "sales_invoice_status": si.status
-    }, update_modified=False)
     return si.name
 
 
@@ -437,3 +456,126 @@ def _get_item_group(name):
     frappe.get_doc({"doctype": "Item Group", "item_group_name": name,
                     "parent_item_group": "All Item Groups"}).insert(ignore_permissions=True)
     return name
+
+
+def create_supplementary_invoice(folio_name, submit=False):
+    """
+    Creates invoice(s) for unbilled folio charges.
+    - Regular charges (Laundry, F&B, Room Rate Adjustment etc) → Supplementary Sales Invoice
+    - Room Rate Credit (downgrade) → Credit Note against primary SI
+    Marks charges as billed atomically before creating any document.
+    """
+    unbilled_count = frappe.db.sql(
+        "SELECT COUNT(*) FROM `tabFolio Charge Line` WHERE parent=%s AND is_void=0 AND is_billed=0",
+        folio_name)[0][0]
+    if not unbilled_count:
+        return None
+
+    folio   = frappe.get_doc("Guest Folio", folio_name)
+    unbilled = [c for c in (folio.get("folio_charges") or []) if not c.is_void and not c.is_billed]
+    if not unbilled:
+        return None
+
+    # Split by type BEFORE marking billed
+    credit_lines = [c for c in unbilled if c.charge_category == "Room Rate Credit"]
+    charge_lines = [c for c in unbilled if c.charge_category != "Room Rate Credit"]
+
+    # Mark ALL as billed immediately — prevents concurrent duplicates
+    for c in unbilled:
+        frappe.db.set_value("Folio Charge Line", c.name, "is_billed", 1)
+    frappe.db.commit()
+
+    invoice_to = folio.billing_customer or folio.customer
+    if not invoice_to:
+        return None
+
+    prop = None
+    if folio.property:
+        prop = frappe.db.get_value("Property", folio.property,
+            ["company", "income_account", "debtors_account", "default_tax_template"], as_dict=True)
+    company      = (prop.company if prop else None) or frappe.defaults.get_defaults().get("company")
+    income_acct  = (getattr(prop, "income_account",  None) if prop else None) or _default_income(company)
+    debtors_acct = (getattr(prop, "debtors_account", None) if prop else None) or _default_debtors(company)
+
+    created_si = None
+
+    # ── Positive charges → Supplementary Sales Invoice ────────────────────────
+    if charge_lines:
+        si = frappe.new_doc("Sales Invoice")
+        si.customer     = invoice_to
+        si.company      = company
+        si.posting_date = today()
+        si.due_date     = today()
+        si.debit_to     = debtors_acct
+        si.remarks      = "Supplementary - Folio: {0} | Stay: {1} | Room: {2}".format(
+            folio_name, folio.guest_stay or "", folio.room or "")
+        si.hotel_folio = folio_name
+        si.hotel_stay  = folio.guest_stay
+        si.hotel_room  = folio.room
+        for c in charge_lines:
+            ic  = _get_item(c.charge_category)
+            uom = frappe.db.get_value("Item", ic, "stock_uom") or "Nos"
+            r = si.append("items", {})
+            r.item_code = ic
+            r.item_name = r.description = c.description or c.charge_category
+            r.qty = flt(c.qty) or 1; r.uom = uom; r.stock_uom = uom; r.conversion_factor = 1
+            r.rate = flt(c.rate) or flt(c.amount); r.amount = flt(c.amount)
+            r.income_account = income_acct
+        if prop and prop.default_tax_template:
+            si.taxes_and_charges = prop.default_tax_template
+        si.set_missing_values()
+        si.calculate_taxes_and_totals()
+        si.hotel_billing_instruction = "Folio Invoice"
+        si.insert(ignore_permissions=True)
+        frappe.db.set_value("Guest Folio", folio_name,
+            "sales_invoice_status", "Has Supplementary", update_modified=False)
+        frappe.db.commit()
+        if submit:
+            si.submit()
+        created_si = si.name
+
+    # ── Room Rate Credit → Credit Note against primary SI ─────────────────────
+    if credit_lines:
+        primary_si = frappe.db.get_value("Guest Folio", folio_name, "sales_invoice")
+        if primary_si and frappe.db.exists("Sales Invoice", primary_si):
+            for c in credit_lines:
+                try:
+                    from dagaarsoft_hospitality.dagaarsoft_hospitality.doctype.room_move.room_move import (
+                        _create_room_move_credit_note)
+                    _create_room_move_credit_note(
+                        primary_si, folio_name,
+                        flt(c.amount),
+                        c.reference_name or "Room Move",
+                        folio.guest_stay or "",
+                        folio.property or "",
+                        "Downgrade Credit")
+                except Exception:
+                    frappe.log_error(frappe.get_traceback(),
+                        "Credit Note from Bill Pending Error: " + folio_name)
+
+    frappe.db.set_value("Guest Folio", folio_name,
+        "sales_invoice_status",
+        "Supplementary Issued" if submit else "Supplementary Draft",
+        update_modified=False)
+
+    return created_si
+
+def _register_folio_si(folio_name, si_name):
+    """Store SI names that belong to a folio so posa_integration can skip them."""
+    key = f"folio_si_{folio_name}"
+    existing = frappe.cache().get_value(key) or []
+    if si_name not in existing:
+        existing.append(si_name)
+    frappe.cache().set_value(key, existing, expires_in_sec=3600)
+
+
+def is_folio_generated_si(folio_name, si_name):
+    """Check if SI was generated from folio (primary or supplementary)."""
+    # Check primary SI
+    primary = frappe.db.get_value("Guest Folio", folio_name, "sales_invoice")
+    if primary == si_name:
+        return True
+    # Check cache for supplementary SIs
+    key = f"folio_si_{folio_name}"
+    cached = frappe.cache().get_value(key) or []
+    return si_name in cached

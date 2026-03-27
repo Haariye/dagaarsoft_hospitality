@@ -1,0 +1,19 @@
+{
+  "name": "RE Rent Schedule Line",
+  "doctype": "DocType",
+  "module": "DagaarSoft Real Estate",
+  "istable": 1,
+  "editable_grid": 1,
+  "fields": [
+    {"fieldname":"period","fieldtype":"Data","label":"Period","in_list_view":1,"read_only":1},
+    {"fieldname":"due_date","fieldtype":"Date","label":"Due Date","reqd":1,"in_list_view":1},
+    {"fieldname":"amount","fieldtype":"Currency","label":"Amount","reqd":1,"in_list_view":1},
+    {"fieldname":"status","fieldtype":"Select","label":"Status",
+     "options":"Pending\nInvoiced\nPaid\nOverdue\nWaived",
+     "default":"Pending","in_list_view":1},
+    {"fieldname":"sales_invoice","fieldtype":"Link","label":"Invoice","options":"Sales Invoice","in_list_view":1},
+    {"fieldname":"payment_entry","fieldtype":"Link","label":"Payment","options":"Payment Entry"},
+    {"fieldname":"paid_date","fieldtype":"Date","label":"Paid On"},
+    {"fieldname":"notes","fieldtype":"Small Text","label":"Notes"}
+  ]
+}

@@ -1,6 +1,7 @@
 // Guest Stay JS v5.1 - FIX 7,8,9,10,11
 frappe.ui.form.on("Guest Stay", {
     onload(frm) {
+        dh_apply_property(frm);
         const d = (frappe.boot && frappe.boot.hospitality_defaults) || {};
         if (frm.doc.docstatus === 0) {
             if (!frm.doc.property && d.property) frm.set_value("property", d.property);
@@ -21,6 +22,8 @@ frappe.ui.form.on("Guest Stay", {
             frm.add_custom_button(__("Post Room Charges"), () => _post_room_charges(frm), __("Billing"));
             frm.add_custom_button(__("Move Room"), () =>
                 frappe.new_doc("Room Move",{guest_stay:frm.doc.name}), __("Actions"));
+            frm.add_custom_button(__("Transfer Billing"), () => _transfer_billing(frm), __("Actions"));
+            frm.add_custom_button(__("Change Guest"), () => _change_customer(frm), __("Actions"));
             // FIX 8+9: Enhanced checkout button
             frm.add_custom_button(__("🚪 Check Out"), () => _checkout(frm)).addClass("btn-danger");
         }
@@ -203,6 +206,56 @@ function _checkout(frm) {
             });
         }
     });
+}
+
+function _transfer_billing(frm) {
+    const d = new frappe.ui.Dialog({
+        title: __('Transfer Billing to Third Party'),
+        fields: [
+            {fieldname:'billing_customer', fieldtype:'Link', options:'Customer',
+             label:__('Bill To (Company / Travel Agency)'), reqd:1,
+             default: frm.doc.billing_customer || ''},
+            {fieldname:'transfer_mode', fieldtype:'Select',
+             label:__('Apply To'),
+             options:'from_now\nall',
+             default:'from_now',
+             description:__('from_now = future charges only | all = include existing unbilled charges')},
+        ],
+        primary_action_label: __('Transfer'),
+        primary_action(v) {
+            frappe.call({
+                method:'dagaarsoft_hospitality.dagaarsoft_hospitality.doctype.guest_stay.guest_stay.transfer_billing',
+                args:{stay_name:frm.doc.name, billing_customer:v.billing_customer, transfer_mode:v.transfer_mode},
+                callback(){d.hide(); frm.reload_doc();}
+            });
+        }
+    });
+    d.show();
+}
+
+function _change_customer(frm) {
+    frappe.prompt({
+        fieldname:'new_customer', fieldtype:'Link', options:'Customer',
+        label:__('New Primary Guest Customer'), reqd:1
+    }, v => {
+        frappe.confirm(
+            __('Update guest to {0} and cascade to all related documents (Folio, Deposits, Draft Invoices)?',
+                [v.new_customer]),
+            () => {
+                frappe.call({
+                    method:'dagaarsoft_hospitality.dagaarsoft_hospitality.doctype.guest_stay.guest_stay.update_customer_cascade',
+                    args:{stay_name:frm.doc.name, new_customer:v.new_customer},
+                    freeze:true,
+                    callback(r){
+                        if(r.message) frappe.show_alert({
+                            message:__('Updated {0} document(s)',[r.message.changed]),
+                            indicator:'green'});
+                        frm.reload_doc();
+                    }
+                });
+            }
+        );
+    }, __('Change Guest'), __('Update'));
 }
 
 function _do_checkout(stay_name, force, adjustment_note, frm) {

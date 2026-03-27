@@ -1,0 +1,31 @@
+{
+  "name": "RE Move Out",
+  "doctype": "DocType",
+  "module": "DagaarSoft Real Estate",
+  "engine": "InnoDB",
+  "autoname": "naming_series:",
+  "is_submittable": 1,
+  "fields": [
+    {"fieldname":"naming_series","fieldtype":"Select","label":"Series","options":"REMOUT-.YYYY.-.####","reqd":1},
+    {"fieldname":"lease","fieldtype":"Link","label":"Lease","options":"RE Lease","reqd":1,"in_list_view":1},
+    {"fieldname":"unit","fieldtype":"Link","label":"Unit","options":"RE Unit","in_list_view":1},
+    {"fieldname":"tenant","fieldtype":"Link","label":"Tenant","options":"RE Tenant","in_list_view":1},
+    {"fieldname":"move_out_date","fieldtype":"Date","label":"Move-Out Date","reqd":1,"in_list_view":1},
+    {"fieldname":"col1","fieldtype":"Column Break"},
+    {"fieldname":"keys_returned","fieldtype":"Check","label":"Keys Returned","default":"0"},
+    {"fieldname":"keys_count","fieldtype":"Int","label":"Keys Returned Count"},
+    {"fieldname":"meter_reading_electric","fieldtype":"Float","label":"Electric Meter"},
+    {"fieldname":"meter_reading_water","fieldtype":"Float","label":"Water Meter"},
+    {"fieldname":"sec_deposit","fieldtype":"Section Break","label":"Deposit Settlement"},
+    {"fieldname":"deposit_refundable","fieldtype":"Currency","label":"Refundable Amount"},
+    {"fieldname":"deposit_deductions","fieldtype":"Currency","label":"Deductions"},
+    {"fieldname":"deduction_reason","fieldtype":"Text","label":"Deduction Reason"},
+    {"fieldname":"notes","fieldtype":"Text","label":"Notes","allow_on_submit":1},
+    {"fieldname":"tenant_signature","fieldtype":"Signature","label":"Tenant Signature"}
+  ],
+  "permissions": [
+    {"role":"Hotel Manager","read":1,"write":1,"create":1,"delete":1,"submit":1,"cancel":1},
+    {"role":"Hotel Receptionist","read":1,"write":1,"create":1,"submit":1}
+  ],
+  "track_changes": 1
+}

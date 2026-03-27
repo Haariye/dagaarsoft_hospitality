@@ -1,6 +1,7 @@
 // Housekeeping Task JS v3 — Mobile-friendly, one-tap updates
 frappe.ui.form.on("Housekeeping Task", {
     refresh(frm) {
+        dh_apply_property(frm);
         const colors = {
             "Pending": "orange", "In Progress": "blue",
             "Completed": "green", "Skipped": "gray", "Blocked": "red"

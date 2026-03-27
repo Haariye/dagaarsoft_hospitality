@@ -1,43 +1,14 @@
 {
   "doctype": "Workspace",
   "name": "Hotel Reports",
+  "title": "Hotel Reports",
   "label": "Hotel Reports",
   "module": "DagaarSoft Hospitality",
-  "icon": "bar-chart",
+  "icon": "chart-axis",
   "is_standard": "Yes",
   "public": 1,
-  "shortcuts": [
-    {"type":"Report","label":"In House Report","link_to":"In House Report"},
-    {"type":"Report","label":"Arrivals Today","link_to":"Arrivals Today"},
-    {"type":"Report","label":"Departures Today","link_to":"Departures Today"},
-    {"type":"Report","label":"Occupancy Report","link_to":"Occupancy Report"},
-    {"type":"Report","label":"Daily Revenue Report","link_to":"Daily Revenue Report"},
-    {"type":"Report","label":"Folio Aging Report","link_to":"Folio Aging Report"},
-    {"type":"Report","label":"Room Status Board","link_to":"Room Status Board"}
-  ],
-  "cards": [
-    {
-      "card_name": "Operations",
-      "label": "Operations Reports",
-      "links": [
-        {"label":"In House Report","link_type":"Report","link_to":"In House Report","type":"Link"},
-        {"label":"Arrivals Today","link_type":"Report","link_to":"Arrivals Today","type":"Link"},
-        {"label":"Departures Today","link_type":"Report","link_to":"Departures Today","type":"Link"},
-        {"label":"Room Status Board","link_type":"Report","link_to":"Room Status Board","type":"Link"},
-        {"label":"Housekeeping Schedule","link_type":"Report","link_to":"Housekeeping Schedule","type":"Link"}
-      ]
-    },
-    {
-      "card_name": "Revenue",
-      "label": "Revenue Reports",
-      "links": [
-        {"label":"Daily Revenue Report","link_type":"Report","link_to":"Daily Revenue Report","type":"Link"},
-        {"label":"Occupancy Report","link_type":"Report","link_to":"Occupancy Report","type":"Link"},
-        {"label":"Folio Aging Report","link_type":"Report","link_to":"Folio Aging Report","type":"Link"},
-        {"label":"Deposit Report","link_type":"Report","link_to":"Deposit Report","type":"Link"},
-        {"label":"POS Sales Report","link_type":"Report","link_to":"POS Sales Report","type":"Link"}
-      ]
-    }
-  ],
-  "roles": [{"role":"Hotel Manager"},{"role":"Hotel Auditor"}]
+  "content": [],
+  "shortcuts": [],
+  "cards": [],
+  "roles": []
 }

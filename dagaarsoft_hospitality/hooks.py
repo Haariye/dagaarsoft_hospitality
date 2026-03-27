@@ -9,6 +9,11 @@ app_license     = "MIT"
 app_version     = "5.1.0"
 required_apps   = ["frappe", "erpnext"]
 
+# ── Global JS (loaded on every page) ─────────────────────────────────────────
+app_include_js = [
+    "/assets/dagaarsoft_hospitality/js/property_session.js",
+]
+
 # ── Fixtures ──────────────────────────────────────────────────────────────────
 fixtures = [
     {"dt": "Custom Field", "filters": [["module", "=", "DagaarSoft Hospitality"]]}
@@ -30,6 +35,15 @@ doctype_js = {
     "Night Audit Run":    "public/js/night_audit_run.js",
     "Room":               "public/js/room.js",
     "Sales Invoice":      "public/js/sales_invoice_extend.js",
+    # ── Real Estate ────────────────────────────────────────────────────────────
+    "RE Property":            "public/js/re/re_property.js",
+    "RE Unit":                "public/js/re/re_unit.js",
+    "RE Lease":               "public/js/re/re_lease.js",
+    "RE Tenant":              "public/js/re/re_tenant.js",
+    "RE Maintenance Request": "public/js/re/re_maintenance_request.js",
+    "RE Inspection Report":   "public/js/re/re_inspection_report.js",
+    "RE Notice":              "public/js/re/re_notice.js",
+    "RE Utility Bill":        "public/js/re/re_utility_bill.js",
 }
 
 doctype_list_js = {
@@ -98,6 +112,14 @@ doc_events = {
         "on_submit": "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.posa_integration.on_sales_invoice_submit",
         "on_cancel": "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.posa_integration.on_sales_invoice_cancel",
     },
+
+    # ── Real Estate ────────────────────────────────────────────────────────────
+    "RE Lease": {
+        "validate":  "dagaarsoft_hospitality.dagaarsoft_real_estate.doctype.re_lease.re_lease.validate",
+        "on_submit": "dagaarsoft_hospitality.dagaarsoft_real_estate.doctype.re_lease.re_lease.on_submit",
+        "on_cancel": "dagaarsoft_hospitality.dagaarsoft_real_estate.doctype.re_lease.re_lease.on_cancel",
+    },
+
     "Payment Entry": {
         # FIX 11: Immediately sync folio invoice status on payment
         "on_submit": "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.posa_integration.on_payment_entry_submit",
@@ -123,9 +145,14 @@ scheduler_events = {
         "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.tasks.update_maintenance_overdue",
         "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.tasks.update_housekeeping_overdue",
         "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.tasks.sync_folio_invoice_statuses",
+        "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.tasks.auto_generate_supplementary_invoices",
     ],
     "daily": [
         "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.tasks.auto_checkout_departed_guests",
+        "dagaarsoft_hospitality.dagaarsoft_real_estate.utils.tasks.check_lease_expiry",
+        "dagaarsoft_hospitality.dagaarsoft_real_estate.utils.tasks.generate_monthly_invoices",
+        "dagaarsoft_hospitality.dagaarsoft_real_estate.utils.tasks.apply_late_fees",
+
         "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.tasks.purge_old_audit_logs",
     ],
     "weekly": [

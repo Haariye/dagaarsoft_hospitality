@@ -1,286 +1,286 @@
 {
-  "actions": [],
-  "autoname": "naming_series:",
-  "creation": "2026-03-21 20:30:55.652970",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": [
-    "naming_series",
-    "property",
-    "guest_stay",
-    "reservation",
-    "col_1",
-    "customer",
-    "billing_customer",
-    "room",
-    "folio_status",
-    "sec_rate",
-    "nightly_rate",
-    "num_nights",
-    "rate_plan",
-    "col_2",
-    "billing_instruction",
-    "currency",
-    "sec_charges",
-    "folio_charges",
-    "sec_payments",
-    "folio_payments",
-    "sec_totals",
-    "total_charges",
-    "total_payments",
-    "balance_due",
-    "sec_erp",
-    "sales_invoice",
-    "sales_invoice_status",
-    "col_3",
-    "payment_entry",
-    "amended_from"
-  ],
-  "fields": [
-    {
-      "fieldname": "naming_series",
-      "fieldtype": "Select",
-      "label": "Series",
-      "options": "FOL-.YYYY.-.####",
-      "reqd": 1
-    },
-    {
-      "fieldname": "property",
-      "fieldtype": "Link",
-      "label": "Property",
-      "options": "Property",
-      "reqd": 1
-    },
-    {
-      "fieldname": "guest_stay",
-      "fieldtype": "Link",
-      "in_list_view": 1,
-      "label": "Guest Stay",
-      "options": "Guest Stay",
-      "reqd": 1
-    },
-    {
-      "fetch_from": "guest_stay.reservation",
-      "fieldname": "reservation",
-      "fieldtype": "Link",
-      "label": "Reservation",
-      "options": "Reservation",
-      "read_only": 1
-    },
-    {
-      "fieldname": "col_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fetch_from": "guest_stay.customer",
-      "fieldname": "customer",
-      "fieldtype": "Link",
-      "label": "Guest",
-      "options": "Customer",
-      "read_only": 1
-    },
-    {
-      "description": "Invoice created for this customer (e.g. Travel Agency, Company)",
-      "fieldname": "billing_customer",
-      "fieldtype": "Link",
-      "label": "Bill To",
-      "options": "Customer"
-    },
-    {
-      "fetch_from": "guest_stay.room",
-      "fieldname": "room",
-      "fieldtype": "Link",
-      "label": "Room",
-      "options": "Room",
-      "read_only": 1
-    },
-    {
-      "default": "Open",
-      "fieldname": "folio_status",
-      "fieldtype": "Select",
-      "in_list_view": 1,
-      "in_standard_filter": 1,
-      "label": "Status",
-      "options": "Open\nSuspended\nClosed\nTransferred",
-      "reqd": 1
-    },
-    {
-      "fieldname": "sec_rate",
-      "fieldtype": "Section Break",
-      "label": "Rate Information"
-    },
-    {
-      "fieldname": "nightly_rate",
-      "fieldtype": "Currency",
-      "label": "Nightly Rate",
-      "read_only": 1
-    },
-    {
-      "fieldname": "num_nights",
-      "fieldtype": "Int",
-      "label": "Nights",
-      "read_only": 1
-    },
-    {
-      "fieldname": "rate_plan",
-      "fieldtype": "Link",
-      "label": "Rate Plan",
-      "options": "Rate Plan",
-      "read_only": 1
-    },
-    {
-      "fieldname": "col_2",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "billing_instruction",
-      "fieldtype": "Select",
-      "label": "Billing Instruction",
-      "options": "Charge to Room\nCharge to Company\nCharge to Travel Agent\nSplit Bill\nPrepaid"
-    },
-    {
-      "fieldname": "currency",
-      "fieldtype": "Link",
-      "label": "Currency",
-      "options": "Currency"
-    },
-    {
-      "fieldname": "sec_charges",
-      "fieldtype": "Section Break",
-      "label": "Charge Lines"
-    },
-    {
-      "allow_on_submit": 1,
-      "fieldname": "folio_charges",
-      "fieldtype": "Table",
-      "label": "Charges",
-      "options": "Folio Charge Line",
-      "cannot_add_rows": 1,
-      "cannot_delete_rows": 1
-    },
-    {
-      "fieldname": "sec_payments",
-      "fieldtype": "Section Break",
-      "label": "Payment Lines"
-    },
-    {
-      "fieldname": "folio_payments",
-      "fieldtype": "Table",
-      "label": "Payments",
-      "options": "Folio Payment Line"
-    },
-    {
-      "fieldname": "sec_totals",
-      "fieldtype": "Section Break",
-      "label": "Totals"
-    },
-    {
-      "fieldname": "total_charges",
-      "fieldtype": "Currency",
-      "label": "Total Charges",
-      "read_only": 1
-    },
-    {
-      "fieldname": "total_payments",
-      "fieldtype": "Currency",
-      "label": "Total Payments",
-      "read_only": 1
-    },
-    {
-      "bold": 1,
-      "fieldname": "balance_due",
-      "fieldtype": "Currency",
-      "label": "Balance Due",
-      "read_only": 1
-    },
-    {
-      "fieldname": "sec_erp",
-      "fieldtype": "Section Break",
-      "label": "ERPNext"
-    },
-    {
-      "fieldname": "sales_invoice",
-      "fieldtype": "Link",
-      "label": "Sales Invoice",
-      "options": "Sales Invoice",
-      "read_only": 1
-    },
-    {
-      "fieldname": "sales_invoice_status",
-      "fieldtype": "Data",
-      "label": "Invoice Status",
-      "read_only": 1
-    },
-    {
-      "fieldname": "col_3",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "payment_entry",
-      "fieldtype": "Link",
-      "label": "Last Payment Entry",
-      "options": "Payment Entry",
-      "read_only": 1
-    },
-    {
-      "fieldname": "amended_from",
-      "fieldtype": "Link",
-      "label": "Amended From",
-      "options": "Guest Folio",
-      "print_hide": 1
-    },
-    {
-      "fieldname": "invoice_outstanding",
-      "label": "Invoice Outstanding",
-      "fieldtype": "Currency",
-      "read_only": 1,
-      "insert_after": "sales_invoice_status"
-    },
-    {
-      "fieldname": "invoice_paid_amount",
-      "label": "Invoice Paid Amount",
-      "fieldtype": "Currency",
-      "read_only": 1,
-      "insert_after": "invoice_outstanding"
-    }
-  ],
-  "is_submittable": 1,
-  "links": [],
-  "modified": "2026-03-21 22:43:32.287139",
-  "modified_by": "Administrator",
-  "module": "DagaarSoft Hospitality",
-  "name": "Guest Folio",
-  "naming_rule": "By \"Naming Series\" field",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "amend": 1,
-      "cancel": 1,
-      "create": 1,
-      "delete": 1,
-      "read": 1,
-      "role": "Hotel Manager",
-      "submit": 1,
-      "write": 1
-    },
-    {
-      "create": 1,
-      "read": 1,
-      "role": "Hotel Receptionist",
-      "submit": 1,
-      "write": 1
-    },
-    {
-      "read": 1,
-      "role": "Hotel Cashier",
-      "submit": 1,
-      "write": 1
-    }
-  ],
-  "row_format": "Dynamic",
-  "sort_field": "modified",
-  "sort_order": "DESC",
-  "states": [],
-  "title_field": "guest_stay",
-  "track_changes": 1
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2026-03-21 20:30:55.652970",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "property",
+  "guest_stay",
+  "reservation",
+  "col_1",
+  "customer",
+  "billing_customer",
+  "room",
+  "folio_status",
+  "sec_rate",
+  "nightly_rate",
+  "num_nights",
+  "rate_plan",
+  "col_2",
+  "billing_instruction",
+  "currency",
+  "sec_charges",
+  "folio_charges",
+  "sec_payments",
+  "folio_payments",
+  "sec_totals",
+  "total_charges",
+  "total_payments",
+  "balance_due",
+  "sec_erp",
+  "sales_invoice",
+  "sales_invoice_status",
+  "col_3",
+  "payment_entry",
+  "amended_from",
+  "invoice_outstanding",
+  "invoice_paid_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "FOL-.YYYY.-.####",
+   "reqd": 1
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "options": "Property",
+   "reqd": 1
+  },
+  {
+   "fieldname": "guest_stay",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Guest Stay",
+   "options": "Guest Stay",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "guest_stay.reservation",
+   "fieldname": "reservation",
+   "fieldtype": "Link",
+   "label": "Reservation",
+   "options": "Reservation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "guest_stay.customer",
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Guest",
+   "options": "Customer",
+   "read_only": 1
+  },
+  {
+   "description": "Invoice created for this customer (e.g. Travel Agency, Company)",
+   "fieldname": "billing_customer",
+   "fieldtype": "Link",
+   "label": "Bill To",
+   "options": "Customer"
+  },
+  {
+   "fetch_from": "guest_stay.room",
+   "fieldname": "room",
+   "fieldtype": "Link",
+   "label": "Room",
+   "options": "Room",
+   "read_only": 1
+  },
+  {
+   "default": "Open",
+   "fieldname": "folio_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Open\nSuspended\nClosed\nTransferred",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sec_rate",
+   "fieldtype": "Section Break",
+   "label": "Rate Information"
+  },
+  {
+   "fieldname": "nightly_rate",
+   "fieldtype": "Currency",
+   "label": "Nightly Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "num_nights",
+   "fieldtype": "Int",
+   "label": "Nights",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rate_plan",
+   "fieldtype": "Link",
+   "label": "Rate Plan",
+   "options": "Rate Plan",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "billing_instruction",
+   "fieldtype": "Select",
+   "label": "Billing Instruction",
+   "options": "Charge to Room\nCharge to Company\nCharge to Travel Agent\nSplit Bill\nPrepaid"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "sec_charges",
+   "fieldtype": "Section Break",
+   "label": "Charge Lines"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "folio_charges",
+   "fieldtype": "Table",
+   "label": "Charges",
+   "options": "Folio Charge Line"
+  },
+  {
+   "fieldname": "sec_payments",
+   "fieldtype": "Section Break",
+   "label": "Payment Lines"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "folio_payments",
+   "fieldtype": "Table",
+   "label": "Payments",
+   "options": "Folio Payment Line",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_totals",
+   "fieldtype": "Section Break",
+   "label": "Totals"
+  },
+  {
+   "fieldname": "total_charges",
+   "fieldtype": "Currency",
+   "label": "Total Charges",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_payments",
+   "fieldtype": "Currency",
+   "label": "Total Payments",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "fieldname": "balance_due",
+   "fieldtype": "Currency",
+   "label": "Balance Due",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_erp",
+   "fieldtype": "Section Break",
+   "label": "ERPNext"
+  },
+  {
+   "fieldname": "sales_invoice",
+   "fieldtype": "Link",
+   "label": "Sales Invoice",
+   "options": "Sales Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sales_invoice_status",
+   "fieldtype": "Data",
+   "label": "Invoice Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "col_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payment_entry",
+   "fieldtype": "Link",
+   "label": "Last Payment Entry",
+   "options": "Payment Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "options": "Guest Folio",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "invoice_outstanding",
+   "fieldtype": "Currency",
+   "label": "Invoice Outstanding",
+   "read_only": 1
+  },
+  {
+   "fieldname": "invoice_paid_amount",
+   "fieldtype": "Currency",
+   "label": "Invoice Paid Amount",
+   "read_only": 1
+  }
+ ],
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-03-23 00:03:34.535347",
+ "modified_by": "Administrator",
+ "module": "DagaarSoft Hospitality",
+ "name": "Guest Folio",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "Hotel Manager",
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "role": "Hotel Receptionist",
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Hotel Cashier",
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "guest_stay",
+ "track_changes": 1
 }

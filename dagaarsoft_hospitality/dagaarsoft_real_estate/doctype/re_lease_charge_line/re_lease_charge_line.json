@@ -1,0 +1,17 @@
+{
+  "name": "RE Lease Charge Line",
+  "doctype": "DocType",
+  "module": "DagaarSoft Real Estate",
+  "istable": 1,
+  "editable_grid": 1,
+  "fields": [
+    {"fieldname":"charge_type","fieldtype":"Select","label":"Charge","reqd":1,"in_list_view":1,
+     "options":"Rent\nWater\nElectricity\nGas\nInternet\nParking\nService Charge\nMaintenance\nOther"},
+    {"fieldname":"description","fieldtype":"Data","label":"Description","in_list_view":1},
+    {"fieldname":"amount","fieldtype":"Currency","label":"Amount","reqd":1,"in_list_view":1},
+    {"fieldname":"frequency","fieldtype":"Select","label":"Frequency",
+     "options":"Monthly\nQuarterly\nAnnual\nOne-Time","default":"Monthly","in_list_view":1},
+    {"fieldname":"is_taxable","fieldtype":"Check","label":"Taxable","default":"0"},
+    {"fieldname":"income_account","fieldtype":"Link","label":"Income Account","options":"Account"}
+  ]
+}

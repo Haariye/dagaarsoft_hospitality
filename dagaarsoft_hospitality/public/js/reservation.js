@@ -1,6 +1,7 @@
 // Reservation JS v4 — Full availability popup, room auto-populate, deposit gate, filters
 frappe.ui.form.on("Reservation", {
     refresh(frm) {
+        dh_apply_property(frm);
         _set_status(frm);
         if (frm.doc.docstatus === 1) {
             let s = frm.doc.reservation_status;

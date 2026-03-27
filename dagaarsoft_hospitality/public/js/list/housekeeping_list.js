@@ -23,5 +23,13 @@ frappe.listview_settings["Housekeeping Task"]={
                 }
             });
         });
+    },
+    onload(listview) {
+        if (typeof dh_get_session_property === 'function') {
+            const sess = dh_get_session_property();
+            if (sess && sess.property) {
+                listview.filter_area.add([[listview.doctype, 'property', '=', sess.property]]);
+            }
+        }
     }
 };

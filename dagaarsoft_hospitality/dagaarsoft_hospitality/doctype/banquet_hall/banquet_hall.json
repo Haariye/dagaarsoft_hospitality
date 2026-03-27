@@ -1,65 +1,94 @@
 {
-  "name": "Banquet Hall",
-  "doctype": "DocType",
-  "module": "DagaarSoft Hospitality",
-  "naming_rule": "By fieldname",
-  "autoname": "field:hall_name",
-  "is_submittable": 0,
-  "fields": [
-    {
-      "fieldname": "hall_name",
-      "fieldtype": "Data",
-      "label": "Hall Name",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "property",
-      "fieldtype": "Link",
-      "label": "Property",
-      "options": "Property",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "capacity",
-      "fieldtype": "Int",
-      "label": "Max Capacity"
-    },
-    {
-      "fieldname": "col_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "area_sqm",
-      "fieldtype": "Float",
-      "label": "Area (sqm)"
-    },
-    {
-      "fieldname": "floor",
-      "fieldtype": "Data",
-      "label": "Floor"
-    },
-    {
-      "fieldname": "is_active",
-      "fieldtype": "Check",
-      "label": "Is Active",
-      "default": "1"
-    }
-  ],
-  "permissions": [
-    {
-      "role": "Hotel Manager",
-      "read": 1,
-      "write": 1,
-      "create": 1,
-      "delete": 1
-    },
-    {
-      "role": "Banquet Manager",
-      "read": 1,
-      "write": 1,
-      "create": 1
-    }
-  ]
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:hall_name",
+ "creation": "2026-03-22 23:41:38.408863",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "hall_name",
+  "property",
+  "capacity",
+  "col_1",
+  "hall_status",
+  "area_sqm",
+  "floor",
+  "is_active"
+ ],
+ "fields": [
+  {
+   "fieldname": "hall_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Hall Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Property",
+   "options": "Property",
+   "reqd": 1
+  },
+  {
+   "fieldname": "capacity",
+   "fieldtype": "Int",
+   "label": "Max Capacity"
+  },
+  {
+   "fieldname": "col_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "area_sqm",
+   "fieldtype": "Float",
+   "label": "Area (sqm)"
+  },
+  {
+   "fieldname": "floor",
+   "fieldtype": "Data",
+   "label": "Floor"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active"
+  },
+  {
+   "default": "Available",
+   "fieldname": "hall_status",
+   "fieldtype": "Data",
+   "label": "Hall Status",
+   "options": "\nAvailable\nReserved\nOccupied\nMaintenance\nOut of Service"
+  }
+ ],
+ "links": [],
+ "modified": "2026-03-23 19:03:13.204847",
+ "modified_by": "Administrator",
+ "module": "DagaarSoft Hospitality",
+ "name": "Banquet Hall",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "Hotel Manager",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "role": "Banquet Manager",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
 }

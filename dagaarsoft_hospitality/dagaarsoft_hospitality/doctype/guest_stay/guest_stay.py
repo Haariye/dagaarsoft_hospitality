@@ -337,3 +337,108 @@ def _post_adjustment_note(folio_name, stay_name, note):
             reference_doctype="Guest Stay", reference_name=stay_name)
     except Exception:
         pass
+
+@frappe.whitelist()
+def transfer_billing(stay_name, billing_customer, transfer_mode="from_now"):
+    """
+    FIX 4: Transfer billing to a third-party company or travel agency.
+    transfer_mode:
+      "from_now"  - only future charges use new billing_customer
+      "all"       - also updates existing unbilled folio charges and the folio itself
+    """
+    stay = frappe.get_doc("Guest Stay", stay_name)
+
+    # Update stay
+    frappe.db.set_value("Guest Stay", stay_name, {
+        "billing_customer": billing_customer,
+        "billing_instruction": "Charge to Company" if billing_customer else "Charge to Room"
+    }, update_modified=False)
+
+    # Always update the folio's billing_customer
+    if stay.guest_folio:
+        frappe.db.set_value("Guest Folio", stay.guest_folio, {
+            "billing_customer": billing_customer
+        }, update_modified=False)
+
+    if transfer_mode == "all" and stay.guest_folio:
+        # Unbilled charges remain — they will use new billing_customer on next invoice
+        # Also update any Draft Sales Invoices linked to this folio
+        for si in frappe.get_all("Sales Invoice",
+                {"hotel_folio": stay.guest_folio, "docstatus": 0}, ["name"]):
+            frappe.db.set_value("Sales Invoice", si.name, "customer", billing_customer)
+
+    frappe.msgprint(
+        "Billing transferred to {0} ({1}).".format(
+            frappe.db.get_value("Customer", billing_customer, "customer_name") or billing_customer,
+            "all pending charges" if transfer_mode == "all" else "future charges only"),
+        alert=True)
+    return {"ok": True}
+
+
+@frappe.whitelist()
+def update_customer_cascade(stay_name, new_customer):
+    """
+    FIX 5: Update customer on Stay and cascade to all related documents.
+    Updates: Guest Stay, Guest Folio, Hotel Deposit, Sales Invoice (draft only),
+    Payment Entry (draft only).
+    """
+    stay = frappe.get_doc("Guest Stay", stay_name)
+    old_customer = stay.customer
+    if old_customer == new_customer:
+        return {"changed": 0}
+
+    new_name = frappe.db.get_value("Customer", new_customer, "customer_name") or new_customer
+    updated = []
+
+    # 1. Guest Stay
+    frappe.db.set_value("Guest Stay", stay_name, {
+        "customer": new_customer,
+        "guest_name": new_name
+    }, update_modified=False)
+    updated.append("Guest Stay")
+
+    # 2. Guest Folio
+    if stay.guest_folio:
+        folio = frappe.get_doc("Guest Folio", stay.guest_folio)
+        # Only update customer if billing_customer was same as old customer
+        update_data = {}
+        if folio.customer == old_customer:
+            update_data["customer"] = new_customer
+        if not folio.billing_customer or folio.billing_customer == old_customer:
+            update_data["billing_customer"] = new_customer
+        if update_data:
+            frappe.db.set_value("Guest Folio", stay.guest_folio,
+                update_data, update_modified=False)
+            updated.append("Guest Folio")
+
+    # 3. Hotel Deposits (submitted — update customer for future reference)
+    for dep in frappe.get_all("Hotel Deposit",
+            {"guest_stay": stay_name}, ["name", "customer"]):
+        if dep.customer == old_customer:
+            frappe.db.set_value("Hotel Deposit", dep.name,
+                "customer", new_customer, update_modified=False)
+            updated.append("Hotel Deposit: " + dep.name)
+
+    # 4. Draft Sales Invoices only (cannot modify submitted)
+    if stay.guest_folio:
+        for si in frappe.get_all("Sales Invoice",
+                {"hotel_folio": stay.guest_folio, "docstatus": 0,
+                 "customer": old_customer}, ["name"]):
+            frappe.db.set_value("Sales Invoice", si.name,
+                "customer", new_customer, update_modified=False)
+            updated.append("Draft SI: " + si.name)
+
+    # 5. Draft Payment Entries
+    for pe in frappe.get_all("Payment Entry",
+            {"hotel_stay": stay_name, "docstatus": 0,
+             "party": old_customer}, ["name"]):
+        frappe.db.set_value("Payment Entry", pe.name,
+            "party", new_customer, update_modified=False)
+        updated.append("Draft PE: " + pe.name)
+
+    frappe.db.commit()
+    frappe.msgprint(
+        "Customer updated to {0}. Updated: {1}".format(
+            new_name, ", ".join(updated)),
+        alert=True)
+    return {"changed": len(updated), "updated": updated}

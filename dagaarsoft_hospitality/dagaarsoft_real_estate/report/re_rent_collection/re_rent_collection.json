@@ -1,0 +1,16 @@
+{
+  "name": "RE Rent Collection",
+  "doctype": "Report",
+  "module": "DagaarSoft Real Estate",
+  "report_type": "Script Report",
+  "ref_doctype": "RE Lease",
+  "is_standard": "Yes",
+  "report_name": "RE Rent Collection",
+  "filters": [
+    {"fieldname":"property",  "label":"Property",   "fieldtype":"Link",   "options":"RE Property"},
+    {"fieldname":"tenant",    "label":"Tenant",      "fieldtype":"Link",   "options":"RE Tenant"},
+    {"fieldname":"status",    "label":"Line Status", "fieldtype":"Select", "options":"\nPending\nInvoiced\nPaid\nOverdue"},
+    {"fieldname":"from_date", "label":"Due From",    "fieldtype":"Date"},
+    {"fieldname":"to_date",   "label":"Due To",      "fieldtype":"Date"}
+  ]
+}

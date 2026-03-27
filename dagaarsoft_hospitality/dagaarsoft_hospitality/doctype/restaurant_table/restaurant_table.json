@@ -1,20 +1,98 @@
 {
-  "name": "Restaurant Table",
-  "doctype": "DocType",
-  "module": "DagaarSoft Hospitality",
-  "fields": [
-    {"fieldname":"table_number","fieldtype":"Data","label":"Table Number","reqd":1,"in_list_view":1},
-    {"fieldname":"outlet","fieldtype":"Link","label":"Outlet","options":"Outlet","reqd":1,"in_list_view":1},
-    {"fieldname":"seating_capacity","fieldtype":"Int","label":"Capacity","in_list_view":1},
-    {"fieldname":"table_status","fieldtype":"Select","label":"Status",
-      "options":"Available\nOccupied\nReserved\nCleaning","default":"Available","in_list_view":1,"in_standard_filter":1},
-    {"fieldname":"current_pos_order","fieldtype":"Link","label":"Current Order","options":"Restaurant POS","read_only":1},
-    {"fieldname":"floor","fieldtype":"Data","label":"Floor/Section"},
-    {"fieldname":"is_active","fieldtype":"Check","label":"Active","default":"1"}
-  ],
-  "permissions": [
-    {"role":"Hotel Manager","read":1,"write":1,"create":1,"delete":1},
-    {"role":"Restaurant Manager","read":1,"write":1,"create":1},
-    {"role":"Hotel Receptionist","read":1}
-  ]
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:table_number",
+ "creation": "2026-03-22 23:41:40.319991",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "table_number",
+  "outlet",
+  "seating_capacity",
+  "table_status",
+  "current_pos_order",
+  "floor",
+  "is_active"
+ ],
+ "fields": [
+  {
+   "fieldname": "table_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Table Number",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "outlet",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Outlet",
+   "options": "Outlet",
+   "reqd": 1
+  },
+  {
+   "fieldname": "seating_capacity",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Capacity"
+  },
+  {
+   "default": "Available",
+   "fieldname": "table_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Available\nOccupied\nReserved\nCleaning"
+  },
+  {
+   "fieldname": "current_pos_order",
+   "fieldtype": "Link",
+   "label": "Current Order",
+   "options": "Restaurant POS",
+   "read_only": 1
+  },
+  {
+   "fieldname": "floor",
+   "fieldtype": "Data",
+   "label": "Floor/Section"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Active"
+  }
+ ],
+ "links": [],
+ "modified": "2026-03-26 02:50:19.417502",
+ "modified_by": "Administrator",
+ "module": "DagaarSoft Hospitality",
+ "name": "Restaurant Table",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "Hotel Manager",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "role": "Restaurant Manager",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Hotel Receptionist"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
 }

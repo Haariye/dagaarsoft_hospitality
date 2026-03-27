@@ -1,0 +1,252 @@
+{
+ "charts": [
+  {
+   "chart_name": "Guest Stay",
+   "label": "Guest Stay"
+  }
+ ],
+ "content": "[{\"id\":\"_hIwwCIxX9\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Guest Stay\",\"col\":12}},{\"id\":\"header_1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Front Desk</span>\",\"col\":12}},{\"id\":\"shortcut_2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservation\",\"col\":3}},{\"id\":\"shortcut_3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Guest Stay\",\"col\":3}},{\"id\":\"shortcut_4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Guest Folio\",\"col\":3}},{\"id\":\"shortcut_5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Room Move\",\"col\":3}},{\"id\":\"shortcut_6\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Hotel Deposit\",\"col\":3}},{\"id\":\"BBoMAQaVm9\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Laundry Ticket\",\"col\":3}},{\"id\":\"p6lqUU5sTa\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Room Status\",\"col\":3}},{\"id\":\"3JfOx1BCu9\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"header_7\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Housekeeping</span>\",\"col\":12}},{\"id\":\"D5L1cLeB7N\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Housekeeping Task\",\"col\":3}},{\"id\":\"shortcut_8\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Room\",\"col\":3}},{\"id\":\"shortcut_9\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Room Type\",\"col\":3}},{\"id\":\"FMdrPrmxQY\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"header_10\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Setup</span>\",\"col\":12}},{\"id\":\"shortcut_11\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Property\",\"col\":3}},{\"id\":\"shortcut_12\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Rate Plan\",\"col\":3}},{\"id\":\"shortcut_13\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Hospitality Settings\",\"col\":3}},{\"id\":\"18xIvZ0VrG\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"qBjLbzAqad\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Reports<b></b></span>\",\"col\":12}},{\"id\":\"Ft-8NQ5UK1\",\"type\":\"card\",\"data\":{\"card_name\":\"Hotel Management System Reports\",\"col\":4}},{\"id\":\"GVlSDrDV0A\",\"type\":\"card\",\"data\":{\"card_name\":\"Hotel Analytical Reports\",\"col\":4}},{\"id\":\"BwUzNimqA6\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Departure List\",\"col\":4}}]",
+ "creation": "2026-03-25 03:09:57.342496",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "color-review-points",
+ "idx": 0,
+ "indicator_color": "",
+ "is_hidden": 0,
+ "label": "Hotel Info System",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Hotel Management System Reports",
+   "link_count": 5,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Arrivals Today",
+   "link_count": 0,
+   "link_to": "Arrivals Today",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Departures Today",
+   "link_count": 0,
+   "link_to": "Departures Today",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Guest Stay",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "In House Report",
+   "link_count": 0,
+   "link_to": "In House Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Room Status Board",
+   "link_count": 0,
+   "link_to": "Room Status Board",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Occupancy Report",
+   "link_count": 0,
+   "link_to": "Occupancy Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Hotel Analytical Reports",
+   "link_count": 5,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Daily Revenue Settlement",
+   "link_count": 0,
+   "link_to": "Daily Revenue Settlement",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Deposit Ledger",
+   "link_count": 0,
+   "link_to": "Deposit Ledger",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Hotel Deposit",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Guest Account History",
+   "link_count": 0,
+   "link_to": "Guest Account History",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Guest Stay",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Guest Folio Statement",
+   "link_count": 0,
+   "link_to": "Guest Folio Statement",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Guest Folio",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Revenue Reconciliation",
+   "link_count": 0,
+   "link_to": "Revenue Reconciliation",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-03-26 15:40:23.576030",
+ "modified_by": "sysadmin@naleye.dagaarsoft.app",
+ "module": "DagaarSoft Hospitality",
+ "name": "Hotel Info System",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [
+  {
+   "document_type": "Guest Stay",
+   "label": "Departure List",
+   "quick_list_filter": "[[\"Guest Stay\",\"departure_date\",\"Timespan\",\"this week\",false]]"
+  }
+ ],
+ "roles": [],
+ "sequence_id": 4.0,
+ "shortcuts": [
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Laundry Ticket",
+   "link_to": "Laundry Ticket",
+   "stats_filter": "[[\"Laundry Ticket\",\"charge_to_folio\",\"=\",1,false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "Kanban",
+   "kanban_board": "Status",
+   "label": "Room Status",
+   "link_to": "Room",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Reservation",
+   "link_to": "Reservation",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Housekeeping Task",
+   "link_to": "Housekeeping Task",
+   "stats_filter": "[[\"Housekeeping Task\",\"task_status\",\"=\",\"Pending\",false]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Yellow",
+   "doc_view": "Kanban",
+   "kanban_board": "House Keeping Status",
+   "label": "Room",
+   "link_to": "Room",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Guest Stay",
+   "link_to": "Guest Stay",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Guest Folio",
+   "link_to": "Guest Folio",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Room Move",
+   "link_to": "Room Move",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Hotel Deposit",
+   "link_to": "Hotel Deposit",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Room Type",
+   "link_to": "Room Type",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Property",
+   "link_to": "Property",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Rate Plan",
+   "link_to": "Rate Plan",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Hospitality Settings",
+   "link_to": "Hospitality Settings",
+   "type": "DocType"
+  }
+ ],
+ "title": "Hotel Info System"
+}

@@ -1,0 +1,14 @@
+{
+  "name": "RE Unit Vacancy",
+  "doctype": "Report",
+  "module": "DagaarSoft Real Estate",
+  "report_type": "Script Report",
+  "ref_doctype": "RE Unit",
+  "is_standard": "Yes",
+  "report_name": "RE Unit Vacancy",
+  "filters": [
+    {"fieldname":"property", "label":"Property", "fieldtype":"Link",   "options":"RE Property"},
+    {"fieldname":"status",   "label":"Status",   "fieldtype":"Select", "options":"\nAvailable\nOccupied\nUnder Maintenance\nVacant - Cleaning"},
+    {"fieldname":"furnishing","label":"Furnishing","fieldtype":"Select","options":"\nFurnished\nUnfurnished\nSemi-Furnished"}
+  ]
+}

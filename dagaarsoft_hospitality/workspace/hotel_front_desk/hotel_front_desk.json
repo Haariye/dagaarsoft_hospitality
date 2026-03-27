@@ -1,55 +1,179 @@
 {
   "doctype": "Workspace",
   "name": "Hotel Front Desk",
+  "title": "Hotel Front Desk",
   "label": "Hotel Front Desk",
   "module": "DagaarSoft Hospitality",
   "icon": "hotel",
   "is_standard": "Yes",
   "public": 1,
+  "content": [],
   "shortcuts": [
-    {"type":"DocType","label":"New Reservation","link_to":"Reservation","color":"#48bb78"},
-    {"type":"DocType","label":"Guest Stays","link_to":"Guest Stay","color":"#4299e1"},
-    {"type":"DocType","label":"Guest Folio","link_to":"Guest Folio","color":"#ed8936"},
-    {"type":"DocType","label":"Room Move","link_to":"Room Move","color":"#9f7aea"},
-    {"type":"Report","label":"Arrivals Today","link_to":"Arrivals Today","color":"#4299e1"},
-    {"type":"Report","label":"Departures Today","link_to":"Departures Today","color":"#e53e3e"},
-    {"type":"Report","label":"In House Report","link_to":"In House Report","color":"#276749"},
-    {"type":"Report","label":"Room Status Board","link_to":"Room Status Board","color":"#2d3748"}
+    {
+      "type": "DocType",
+      "label": "New Reservation",
+      "link_to": "Reservation",
+      "color": "#48bb78"
+    },
+    {
+      "type": "DocType",
+      "label": "Guest Stays",
+      "link_to": "Guest Stay",
+      "color": "#4299e1"
+    },
+    {
+      "type": "DocType",
+      "label": "Guest Folio",
+      "link_to": "Guest Folio",
+      "color": "#ed8936"
+    },
+    {
+      "type": "DocType",
+      "label": "Room Move",
+      "link_to": "Room Move",
+      "color": "#9f7aea"
+    },
+    {
+      "type": "Report",
+      "label": "Arrivals Today",
+      "link_to": "Arrivals Today",
+      "color": "#4299e1"
+    },
+    {
+      "type": "Report",
+      "label": "Departures Today",
+      "link_to": "Departures Today",
+      "color": "#e53e3e"
+    },
+    {
+      "type": "Report",
+      "label": "In House Report",
+      "link_to": "In House Report",
+      "color": "#276749"
+    },
+    {
+      "type": "Report",
+      "label": "Room Status Board",
+      "link_to": "Room Status Board",
+      "color": "#2d3748"
+    }
   ],
   "cards": [
     {
       "card_name": "Operations",
       "label": "Front Desk",
       "links": [
-        {"label":"New Reservation","link_type":"DocType","link_to":"Reservation","type":"Link"},
-        {"label":"Guest Stays","link_type":"DocType","link_to":"Guest Stay","type":"Link"},
-        {"label":"Guest Folio","link_type":"DocType","link_to":"Guest Folio","type":"Link"},
-        {"label":"Room Move","link_type":"DocType","link_to":"Room Move","type":"Link"},
-        {"label":"Hotel Deposit","link_type":"DocType","link_to":"Hotel Deposit","type":"Link"}
+        {
+          "label": "New Reservation",
+          "link_type": "DocType",
+          "link_to": "Reservation",
+          "type": "Link"
+        },
+        {
+          "label": "Guest Stays",
+          "link_type": "DocType",
+          "link_to": "Guest Stay",
+          "type": "Link"
+        },
+        {
+          "label": "Guest Folio",
+          "link_type": "DocType",
+          "link_to": "Guest Folio",
+          "type": "Link"
+        },
+        {
+          "label": "Room Move",
+          "link_type": "DocType",
+          "link_to": "Room Move",
+          "type": "Link"
+        },
+        {
+          "label": "Hotel Deposit",
+          "link_type": "DocType",
+          "link_to": "Hotel Deposit",
+          "type": "Link"
+        }
       ]
     },
     {
       "card_name": "Reports",
       "label": "Today",
       "links": [
-        {"label":"Arrivals Today","link_type":"Report","link_to":"Arrivals Today","type":"Link"},
-        {"label":"Departures Today","link_type":"Report","link_to":"Departures Today","type":"Link"},
-        {"label":"In House Report","link_type":"Report","link_to":"In House Report","type":"Link"},
-        {"label":"Room Status Board","link_type":"Report","link_to":"Room Status Board","type":"Link"},
-        {"label":"Occupancy Report","link_type":"Report","link_to":"Occupancy Report","type":"Link"}
+        {
+          "label": "Arrivals Today",
+          "link_type": "Report",
+          "link_to": "Arrivals Today",
+          "type": "Link"
+        },
+        {
+          "label": "Departures Today",
+          "link_type": "Report",
+          "link_to": "Departures Today",
+          "type": "Link"
+        },
+        {
+          "label": "In House Report",
+          "link_type": "Report",
+          "link_to": "In House Report",
+          "type": "Link"
+        },
+        {
+          "label": "Room Status Board",
+          "link_type": "Report",
+          "link_to": "Room Status Board",
+          "type": "Link"
+        },
+        {
+          "label": "Occupancy Report",
+          "link_type": "Report",
+          "link_to": "Occupancy Report",
+          "type": "Link"
+        }
       ]
     },
     {
       "card_name": "Setup",
       "label": "Property Setup",
       "links": [
-        {"label":"Properties","link_type":"DocType","link_to":"Property","type":"Link"},
-        {"label":"Rooms","link_type":"DocType","link_to":"Room","type":"Link"},
-        {"label":"Room Types","link_type":"DocType","link_to":"Room Type","type":"Link"},
-        {"label":"Rate Plans","link_type":"DocType","link_to":"Rate Plan","type":"Link"},
-        {"label":"Hospitality Settings","link_type":"DocType","link_to":"Hospitality Settings","type":"Link"}
+        {
+          "label": "Properties",
+          "link_type": "DocType",
+          "link_to": "Property",
+          "type": "Link"
+        },
+        {
+          "label": "Rooms",
+          "link_type": "DocType",
+          "link_to": "Room",
+          "type": "Link"
+        },
+        {
+          "label": "Room Types",
+          "link_type": "DocType",
+          "link_to": "Room Type",
+          "type": "Link"
+        },
+        {
+          "label": "Rate Plans",
+          "link_type": "DocType",
+          "link_to": "Rate Plan",
+          "type": "Link"
+        },
+        {
+          "label": "Hospitality Settings",
+          "link_type": "DocType",
+          "link_to": "Hospitality Settings",
+          "type": "Link"
+        }
       ]
     }
   ],
-  "roles": [{"role":"Hotel Manager"},{"role":"Hotel Receptionist"}]
+  "roles": [
+    {
+      "role": "Hotel Manager"
+    },
+    {
+      "role": "Hotel Receptionist"
+    }
+  ]
 }

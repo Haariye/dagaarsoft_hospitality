@@ -1,6 +1,7 @@
 // Room Move JS v5 - all billing auto-calculated
 frappe.ui.form.on("Room Move", {
     refresh(frm) {
+        dh_apply_property(frm);
         ["from_room","old_nightly_rate","new_nightly_rate","old_room_type","new_room_type",
          "rate_difference","remaining_nights","total_billing_adjustment","adjustment_type",
          "billing_posted","move_time"].forEach(f => frm.set_df_property(f, "read_only", 1));

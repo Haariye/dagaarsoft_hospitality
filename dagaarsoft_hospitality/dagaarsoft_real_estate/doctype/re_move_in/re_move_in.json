@@ -1,0 +1,29 @@
+{
+  "name": "RE Move In",
+  "doctype": "DocType",
+  "module": "DagaarSoft Real Estate",
+  "engine": "InnoDB",
+  "autoname": "naming_series:",
+  "is_submittable": 1,
+  "fields": [
+    {"fieldname":"naming_series","fieldtype":"Select","label":"Series","options":"REMIN-.YYYY.-.####","reqd":1},
+    {"fieldname":"lease","fieldtype":"Link","label":"Lease","options":"RE Lease","reqd":1,"in_list_view":1},
+    {"fieldname":"unit","fieldtype":"Link","label":"Unit","options":"RE Unit","in_list_view":1},
+    {"fieldname":"tenant","fieldtype":"Link","label":"Tenant","options":"RE Tenant","in_list_view":1},
+    {"fieldname":"move_in_date","fieldtype":"Date","label":"Move-In Date","reqd":1,"in_list_view":1},
+    {"fieldname":"col1","fieldtype":"Column Break"},
+    {"fieldname":"keys_handover","fieldtype":"Check","label":"Keys Handed Over","default":"0"},
+    {"fieldname":"keys_count","fieldtype":"Int","label":"No. of Keys","default":"2"},
+    {"fieldname":"meter_reading_electric","fieldtype":"Float","label":"Electric Meter"},
+    {"fieldname":"meter_reading_water","fieldtype":"Float","label":"Water Meter"},
+    {"fieldname":"sec_checklist","fieldtype":"Section Break","label":"Handover Checklist"},
+    {"fieldname":"checklist","fieldtype":"Table","label":"Checklist","options":"RE Move In Checklist Item"},
+    {"fieldname":"notes","fieldtype":"Text","label":"Notes"},
+    {"fieldname":"tenant_signature","fieldtype":"Signature","label":"Tenant Signature"}
+  ],
+  "permissions": [
+    {"role":"Hotel Manager","read":1,"write":1,"create":1,"delete":1,"submit":1,"cancel":1},
+    {"role":"Hotel Receptionist","read":1,"write":1,"create":1,"submit":1}
+  ],
+  "track_changes": 1
+}

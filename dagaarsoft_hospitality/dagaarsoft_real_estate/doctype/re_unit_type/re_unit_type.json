@@ -1,0 +1,101 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:type_name",
+ "creation": "2026-03-25 21:04:06.624346",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "type_name",
+  "category",
+  "furnishing",
+  "bedrooms",
+  "bathrooms",
+  "col1",
+  "size_sqm",
+  "default_rent",
+  "default_deposit_months",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "type_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Type Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Category",
+   "options": "Apartment\nHouse\nStudio\nVilla\nRoom\nCommercial"
+  },
+  {
+   "fieldname": "furnishing",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Furnishing",
+   "options": "Furnished\nUnfurnished\nSemi-Furnished"
+  },
+  {
+   "fieldname": "bedrooms",
+   "fieldtype": "Int",
+   "label": "Bedrooms"
+  },
+  {
+   "fieldname": "bathrooms",
+   "fieldtype": "Int",
+   "label": "Bathrooms"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "size_sqm",
+   "fieldtype": "Float",
+   "label": "Size (sqm)"
+  },
+  {
+   "fieldname": "default_rent",
+   "fieldtype": "Currency",
+   "label": "Default Monthly Rent"
+  },
+  {
+   "default": "2",
+   "fieldname": "default_deposit_months",
+   "fieldtype": "Int",
+   "label": "Default Deposit (months)"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text",
+   "label": "Description"
+  }
+ ],
+ "links": [],
+ "modified": "2026-03-25 22:07:31.169186",
+ "modified_by": "Administrator",
+ "module": "DagaarSoft Real Estate",
+ "name": "RE Unit Type",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "Hotel Manager",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "type_name",
+ "track_changes": 1
+}

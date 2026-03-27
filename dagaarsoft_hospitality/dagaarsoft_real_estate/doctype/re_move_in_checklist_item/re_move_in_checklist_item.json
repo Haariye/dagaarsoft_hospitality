@@ -1,0 +1,17 @@
+{
+  "name": "RE Move In Checklist Item",
+  "doctype": "DocType",
+  "module": "DagaarSoft Real Estate",
+  "istable": 1,
+  "editable_grid": 1,
+  "fields": [
+    {"fieldname":"item","fieldtype":"Data","label":"Item","reqd":1,"in_list_view":1},
+    {"fieldname":"category","fieldtype":"Select","label":"Category",
+     "options":"Keys\nDocuments\nAmenity\nUtility Reading\nCondition Note\nOther","in_list_view":1},
+    {"fieldname":"quantity","fieldtype":"Int","label":"Qty","default":"1"},
+    {"fieldname":"condition","fieldtype":"Select","label":"Condition",
+     "options":"New\nExcellent\nGood\nFair\nPoor","in_list_view":1},
+    {"fieldname":"notes","fieldtype":"Small Text","label":"Notes","in_list_view":1},
+    {"fieldname":"photo","fieldtype":"Attach Image","label":"Photo"}
+  ]
+}

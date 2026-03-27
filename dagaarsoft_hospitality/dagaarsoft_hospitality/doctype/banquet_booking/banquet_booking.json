@@ -1,158 +1,214 @@
 {
-  "name": "Banquet Booking",
-  "doctype": "DocType",
-  "module": "DagaarSoft Hospitality",
-  "naming_rule": "By \"Naming Series\" field",
-  "autoname": "naming_series:",
-  "is_submittable": 1,
-  "fields": [
-    {
-      "fieldname": "naming_series",
-      "fieldtype": "Select",
-      "label": "Naming Series",
-      "options": "BNQ-.YYYY.-.####\n",
-      "reqd": 1
-    },
-    {
-      "fieldname": "property",
-      "fieldtype": "Link",
-      "label": "Property",
-      "options": "Property",
-      "reqd": 1
-    },
-    {
-      "fieldname": "banquet_hall",
-      "fieldtype": "Link",
-      "label": "Banquet Hall",
-      "options": "Banquet Hall",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "customer",
-      "fieldtype": "Link",
-      "label": "Customer",
-      "options": "Customer",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "col_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "event_name",
-      "fieldtype": "Data",
-      "label": "Event Name",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "event_type",
-      "fieldtype": "Select",
-      "label": "Event Type",
-      "options": "\nWedding\nCorporate\nConference\nGala\nBirthday\nOther"
-    },
-    {
-      "fieldname": "booking_status",
-      "fieldtype": "Select",
-      "label": "Status",
-      "options": "Tentative\nConfirmed\nCompleted\nCancelled",
-      "default": "Tentative",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "event_date",
-      "fieldtype": "Date",
-      "label": "Event Date",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "start_time",
-      "fieldtype": "Time",
-      "label": "Start Time",
-      "reqd": 1
-    },
-    {
-      "fieldname": "end_time",
-      "fieldtype": "Time",
-      "label": "End Time",
-      "reqd": 1
-    },
-    {
-      "fieldname": "col_2",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "expected_guests",
-      "fieldtype": "Int",
-      "label": "Expected Guests"
-    },
-    {
-      "fieldname": "setup_type",
-      "fieldtype": "Select",
-      "label": "Setup Type",
-      "options": "\nTheatre\nClassroom\nBanquet\nCocktail\nBoardroom\nU-Shape"
-    },
-    {
-      "fieldname": "banquet_package",
-      "fieldtype": "Link",
-      "label": "Package",
-      "options": "Banquet Package"
-    },
-    {
-      "fieldname": "services",
-      "fieldtype": "Table",
-      "label": "Additional Services",
-      "options": "Banquet Service Line"
-    },
-    {
-      "fieldname": "sec_billing",
-      "fieldtype": "Section Break",
-      "label": "Billing"
-    },
-    {
-      "fieldname": "total_amount",
-      "fieldtype": "Currency",
-      "label": "Total Amount",
-      "read_only": 1
-    },
-    {
-      "fieldname": "deposit_amount",
-      "fieldtype": "Currency",
-      "label": "Deposit Amount"
-    },
-    {
-      "fieldname": "deposit_received",
-      "fieldtype": "Currency",
-      "label": "Deposit Received",
-      "read_only": 1
-    },
-    {
-      "fieldname": "sales_invoice",
-      "fieldtype": "Link",
-      "label": "Sales Invoice",
-      "options": "Sales Invoice",
-      "read_only": 1
-    }
-  ],
-  "permissions": [
-    {
-      "role": "Hotel Manager",
-      "read": 1,
-      "write": 1,
-      "create": 1,
-      "submit": 1,
-      "cancel": 1
-    },
-    {
-      "role": "Banquet Manager",
-      "read": 1,
-      "write": 1,
-      "create": 1,
-      "submit": 1
-    }
-  ]
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2026-03-22 23:41:39.654420",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "property",
+  "banquet_hall",
+  "customer",
+  "hall",
+  "event_name",
+  "event_type",
+  "booking_status",
+  "col_2",
+  "event_date",
+  "event_end_date",
+  "start_time",
+  "end_time",
+  "expected_guests",
+  "setup_type",
+  "banquet_package",
+  "services",
+  "sec_billing",
+  "total_amount",
+  "deposit_amount",
+  "deposit_received",
+  "sales_invoice",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "BNQ-.YYYY.-.####",
+   "reqd": 1
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "options": "Property",
+   "reqd": 1
+  },
+  {
+   "fieldname": "banquet_hall",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Banquet Hall",
+   "options": "Banquet Hall",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "event_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Event Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "event_type",
+   "fieldtype": "Select",
+   "label": "Event Type",
+   "options": "\nWedding\nCorporate\nConference\nGala\nBirthday\nOther"
+  },
+  {
+   "default": "Tentative",
+   "fieldname": "booking_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Tentative\nConfirmed\nCompleted\nCancelled",
+   "reqd": 1
+  },
+  {
+   "fieldname": "event_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Event Date",
+   "options": "Today",
+   "reqd": 1
+  },
+  {
+   "fieldname": "start_time",
+   "fieldtype": "Time",
+   "label": "Start Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "end_time",
+   "fieldtype": "Time",
+   "label": "End Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "expected_guests",
+   "fieldtype": "Int",
+   "label": "Expected Guests"
+  },
+  {
+   "fieldname": "setup_type",
+   "fieldtype": "Select",
+   "label": "Setup Type",
+   "options": "\nTheatre\nClassroom\nBanquet\nCocktail\nBoardroom\nU-Shape"
+  },
+  {
+   "fieldname": "banquet_package",
+   "fieldtype": "Link",
+   "label": "Package",
+   "options": "Banquet Package"
+  },
+  {
+   "fieldname": "services",
+   "fieldtype": "Table",
+   "label": "Additional Services",
+   "options": "Banquet Service Line"
+  },
+  {
+   "fieldname": "sec_billing",
+   "fieldtype": "Section Break",
+   "label": "Billing"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "deposit_amount",
+   "fieldtype": "Currency",
+   "label": "Deposit Amount"
+  },
+  {
+   "fieldname": "deposit_received",
+   "fieldtype": "Currency",
+   "label": "Deposit Received",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sales_invoice",
+   "fieldtype": "Link",
+   "label": "Sales Invoice",
+   "options": "Sales Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "event_end_date",
+   "fieldtype": "Date",
+   "label": "Event End Date",
+   "options": "Today"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Banquet Booking",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "hall",
+   "fieldtype": "Link",
+   "label": "Hall",
+   "options": "Banquet Hall"
+  }
+ ],
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-03-23 19:10:59.531328",
+ "modified_by": "Administrator",
+ "module": "DagaarSoft Hospitality",
+ "name": "Banquet Booking",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "cancel": 1,
+   "create": 1,
+   "read": 1,
+   "role": "Hotel Manager",
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "role": "Banquet Manager",
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
 }

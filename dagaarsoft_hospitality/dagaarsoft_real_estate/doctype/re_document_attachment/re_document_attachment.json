@@ -1,0 +1,25 @@
+{
+  "name": "RE Document Attachment",
+  "doctype": "DocType",
+  "module": "DagaarSoft Real Estate",
+  "engine": "InnoDB",
+  "autoname": "naming_series:",
+  "fields": [
+    {"fieldname":"naming_series","fieldtype":"Select","label":"Series","options":"REDOC-.YYYY.-.####","reqd":1},
+    {"fieldname":"reference_doctype","fieldtype":"Select","label":"Linked To",
+     "options":"RE Lease\nRE Unit\nRE Tenant\nRE Owner\nRE Property","in_list_view":1},
+    {"fieldname":"reference_name","fieldtype":"Dynamic Link","label":"Reference",
+     "options":"reference_doctype","in_list_view":1},
+    {"fieldname":"document_type","fieldtype":"Select","label":"Document Type",
+     "options":"Contract\nID Document\nTitle Deed\nUtility Bill\nInspection Report\nCorrespondence\nPhoto\nOther",
+     "in_list_view":1},
+    {"fieldname":"document_date","fieldtype":"Date","label":"Date","in_list_view":1},
+    {"fieldname":"expiry_date","fieldtype":"Date","label":"Expires","in_list_view":1},
+    {"fieldname":"col1","fieldtype":"Column Break"},
+    {"fieldname":"file","fieldtype":"Attach","label":"File","reqd":1},
+    {"fieldname":"description","fieldtype":"Data","label":"Description"},
+    {"fieldname":"is_confidential","fieldtype":"Check","label":"Confidential","default":"0"}
+  ],
+  "permissions": [{"role":"Hotel Manager","read":1,"write":1,"create":1,"delete":1}],
+  "track_changes": 1
+}

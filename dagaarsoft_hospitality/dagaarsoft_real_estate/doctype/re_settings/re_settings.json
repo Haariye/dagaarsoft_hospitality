@@ -1,0 +1,24 @@
+{
+  "name": "RE Settings",
+  "doctype": "DocType",
+  "module": "DagaarSoft Real Estate",
+  "engine": "InnoDB",
+  "issingle": 1,
+  "fields": [
+    {"fieldname":"default_property","fieldtype":"Link","label":"Default Property","options":"RE Property"},
+    {"fieldname":"rent_income_account","fieldtype":"Link","label":"Rent Income Account","options":"Account",
+     "description":"Default income account for rent invoices"},
+    {"fieldname":"deposit_liability_account","fieldtype":"Link","label":"Deposit Liability Account","options":"Account",
+     "description":"Deposits held appear as liability"},
+    {"fieldname":"col1","fieldtype":"Column Break"},
+    {"fieldname":"default_payment_mode","fieldtype":"Link","label":"Default Payment Mode","options":"Mode of Payment"},
+    {"fieldname":"late_fee_percentage","fieldtype":"Float","label":"Late Fee %","default":"5"},
+    {"fieldname":"late_fee_grace_days","fieldtype":"Int","label":"Grace Days","default":"5"},
+    {"fieldname":"sec_notify","fieldtype":"Section Break","label":"Notifications"},
+    {"fieldname":"send_rent_reminder","fieldtype":"Check","label":"Send Rent Reminders","default":"1"},
+    {"fieldname":"reminder_days_before","fieldtype":"Int","label":"Days Before Due","default":"3"},
+    {"fieldname":"send_expiry_reminder","fieldtype":"Check","label":"Send Lease Expiry Reminder","default":"1"},
+    {"fieldname":"expiry_reminder_days","fieldtype":"Int","label":"Days Before Expiry","default":"60"}
+  ],
+  "permissions": [{"role":"Hotel Manager","read":1,"write":1}]
+}

@@ -1,0 +1,365 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2026-03-25 21:04:07.266392",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "lease_status",
+  "property",
+  "unit",
+  "col1",
+  "tenant",
+  "property_owner",
+  "company",
+  "sec_dates",
+  "start_date",
+  "end_date",
+  "lease_term_months",
+  "notice_period_days",
+  "col_dates",
+  "rent_day_of_month",
+  "grace_period_days",
+  "auto_generate_invoices",
+  "renewal_reminder_days",
+  "sec_financials",
+  "monthly_rent",
+  "rent_includes_utility",
+  "currency",
+  "col_fin",
+  "security_deposit",
+  "deposit_paid",
+  "deposit_status",
+  "sec_charges",
+  "charges",
+  "sec_schedule",
+  "rent_schedule",
+  "sec_movein",
+  "move_in_date",
+  "move_in_checklist",
+  "col_movein",
+  "move_out_date",
+  "move_out_notes",
+  "sec_docs",
+  "contract_document",
+  "id_copy_tenant",
+  "additional_documents",
+  "sec_meta",
+  "created_by",
+  "confirmed_on",
+  "cancelled_by",
+  "cancellation_reason",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "LEASE-.YYYY.-.####",
+   "reqd": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "Draft",
+   "fieldname": "lease_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Draft\nActive\nExpiring Soon\nExpired\nTerminated\nRenewed"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Property",
+   "options": "RE Property",
+   "reqd": 1
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Unit",
+   "options": "RE Unit",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tenant",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Tenant",
+   "options": "RE Tenant",
+   "reqd": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sec_dates",
+   "fieldtype": "Section Break",
+   "label": "Lease Term"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "lease_term_months",
+   "fieldtype": "Int",
+   "label": "Term (months)",
+   "read_only": 1
+  },
+  {
+   "default": "30",
+   "fieldname": "notice_period_days",
+   "fieldtype": "Int",
+   "label": "Notice Period (days)"
+  },
+  {
+   "fieldname": "col_dates",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "description": "Day of month rent is due (1-28)",
+   "fieldname": "rent_day_of_month",
+   "fieldtype": "Int",
+   "label": "Rent Due Day"
+  },
+  {
+   "default": "5",
+   "fieldname": "grace_period_days",
+   "fieldtype": "Int",
+   "label": "Grace Period (days)"
+  },
+  {
+   "default": "1",
+   "fieldname": "auto_generate_invoices",
+   "fieldtype": "Check",
+   "label": "Auto-Generate Monthly Invoices"
+  },
+  {
+   "default": "60",
+   "fieldname": "renewal_reminder_days",
+   "fieldtype": "Int",
+   "label": "Renewal Reminder (days before)"
+  },
+  {
+   "fieldname": "sec_financials",
+   "fieldtype": "Section Break",
+   "label": "Financials"
+  },
+  {
+   "fieldname": "monthly_rent",
+   "fieldtype": "Currency",
+   "label": "Monthly Rent",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "rent_includes_utility",
+   "fieldtype": "Check",
+   "label": "Rent Includes Utilities"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "col_fin",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "security_deposit",
+   "fieldtype": "Currency",
+   "label": "Security Deposit"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "deposit_paid",
+   "fieldtype": "Currency",
+   "label": "Deposit Paid",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "Pending",
+   "fieldname": "deposit_status",
+   "fieldtype": "Select",
+   "label": "Deposit Status",
+   "options": "Pending\nPartially Paid\nPaid\nRefunded\nForfeited"
+  },
+  {
+   "fieldname": "sec_charges",
+   "fieldtype": "Section Break",
+   "label": "Additional Charges"
+  },
+  {
+   "fieldname": "charges",
+   "fieldtype": "Table",
+   "label": "Charges",
+   "options": "RE Lease Charge Line"
+  },
+  {
+   "fieldname": "sec_schedule",
+   "fieldtype": "Section Break",
+   "label": "Rent Schedule"
+  },
+  {
+   "fieldname": "rent_schedule",
+   "fieldtype": "Table",
+   "label": "Rent Schedule",
+   "options": "RE Rent Schedule Line"
+  },
+  {
+   "fieldname": "sec_movein",
+   "fieldtype": "Section Break",
+   "label": "Move-In / Move-Out"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "move_in_date",
+   "fieldtype": "Date",
+   "label": "Actual Move-In"
+  },
+  {
+   "fieldname": "move_in_checklist",
+   "fieldtype": "Table",
+   "label": "Move-In Checklist",
+   "options": "RE Move In Checklist Item"
+  },
+  {
+   "fieldname": "col_movein",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "move_out_date",
+   "fieldtype": "Date",
+   "label": "Actual Move-Out"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "move_out_notes",
+   "fieldtype": "Text",
+   "label": "Move-Out Notes"
+  },
+  {
+   "fieldname": "sec_docs",
+   "fieldtype": "Section Break",
+   "label": "Documents"
+  },
+  {
+   "fieldname": "contract_document",
+   "fieldtype": "Attach",
+   "label": "Signed Contract"
+  },
+  {
+   "fieldname": "id_copy_tenant",
+   "fieldtype": "Attach",
+   "label": "Tenant ID Copy"
+  },
+  {
+   "fieldname": "additional_documents",
+   "fieldtype": "Attach",
+   "label": "Additional Docs"
+  },
+  {
+   "fieldname": "sec_meta",
+   "fieldtype": "Section Break",
+   "label": "Audit"
+  },
+  {
+   "fieldname": "created_by",
+   "fieldtype": "Link",
+   "label": "Created By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "confirmed_on",
+   "fieldtype": "Datetime",
+   "label": "Confirmed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cancelled_by",
+   "fieldtype": "Link",
+   "label": "Cancelled By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "cancellation_reason",
+   "fieldtype": "Data",
+   "label": "Cancellation Reason"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "options": "RE Lease",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "property_owner",
+   "fieldtype": "Link",
+   "label": "Owner",
+   "options": "RE Owner"
+  }
+ ],
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-03-26 16:34:57.042005",
+ "modified_by": "uat@dagaartech.com",
+ "module": "DagaarSoft Real Estate",
+ "name": "RE Lease",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "Hotel Manager",
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "role": "Hotel Receptionist",
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "search_fields": "unit,tenant,property",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "unit",
+ "track_changes": 1
+}

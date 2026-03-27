@@ -1,6 +1,7 @@
 // Room JS v3 — Quick actions, status update
 frappe.ui.form.on("Room", {
     refresh(frm) {
+        dh_apply_property(frm);
         const rs_color = {
             "Vacant Clean": "green", "Vacant Dirty": "orange",
             "Occupied": "red", "Out of Order": "gray",

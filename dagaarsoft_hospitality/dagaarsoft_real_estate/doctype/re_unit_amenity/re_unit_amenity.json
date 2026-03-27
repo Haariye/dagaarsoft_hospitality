@@ -1,0 +1,16 @@
+{
+  "name": "RE Unit Amenity",
+  "doctype": "DocType",
+  "module": "DagaarSoft Real Estate",
+  "istable": 1,
+  "editable_grid": 1,
+  "fields": [
+    {"fieldname":"amenity","fieldtype":"Data","label":"Amenity","reqd":1,"in_list_view":1},
+    {"fieldname":"category","fieldtype":"Select","label":"Category",
+     "options":"Appliance\nFurniture\nSecurity\nUtility\nParking\nOther","in_list_view":1},
+    {"fieldname":"quantity","fieldtype":"Int","label":"Qty","default":"1","in_list_view":1},
+    {"fieldname":"condition","fieldtype":"Select","label":"Condition",
+     "options":"Excellent\nGood\nFair\nPoor","in_list_view":1},
+    {"fieldname":"notes","fieldtype":"Small Text","label":"Notes"}
+  ]
+}

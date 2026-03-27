@@ -1,0 +1,17 @@
+{
+  "name": "RE Lease History",
+  "doctype": "Report",
+  "module": "DagaarSoft Real Estate",
+  "report_type": "Script Report",
+  "ref_doctype": "RE Lease",
+  "is_standard": "Yes",
+  "report_name": "RE Lease History",
+  "filters": [
+    {"fieldname":"property",     "label":"Property",     "fieldtype":"Link",   "options":"RE Property"},
+    {"fieldname":"tenant",       "label":"Tenant",        "fieldtype":"Link",   "options":"RE Tenant"},
+    {"fieldname":"unit",         "label":"Unit",          "fieldtype":"Link",   "options":"RE Unit"},
+    {"fieldname":"lease_status", "label":"Status",        "fieldtype":"Select", "options":"\nActive\nExpiring Soon\nExpired\nTerminated\nRenewed"},
+    {"fieldname":"from_date",    "label":"From Date",     "fieldtype":"Date"},
+    {"fieldname":"to_date",      "label":"To Date",       "fieldtype":"Date"}
+  ]
+}

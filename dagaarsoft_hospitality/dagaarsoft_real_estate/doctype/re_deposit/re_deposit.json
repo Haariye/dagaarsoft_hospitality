@@ -1,0 +1,191 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2026-03-25 21:04:06.471246",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "lease",
+  "tenant",
+  "unit",
+  "deposit_type",
+  "col1",
+  "amount",
+  "deposit_amount",
+  "deposit_date",
+  "deposit_status",
+  "payment_entry",
+  "sec_refund",
+  "refund_amount",
+  "refund_date",
+  "refund_payment_entry",
+  "col_refund",
+  "deductions",
+  "deduction_reason",
+  "notes",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "REDEP-.YYYY.-.####",
+   "reqd": 1
+  },
+  {
+   "fieldname": "lease",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Lease",
+   "options": "RE Lease",
+   "reqd": 1
+  },
+  {
+   "fieldname": "tenant",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Tenant",
+   "options": "RE Tenant"
+  },
+  {
+   "fieldname": "unit",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Unit",
+   "options": "RE Unit"
+  },
+  {
+   "default": "Security Deposit",
+   "fieldname": "deposit_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "Security Deposit\nAdvance Rent\nKey Deposit\nOther"
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "reqd": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "Held",
+   "fieldname": "deposit_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Held\nPartially Refunded\nRefunded\nForfeited"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "payment_entry",
+   "fieldtype": "Link",
+   "label": "Payment Entry",
+   "options": "Payment Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_refund",
+   "fieldtype": "Section Break",
+   "label": "Refund"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "refund_amount",
+   "fieldtype": "Currency",
+   "label": "Refund Amount"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "refund_date",
+   "fieldtype": "Date",
+   "label": "Refund Date"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "refund_payment_entry",
+   "fieldtype": "Link",
+   "label": "Refund PE",
+   "options": "Payment Entry"
+  },
+  {
+   "fieldname": "col_refund",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "deductions",
+   "fieldtype": "Currency",
+   "label": "Deductions"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "deduction_reason",
+   "fieldtype": "Data",
+   "label": "Deduction Reason"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "notes",
+   "fieldtype": "Text",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "deposit_amount",
+   "fieldtype": "Currency",
+   "label": "Deposit Amount"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "RE Deposit",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "deposit_date",
+   "fieldtype": "Date",
+   "label": "Deposit Date"
+  }
+ ],
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-03-26 18:40:00.282479",
+ "modified_by": "Administrator",
+ "module": "DagaarSoft Real Estate",
+ "name": "RE Deposit",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "Hotel Manager",
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "role": "Hotel Receptionist",
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

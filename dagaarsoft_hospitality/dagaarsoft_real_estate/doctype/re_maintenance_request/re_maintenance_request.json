@@ -1,0 +1,42 @@
+{
+  "name": "RE Maintenance Request",
+  "doctype": "DocType",
+  "module": "DagaarSoft Real Estate",
+  "engine": "InnoDB",
+  "autoname": "naming_series:",
+  "is_submittable": 1,
+  "fields": [
+    {"fieldname":"naming_series","fieldtype":"Select","label":"Series","options":"REMNT-.YYYY.-.####","reqd":1},
+    {"fieldname":"property","fieldtype":"Link","label":"Property","options":"RE Property","reqd":1,"in_list_view":1},
+    {"fieldname":"unit","fieldtype":"Link","label":"Unit","options":"RE Unit","reqd":1,"in_list_view":1},
+    {"fieldname":"tenant","fieldtype":"Link","label":"Reported By","options":"RE Tenant","in_list_view":1},
+    {"fieldname":"status","fieldtype":"Select","label":"Status",
+     "options":"Open\nIn Progress\nPending Parts\nCompleted\nCancelled",
+     "default":"Open","in_list_view":1,"allow_on_submit":1},
+    {"fieldname":"priority","fieldtype":"Select","label":"Priority",
+     "options":"Low\nMedium\nHigh\nUrgent","default":"Medium","in_list_view":1},
+    {"fieldname":"col1","fieldtype":"Column Break"},
+    {"fieldname":"request_date","fieldtype":"Date","label":"Request Date","reqd":1},
+    {"fieldname":"category","fieldtype":"Select","label":"Category",
+     "options":"Plumbing\nElectrical\nHVAC\nStructural\nAppliance\nPainting\nCleaning\nSecurity\nOther"},
+    {"fieldname":"assigned_to","fieldtype":"Link","label":"Assigned To","options":"User","allow_on_submit":1},
+    {"fieldname":"completion_date","fieldtype":"Date","label":"Completed On","allow_on_submit":1},
+    {"fieldname":"sec_desc","fieldtype":"Section Break","label":"Details"},
+    {"fieldname":"description","fieldtype":"Text Editor","label":"Description","reqd":1},
+    {"fieldname":"photos_before","fieldtype":"Attach","label":"Photos (Before)"},
+    {"fieldname":"col_desc","fieldtype":"Column Break"},
+    {"fieldname":"resolution_notes","fieldtype":"Text Editor","label":"Resolution Notes","allow_on_submit":1},
+    {"fieldname":"photos_after","fieldtype":"Attach","label":"Photos (After)","allow_on_submit":1},
+    {"fieldname":"sec_cost","fieldtype":"Section Break","label":"Cost"},
+    {"fieldname":"estimated_cost","fieldtype":"Currency","label":"Estimated Cost"},
+    {"fieldname":"actual_cost","fieldtype":"Currency","label":"Actual Cost","allow_on_submit":1},
+    {"fieldname":"purchase_invoice","fieldtype":"Link","label":"Purchase Invoice","options":"Purchase Invoice","allow_on_submit":1},
+    {"fieldname":"chargeable_to_tenant","fieldtype":"Check","label":"Charge to Tenant","default":"0"},
+    {"fieldname":"tenant_invoice","fieldtype":"Link","label":"Tenant Invoice","options":"Sales Invoice","allow_on_submit":1}
+  ],
+  "permissions": [
+    {"role":"Hotel Manager","read":1,"write":1,"create":1,"delete":1,"submit":1,"cancel":1},
+    {"role":"Hotel Receptionist","read":1,"write":1,"create":1,"submit":1}
+  ],
+  "track_changes": 1
+}

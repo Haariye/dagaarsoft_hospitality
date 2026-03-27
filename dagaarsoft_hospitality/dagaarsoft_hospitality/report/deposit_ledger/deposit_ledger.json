@@ -1,0 +1,16 @@
+{
+  "name": "Deposit Ledger",
+  "doctype": "Report",
+  "module": "DagaarSoft Hospitality",
+  "report_type": "Script Report",
+  "ref_doctype": "Hotel Deposit",
+  "is_standard": "Yes",
+  "report_name": "Deposit Ledger",
+  "filters": [
+    {"fieldname": "property",       "label": "Property",       "fieldtype": "Link",   "options": "Property"},
+    {"fieldname": "from_date",      "label": "From Date",      "fieldtype": "Date"},
+    {"fieldname": "to_date",        "label": "To Date",        "fieldtype": "Date"},
+    {"fieldname": "customer",       "label": "Customer",       "fieldtype": "Link",   "options": "Customer"},
+    {"fieldname": "deposit_status", "label": "Deposit Status", "fieldtype": "Select", "options": "\nReceived\nApplied\nRefunded\nCancelled"}
+  ]
+}

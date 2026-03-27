@@ -1,0 +1,184 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"header_1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Units &amp; Properties</span>\",\"col\":12}},{\"id\":\"xF8S56voI5\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"shortcut_1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"RE Property\",\"col\":3}},{\"id\":\"shortcut_2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"RE Unit\",\"col\":3}},{\"id\":\"shortcut_3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"RE Unit Type\",\"col\":3}},{\"id\":\"shortcut_4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Viewing Schedule\",\"col\":3}},{\"id\":\"header_2\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Tenants &amp; Owners</span>\",\"col\":12}},{\"id\":\"shortcut_5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"RE Tenant\",\"col\":3}},{\"id\":\"shortcut_6\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"RE Owner\",\"col\":3}},{\"id\":\"jNMYFS5de8\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"header_3\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Lease Management</span>\",\"col\":12}},{\"id\":\"shortcut_7\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"RE Lease\",\"col\":3}},{\"id\":\"shortcut_8\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"RE Move In\",\"col\":3}},{\"id\":\"shortcut_9\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"RE Move Out\",\"col\":3}},{\"id\":\"shortcut_10\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"RE Notice\",\"col\":3}},{\"id\":\"RWyjuUJsQY\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"header_4\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Billing</span>\",\"col\":12}},{\"id\":\"shortcut_11\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"RE Deposit\",\"col\":3}},{\"id\":\"shortcut_12\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"RE Utility Bill\",\"col\":3}},{\"id\":\"shortcut_13\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"RE Penalty\",\"col\":3}},{\"id\":\"BcOkPee8s8\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"header_5\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Operations</span>\",\"col\":12}},{\"id\":\"shortcut_14\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Maintenance Request\",\"col\":3}},{\"id\":\"shortcut_15\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Inspection Report\",\"col\":3}},{\"id\":\"shortcut_16\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Documents\",\"col\":3}},{\"id\":\"shortcut_17\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"RE Settings\",\"col\":3}},{\"id\":\"8zTrnqeOmU\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"header_6\",\"type\":\"header\",\"data\":{\"text\":\"<span style=\\\"font-size: 18px; letter-spacing: 0.18px;\\\"><b>Report</b></span>\",\"col\":12}},{\"id\":\"IVPeE5HAxh\",\"type\":\"card\",\"data\":{\"card_name\":\"Real Estate Reports\",\"col\":4}}]",
+ "creation": "2026-03-25 21:48:23.691351",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "assets",
+ "idx": 0,
+ "indicator_color": "",
+ "is_hidden": 0,
+ "label": "Real Estate System",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Real Estate Reports",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "RE Deposit Report",
+   "link_count": 0,
+   "link_to": "RE Deposit Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "RE Lease History",
+   "link_count": 0,
+   "link_to": "RE Lease History",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "RE Lease",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "RE Unit Vacancy",
+   "link_count": 0,
+   "link_to": "RE Unit Vacancy",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "RE Unit",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "RE Rent Collection",
+   "link_count": 0,
+   "link_to": "RE Rent Collection",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-03-26 18:58:40.400436",
+ "modified_by": "Administrator",
+ "module": "DagaarSoft Real Estate",
+ "name": "Real Estate System",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 11.0,
+ "shortcuts": [
+  {
+   "doc_view": "List",
+   "label": "RE Property",
+   "link_to": "RE Property",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "RE Unit",
+   "link_to": "RE Unit",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "RE Unit Type",
+   "link_to": "RE Unit Type",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Viewing Schedule",
+   "link_to": "RE Viewing Schedule",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "RE Tenant",
+   "link_to": "RE Tenant",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "RE Owner",
+   "link_to": "RE Owner",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "RE Lease",
+   "link_to": "RE Lease",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "RE Move In",
+   "link_to": "RE Move In",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "RE Move Out",
+   "link_to": "RE Move Out",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "RE Notice",
+   "link_to": "RE Notice",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "RE Deposit",
+   "link_to": "RE Deposit",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "RE Utility Bill",
+   "link_to": "RE Utility Bill",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "RE Penalty",
+   "link_to": "RE Penalty",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Maintenance Request",
+   "link_to": "RE Maintenance Request",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Inspection Report",
+   "link_to": "RE Inspection Report",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Documents",
+   "link_to": "RE Document Attachment",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "RE Settings",
+   "link_to": "RE Settings",
+   "type": "DocType"
+  }
+ ],
+ "title": "Real Estate System"
+}

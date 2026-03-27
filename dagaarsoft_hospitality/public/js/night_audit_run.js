@@ -1,6 +1,7 @@
 // Night Audit Run JS v3 — User friendly with full preview
 frappe.ui.form.on("Night Audit Run", {
     refresh(frm) {
+        dh_apply_property(frm);
         if (frm.doc.docstatus === 0) {
             // BIG prominent preview button
             frm.add_custom_button(__("🔍 Preview Audit (Review Before Running)"), () => {

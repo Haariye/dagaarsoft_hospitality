@@ -1,0 +1,26 @@
+{
+  "name": "RE Penalty",
+  "doctype": "DocType",
+  "module": "DagaarSoft Real Estate",
+  "engine": "InnoDB",
+  "autoname": "naming_series:",
+  "is_submittable": 1,
+  "fields": [
+    {"fieldname":"naming_series","fieldtype":"Select","label":"Series","options":"REPNL-.YYYY.-.####","reqd":1},
+    {"fieldname":"lease","fieldtype":"Link","label":"Lease","options":"RE Lease","reqd":1,"in_list_view":1},
+    {"fieldname":"tenant","fieldtype":"Link","label":"Tenant","options":"RE Tenant","in_list_view":1},
+    {"fieldname":"penalty_type","fieldtype":"Select","label":"Type",
+     "options":"Late Payment\nDamage\nLease Violation\nEarly Termination\nOther",
+     "reqd":1,"in_list_view":1},
+    {"fieldname":"penalty_date","fieldtype":"Date","label":"Date","reqd":1,"in_list_view":1},
+    {"fieldname":"col1","fieldtype":"Column Break"},
+    {"fieldname":"amount","fieldtype":"Currency","label":"Amount","reqd":1,"in_list_view":1},
+    {"fieldname":"waived","fieldtype":"Check","label":"Waived","allow_on_submit":1},
+    {"fieldname":"waive_reason","fieldtype":"Data","label":"Waiver Reason","allow_on_submit":1},
+    {"fieldname":"sales_invoice","fieldtype":"Link","label":"Invoice","options":"Sales Invoice",
+     "read_only":1,"allow_on_submit":1},
+    {"fieldname":"description","fieldtype":"Text","label":"Description","reqd":1}
+  ],
+  "permissions": [{"role":"Hotel Manager","read":1,"write":1,"create":1,"delete":1,"submit":1,"cancel":1}],
+  "track_changes": 1
+}

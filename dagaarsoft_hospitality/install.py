@@ -147,6 +147,7 @@ def _ensure_hospitality_settings():
 
 
 def after_install():
+    _install_realestate_custom_fields()
     """
     Runs immediately after pip install of the app.
     Our own DocTypes are installed at this point, so hotel custom fields are safe.
@@ -165,3 +166,26 @@ def after_migrate():
     _ensure_custom_fields()
     _ensure_hospitality_settings()
     frappe.db.commit()
+
+def _install_realestate_custom_fields():
+    """Add RE fields to ERPNext Payment Entry and Sales Invoice."""
+    from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
+    fields = {
+        "Payment Entry": [
+            {"fieldname": "re_lease",    "label": "RE Lease",    "fieldtype": "Link", "options": "RE Lease",    "insert_after": "remarks"},
+            {"fieldname": "re_unit",     "label": "RE Unit",     "fieldtype": "Link", "options": "RE Unit",     "insert_after": "re_lease"},
+            {"fieldname": "re_property", "label": "RE Property", "fieldtype": "Link", "options": "RE Property", "insert_after": "re_unit"},
+        ],
+        "Sales Invoice": [
+            {"fieldname": "re_lease",    "label": "RE Lease",    "fieldtype": "Link", "options": "RE Lease",    "insert_after": "remarks"},
+            {"fieldname": "re_unit",     "label": "RE Unit",     "fieldtype": "Link", "options": "RE Unit",     "insert_after": "re_lease"},
+            {"fieldname": "re_property", "label": "RE Property", "fieldtype": "Link", "options": "RE Property", "insert_after": "re_unit"},
+        ],
+    }
+    for dt, flds in fields.items():
+        for f in flds:
+            if not frappe.db.exists("Custom Field", {"dt": dt, "fieldname": f["fieldname"]}):
+                cf = frappe.new_doc("Custom Field")
+                cf.dt = dt
+                cf.update(f)
+                cf.insert(ignore_permissions=True)

@@ -1,92 +1,135 @@
 {
-  "doctype": "DocType",
-  "name": "Hospitality Settings",
-  "module": "DagaarSoft Hospitality",
-  "issingle": 1,
-  "engine": "InnoDB",
-  "field_order": [
-    "hotel_property",
-    "default_rate_plan",
-    "deposit_required",
-    "default_deposit_mode_of_payment",
-    "cascade_cancel_linked_transactions",
-    "manager_override_role",
-    "allow_posa_room_charge",
-    "section_permissions",
-    "rate_override_role",
-    "discount_role"
-  ],
-  "fields": [
-    {
-      "fieldname": "hotel_property",
-      "label": "Default Property",
-      "fieldtype": "Link",
-      "options": "Property"
-    },
-    {
-      "fieldname": "default_rate_plan",
-      "label": "Default Rate Plan",
-      "fieldtype": "Link",
-      "options": "Rate Plan"
-    },
-    {
-      "fieldname": "deposit_required",
-      "label": "Deposit Required",
-      "fieldtype": "Check",
-      "default": "1"
-    },
-    {
-      "fieldname": "default_deposit_mode_of_payment",
-      "label": "Default Deposit Mode of Payment",
-      "fieldtype": "Link",
-      "options": "Mode of Payment"
-    },
-    {
-      "fieldname": "cascade_cancel_linked_transactions",
-      "label": "Cascade Cancel Linked Transactions",
-      "fieldtype": "Check",
-      "default": "1"
-    },
-    {
-      "fieldname": "manager_override_role",
-      "label": "Manager Override Role",
-      "fieldtype": "Link",
-      "options": "Role",
-      "default": "Hotel Manager"
-    },
-    {
-      "fieldname": "allow_posa_room_charge",
-      "label": "Allow POSAwesome Room Charges",
-      "fieldtype": "Check",
-      "default": "1"
-    },
-    {
-      "fieldname": "section_permissions",
-      "label": "Permissions & Defaults",
-      "fieldtype": "Section Break"
-    },
-    {
-      "fieldname": "rate_override_role",
-      "label": "Rate Override Role",
-      "fieldtype": "Link",
-      "options": "Role",
-      "default": "Hotel Manager"
-    },
-    {
-      "fieldname": "discount_role",
-      "label": "Discount Role",
-      "fieldtype": "Link",
-      "options": "Role",
-      "default": "Hotel Manager"
-    }
-  ],
-  "permissions": [
-    {
-      "role": "System Manager",
-      "read": 1,
-      "write": 1,
-      "create": 1,
-      "delete": 1
-    }
-  ]
+ "actions": [],
+ "creation": "2026-03-22 23:41:37.781054",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "hotel_property",
+  "default_rate_plan",
+  "deposit_required",
+  "default_deposit_mode_of_payment",
+  "cascade_cancel_linked_transactions",
+  "manager_override_role",
+  "allow_posa_room_charge",
+  "section_permissions",
+  "rate_override_role",
+  "discount_role",
+  "default_posa_charge_category",
+  "enable_restaurant_table_field",
+  "column_break_aalx",
+  "room_service_enabled",
+  "auto_night_audit"
+ ],
+ "fields": [
+  {
+   "fieldname": "hotel_property",
+   "fieldtype": "Link",
+   "label": "Default Property",
+   "options": "Property"
+  },
+  {
+   "fieldname": "default_rate_plan",
+   "fieldtype": "Link",
+   "label": "Default Rate Plan",
+   "options": "Rate Plan"
+  },
+  {
+   "default": "1",
+   "fieldname": "deposit_required",
+   "fieldtype": "Check",
+   "label": "Deposit Required"
+  },
+  {
+   "fieldname": "default_deposit_mode_of_payment",
+   "fieldtype": "Link",
+   "label": "Default Deposit Mode of Payment",
+   "options": "Mode of Payment"
+  },
+  {
+   "default": "1",
+   "fieldname": "cascade_cancel_linked_transactions",
+   "fieldtype": "Check",
+   "label": "Cascade Cancel Linked Transactions"
+  },
+  {
+   "default": "Hotel Manager",
+   "fieldname": "manager_override_role",
+   "fieldtype": "Link",
+   "label": "Manager Override Role",
+   "options": "Role"
+  },
+  {
+   "default": "1",
+   "fieldname": "allow_posa_room_charge",
+   "fieldtype": "Check",
+   "label": "Allow POSAwesome Room Charges"
+  },
+  {
+   "fieldname": "section_permissions",
+   "fieldtype": "Section Break",
+   "label": "Permissions & Defaults"
+  },
+  {
+   "default": "Hotel Manager",
+   "fieldname": "rate_override_role",
+   "fieldtype": "Link",
+   "label": "Rate Override Role",
+   "options": "Role"
+  },
+  {
+   "default": "Hotel Manager",
+   "fieldname": "discount_role",
+   "fieldtype": "Link",
+   "label": "Discount Role",
+   "options": "Role"
+  },
+  {
+   "fieldname": "default_posa_charge_category",
+   "fieldtype": "Select",
+   "label": "Default POSA Charge Category",
+   "options": "\nRoom Rate\nRestaurant\nMinibar\nF&B\nLaundry\nTransport\nBanquet\nSpa\nTelephone\nMiscellaneous\nTax\nDiscount\nAdjustment"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_restaurant_table_field",
+   "fieldtype": "Check",
+   "label": "Show Restaurant Table in POSA"
+  },
+  {
+   "default": "1",
+   "fieldname": "room_service_enabled",
+   "fieldtype": "Check",
+   "label": "Room Service Enabled"
+  },
+  {
+   "default": "1",
+   "fieldname": "auto_night_audit",
+   "fieldtype": "Check",
+   "label": "Auto Night Audit at 00:05"
+  },
+  {
+   "fieldname": "column_break_aalx",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-03-23 03:48:26.802315",
+ "modified_by": "Administrator",
+ "module": "DagaarSoft Hospitality",
+ "name": "Hospitality Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
 }

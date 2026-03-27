@@ -165,3 +165,42 @@ def generate_weekly_revenue_summary():
                         frappe.format_value(flt(rev), {"fieldtype": "Currency"})))
         except Exception:
             pass
+
+
+def auto_generate_supplementary_invoices():
+    """
+    Hourly: For every Open folio that already has a submitted SI but still
+    has unbilled non-void charges, create a supplementary Sales Invoice.
+    """
+    from dagaarsoft_hospitality.dagaarsoft_hospitality.utils.billing import (
+        create_supplementary_invoice)
+
+    # Find open folios: submitted, open, have an SI, and have unbilled charges
+    folios = frappe.db.sql("""
+        SELECT DISTINCT gf.name
+        FROM `tabGuest Folio` gf
+        JOIN `tabFolio Charge Line` fcl ON fcl.parent = gf.name
+        WHERE gf.folio_status = 'Open'
+          AND gf.docstatus = 1
+          AND gf.sales_invoice IS NOT NULL
+          AND gf.sales_invoice != ''
+          AND fcl.is_void = 0
+          AND fcl.is_billed = 0
+    """, as_list=True)
+
+    count = 0
+    for row in folios:
+        folio_name = row[0]
+        try:
+            si = create_supplementary_invoice(folio_name, submit=True)
+            if si:
+                count += 1
+                frappe.logger("dagaarsoft_hospitality").info(
+                    f"Supplementary SI {si} created for Folio {folio_name}")
+        except Exception:
+            frappe.log_error(frappe.get_traceback(),
+                f"Supplementary Invoice Error: {folio_name}")
+
+    if count:
+        frappe.logger("dagaarsoft_hospitality").info(
+            f"Auto supplementary invoices: {count} created")

@@ -1,30 +1,14 @@
 {
   "doctype": "Workspace",
   "name": "Hotel Housekeeping",
+  "title": "Hotel Housekeeping",
   "label": "Hotel Housekeeping",
   "module": "DagaarSoft Hospitality",
-  "icon": "tools",
+  "icon": "home",
   "is_standard": "Yes",
   "public": 1,
-  "shortcuts": [
-    {"type":"DocType","label":"Housekeeping Tasks","link_to":"Housekeeping Task","color":"#48bb78"},
-    {"type":"DocType","label":"Maintenance Tickets","link_to":"Maintenance Ticket","color":"#e53e3e"},
-    {"type":"Report","label":"Room Status Board","link_to":"Room Status Board","color":"#4299e1"},
-    {"type":"Report","label":"Housekeeping Schedule","link_to":"Housekeeping Schedule","color":"#276749"}
-  ],
-  "cards": [
-    {
-      "card_name": "Operations",
-      "label": "Operations",
-      "links": [
-        {"label":"Housekeeping Tasks","link_type":"DocType","link_to":"Housekeeping Task","type":"Link"},
-        {"label":"Maintenance Tickets","link_type":"DocType","link_to":"Maintenance Ticket","type":"Link"},
-        {"label":"Laundry Tickets","link_type":"DocType","link_to":"Laundry Ticket","type":"Link"},
-        {"label":"Minibar Consumption","link_type":"DocType","link_to":"Minibar Consumption","type":"Link"},
-        {"label":"Room Status Board","link_type":"Report","link_to":"Room Status Board","type":"Link"},
-        {"label":"Housekeeping Schedule","link_type":"Report","link_to":"Housekeeping Schedule","type":"Link"}
-      ]
-    }
-  ],
-  "roles": [{"role":"Hotel Manager"},{"role":"Hotel Housekeeper"}]
+  "content": [],
+  "shortcuts": [],
+  "cards": [],
+  "roles": []
 }

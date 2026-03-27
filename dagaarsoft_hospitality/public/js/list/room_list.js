@@ -5,5 +5,13 @@ frappe.listview_settings["Room"]={
             "Occupied":["Occupied","blue"],"Out of Order":["Out of Order","red"],
             "Out of Service":["Out of Service","red"],"On Change":["On Change","purple"]};
         return m[doc.room_status]||[doc.room_status||"","grey"];
+    },
+    onload(listview) {
+        if (typeof dh_get_session_property === 'function') {
+            const sess = dh_get_session_property();
+            if (sess && sess.property) {
+                listview.filter_area.add([[listview.doctype, 'property', '=', sess.property]]);
+            }
+        }
     }
 };
