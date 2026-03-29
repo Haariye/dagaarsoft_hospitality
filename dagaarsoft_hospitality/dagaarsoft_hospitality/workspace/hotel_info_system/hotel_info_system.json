@@ -141,7 +141,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-03-26 15:40:23.576030",
+ "modified": "2026-03-28 19:59:14.572927",
  "modified_by": "sysadmin@naleye.dagaarsoft.app",
  "module": "DagaarSoft Hospitality",
  "name": "Hotel Info System",
@@ -153,7 +153,7 @@
   {
    "document_type": "Guest Stay",
    "label": "Departure List",
-   "quick_list_filter": "[[\"Guest Stay\",\"departure_date\",\"Timespan\",\"this week\",false]]"
+   "quick_list_filter": "[[\"Guest Stay\",\"departure_date\",\"Timespan\",\"today\",false]]"
   }
  ],
  "roles": [],

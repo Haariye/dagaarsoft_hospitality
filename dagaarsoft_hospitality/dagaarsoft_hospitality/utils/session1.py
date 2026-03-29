@@ -19,7 +19,7 @@ def boot_session(bootinfo):
             "global_property":              global_property,      # from settings
             "property_locked":              bool(user_property),  # JS uses this to lock the field
             "rate_plan":                    s.default_rate_plan or "",
-            "allow_posa_room_charge":       1,  # Always enabled — controlled per POS Profile via dh_enable_hotel_room
+            "allow_posa_room_charge":       int(s.allow_posa_room_charge or 0),
             "default_posa_charge_category": s.default_posa_charge_category or "F&B",
             "enable_restaurant_table_field":int(getattr(s, "enable_restaurant_table_field", 0) or 0),
             "room_service_enabled":         int(s.room_service_enabled or 0),

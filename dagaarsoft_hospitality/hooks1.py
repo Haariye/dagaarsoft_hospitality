@@ -12,7 +12,6 @@ required_apps   = ["frappe", "erpnext"]
 # ── Global JS (loaded on every page) ─────────────────────────────────────────
 app_include_js = [
     "/assets/dagaarsoft_hospitality/js/property_session.js",
-    "/assets/dagaarsoft_hospitality/js/posa_overrides/hotel_room_mixin.js",
 ]
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
@@ -54,7 +53,10 @@ doctype_list_js = {
     "Housekeeping Task": "public/js/list/housekeeping_list.js",
 }
 
-# Hotel room + restaurant table integration loads via app_include_js (self-gates to /posapp).
+# FIX 13: Inject hotel room widget into POSA on the POS page only
+page_js = {
+    "point-of-sale": "public/js/posa_overrides/hotel_room_mixin.js"
+}
 
 # ── Doc Events ────────────────────────────────────────────────────────────────
 doc_events = {

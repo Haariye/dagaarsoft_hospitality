@@ -54,7 +54,8 @@ doctype_list_js = {
     "Housekeeping Task": "public/js/list/housekeeping_list.js",
 }
 
-# Hotel room + restaurant table integration loads via app_include_js (self-gates to /posapp).
+# Hotel room integration now loads via app_include_js (self-gates to /posapp only).
+# The old page_js approach is removed.
 
 # ── Doc Events ────────────────────────────────────────────────────────────────
 doc_events = {
