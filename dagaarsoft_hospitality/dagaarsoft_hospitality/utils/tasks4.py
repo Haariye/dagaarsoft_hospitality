@@ -1,24 +1,43 @@
 import frappe
 from frappe.utils import today, add_days, now_datetime, flt
 
-
 def auto_post_room_charges():
-    """
-    15:00 daily: Post today's room charge + create Sales Invoice for each checked-in stay.
-    Delegates to billing.auto_daily_room_charge() which is fully idempotent.
-    """
-    from dagaarsoft_hospitality.dagaarsoft_hospitality.utils.billing import auto_daily_room_charge
-    auto_daily_room_charge()
+    audit_date = today()
+    for prop in frappe.get_all("Property", {"is_active": 1}, ["name"]):
+        if not frappe.db.exists("Night Audit Run", {
+            "property": prop.name, "audit_date": audit_date, "audit_status": "Completed"
+        }):
+            _auto_post_for_property(prop.name, audit_date)
 
-
-def auto_invoice_pending_services():
-    """
-    Hourly: Auto-invoice unbilled non-restaurant service charges (laundry, spa, etc.).
-    Restaurant charges are excluded — those come from POS.
-    """
-    from dagaarsoft_hospitality.dagaarsoft_hospitality.utils.billing import auto_invoice_pending_services as _auto
-    _auto()
-
+def _auto_post_for_property(property_name, audit_date):
+    stays = frappe.get_all("Guest Stay",
+        {"property": property_name, "stay_status": "Checked In",
+         "arrival_date": ["<=", audit_date], "departure_date": [">", audit_date]},
+        ["name", "guest_folio", "room", "room_type", "nightly_rate"])
+    for s in stays:
+        if not s.guest_folio: continue
+        already = frappe.db.sql("""
+            SELECT COUNT(*) FROM `tabFolio Charge Line`
+            WHERE parent=%s AND charge_category='Room Rate'
+              AND posting_date=%s AND reference_name=%s AND is_void=0
+        """, (s.guest_folio, audit_date, s.name))[0][0]
+        if already: continue
+        rate = flt(s.nightly_rate) or flt(
+            frappe.db.get_value("Room Type", s.room_type, "bar_rate") or 0)
+        if not rate: continue
+        try:
+            folio = frappe.get_doc("Guest Folio", s.guest_folio)
+            if folio.folio_status != "Open" or folio.docstatus != 1: continue
+            line = folio.append("folio_charges", {})
+            line.description = "Auto Room Charge - {0} - {1}".format(s.room, audit_date)
+            line.qty = 1; line.rate = rate; line.amount = rate
+            line.charge_category = "Room Rate"; line.posting_date = audit_date
+            line.reference_doctype = "Guest Stay"; line.reference_name = s.name
+            line.posted_by = "Administrator"; line.is_read_only = 1
+            line.guest_stay = s.name
+            folio.save(ignore_permissions=True)
+        except Exception:
+            frappe.log_error(frappe.get_traceback(), "Auto Room Charge Error")
 
 def flag_no_shows():
     for s in frappe.get_all("Guest Stay",
@@ -27,7 +46,6 @@ def flag_no_shows():
         frappe.db.set_value("Guest Stay", s.name, "stay_status", "No Show")
         if s.reservation:
             frappe.db.set_value("Reservation", s.reservation, "reservation_status", "No Show")
-
 
 def auto_night_audit():
     try:
@@ -46,7 +64,6 @@ def auto_night_audit():
         except Exception:
             frappe.log_error(frappe.get_traceback(), "Auto Night Audit Error")
 
-
 def flag_overdue_invoices():
     from dagaarsoft_hospitality.dagaarsoft_hospitality.utils.billing import get_invoice_billing_status
     for f in frappe.get_all("Guest Folio",
@@ -62,10 +79,8 @@ def flag_overdue_invoices():
         except Exception:
             pass
 
-
 def sync_folio_invoice_statuses():
     flag_overdue_invoices()
-
 
 def send_arrival_reminders():
     tomorrow = str(add_days(today(), 1))
@@ -80,7 +95,6 @@ def send_arrival_reminders():
                         s.guest_name))
             except Exception:
                 pass
-
 
 def send_departure_reminders():
     for s in frappe.get_all("Guest Stay",
@@ -97,13 +111,11 @@ def send_departure_reminders():
             except Exception:
                 pass
 
-
 def update_maintenance_overdue():
     for t in frappe.get_all("Maintenance Ticket",
         {"ticket_status": ["in", ["Open", "In Progress"]], "due_date": ["<", today()],
          "docstatus": 1}, ["name"]):
         frappe.db.set_value("Maintenance Ticket", t.name, "ticket_status", "Escalated")
-
 
 def update_housekeeping_overdue():
     for t in frappe.get_all("Housekeeping Task",
@@ -111,22 +123,14 @@ def update_housekeeping_overdue():
          "docstatus": 1}, ["name"]):
         frappe.db.set_value("Housekeeping Task", t.name, "priority", "Urgent")
 
-
 def auto_checkout_departed_guests():
-    """Auto checkout only if fully settled (no outstanding)."""
     for s in frappe.get_all("Guest Stay",
         {"stay_status": "Checked In", "departure_date": ["<", today()]},
         ["name", "guest_folio", "room", "guest_name", "property"]):
         try:
             if s.guest_folio:
-                # Check real outstanding from ERPNext
-                outstanding = flt(frappe.db.sql("""
-                    SELECT COALESCE(SUM(outstanding_amount), 0)
-                    FROM `tabSales Invoice`
-                    WHERE hotel_folio = %s AND docstatus = 1 AND is_return = 0
-                """, s.guest_folio)[0][0])
-                if outstanding > 0.01:
-                    continue  # Don't auto-checkout with unpaid bills
+                bal = flt(frappe.db.get_value("Guest Folio", s.guest_folio, "balance_due") or 0)
+                if bal > 0.01: continue
             frappe.db.set_value("Guest Stay", s.name, {
                 "stay_status": "Checked Out", "actual_checkout": now_datetime()})
             if s.guest_folio:
@@ -138,13 +142,11 @@ def auto_checkout_departed_guests():
         except Exception:
             frappe.log_error(frappe.get_traceback(), "Auto Checkout Error")
 
-
 def purge_old_audit_logs():
     cutoff = str(add_days(today(), -90))
     for a in frappe.get_all("Night Audit Run",
         {"audit_date": ["<", cutoff], "audit_status": "Completed"}, ["name"]):
         frappe.db.set_value("Night Audit Run", a.name, "charge_log", "")
-
 
 def generate_weekly_revenue_summary():
     week_start = str(add_days(today(), -7))
@@ -163,3 +165,42 @@ def generate_weekly_revenue_summary():
                         frappe.format_value(flt(rev), {"fieldtype": "Currency"})))
         except Exception:
             pass
+
+
+def auto_generate_supplementary_invoices():
+    """
+    Hourly: For every Open folio that already has a submitted SI but still
+    has unbilled non-void charges, create a supplementary Sales Invoice.
+    """
+    from dagaarsoft_hospitality.dagaarsoft_hospitality.utils.billing import (
+        create_supplementary_invoice)
+
+    # Find open folios: submitted, open, have an SI, and have unbilled charges
+    folios = frappe.db.sql("""
+        SELECT DISTINCT gf.name
+        FROM `tabGuest Folio` gf
+        JOIN `tabFolio Charge Line` fcl ON fcl.parent = gf.name
+        WHERE gf.folio_status = 'Open'
+          AND gf.docstatus = 1
+          AND gf.sales_invoice IS NOT NULL
+          AND gf.sales_invoice != ''
+          AND fcl.is_void = 0
+          AND fcl.is_billed = 0
+    """, as_list=True)
+
+    count = 0
+    for row in folios:
+        folio_name = row[0]
+        try:
+            si = create_supplementary_invoice(folio_name, submit=True)
+            if si:
+                count += 1
+                frappe.logger("dagaarsoft_hospitality").info(
+                    f"Supplementary SI {si} created for Folio {folio_name}")
+        except Exception:
+            frappe.log_error(frappe.get_traceback(),
+                f"Supplementary Invoice Error: {folio_name}")
+
+    if count:
+        frappe.logger("dagaarsoft_hospitality").info(
+            f"Auto supplementary invoices: {count} created")

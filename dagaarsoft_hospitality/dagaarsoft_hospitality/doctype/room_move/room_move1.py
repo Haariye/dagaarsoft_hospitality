@@ -11,17 +11,6 @@ class RoomMove(Document):
         status = frappe.db.get_value("Guest Stay", self.guest_stay, "stay_status")
         if status != "Checked In":
             frappe.throw(_("Guest must be Checked In (current: {0}).").format(status))
-        # One move only per stay
-        prior_moves = frappe.db.count("Room Move", {
-            "guest_stay": self.guest_stay,
-            "docstatus": 1,
-            "name": ["!=", self.name or ""]
-        })
-        if prior_moves >= 1:
-            frappe.throw(_(
-                "This guest has already been moved once during this stay. "
-                "Please check out and create a new stay for the new room."
-            ))
         if self.to_room:
             r = frappe.db.get_value("Room", self.to_room,
                 ["room_status", "is_out_of_order"], as_dict=True)

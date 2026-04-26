@@ -525,8 +525,9 @@ def apply_payment_to_invoice(si_name, amount, payment_mode="Cash",
 @frappe.whitelist()
 def return_excess_deposit(folio_name, amount, payment_mode="Cash", reference_number=None):
     """
-    Return excess deposit to guest via Payment Entry type "Pay".
-    This is a real ERPNext refund: cash leaves, customer receivable reduces.
+    Return excess deposit to guest via a Journal Entry.
+    Debit: Cash/Bank (money going out)
+    Credit: Receivable (reduce what guest has paid in advance)
     """
     if "Hotel Manager" not in frappe.get_roles():
         frappe.throw(_("Only Hotel Manager can process deposit returns."))
@@ -537,61 +538,48 @@ def return_excess_deposit(folio_name, amount, payment_mode="Cash", reference_num
         frappe.throw(_("Amount must be greater than zero."))
 
     customer = folio.billing_customer or folio.customer
-    company, income_acct, debtors_acct, _tax_tpl = _get_folio_accounts(folio)
+    company, income_acct, debtors_acct, _ = _get_folio_accounts(folio)
 
-    # paid_from = cash/bank account (money leaving)
-    paid_from = (
+    # Get cash/bank account for the payment mode
+    cash_acct = (
         frappe.db.get_value("Mode of Payment Account",
             {"parent": payment_mode, "company": company}, "default_account") or
-        frappe.db.get_value("Account",
-            {"company": company, "account_type": "Cash", "is_group": 0}, "name")
+        frappe.db.get_value("Account", {"company": company, "account_type": "Cash", "is_group": 0}, "name")
     )
-    if not paid_from or not debtors_acct:
-        frappe.throw(_("Cannot find Cash or Receivable accounts for {0}.").format(company))
+    if not cash_acct or not debtors_acct:
+        frappe.throw(_("Cannot find Cash or Receivable accounts."))
 
-    pe = frappe.new_doc("Payment Entry")
-    pe.payment_type = "Pay"
-    pe.party_type = "Customer"
-    pe.party = customer
-    pe.company = company
-    pe.posting_date = today()
-    pe.paid_amount = amt
-    pe.received_amount = amt
-    pe.paid_from = paid_from
-    pe.paid_to = debtors_acct
-    pe.mode_of_payment = payment_mode
-    pe.reference_no = reference_number or "Deposit Return - {0}".format(folio_name)
-    pe.reference_date = today()
-    pe.hotel_folio = folio_name
-    pe.hotel_stay = folio.guest_stay
-    pe.hotel_room = folio.room
-    pe.custom_remarks = 1
-    pe.remarks = "Deposit Return | Folio: {0} | Customer: {1}".format(folio_name, customer)
+    je = frappe.new_doc("Journal Entry")
+    je.voucher_type = "Journal Entry"
+    je.company = company
+    je.posting_date = today()
+    je.user_remark = "Deposit Return | Folio: {0} | Customer: {1} | Ref: {2}".format(
+        folio_name, customer, reference_number or "")
 
-    pe.set_missing_values()
-    pe.insert(ignore_permissions=True)
-    pe.submit()
+    # Debit Cash (money leaving)
+    je.append("accounts", {
+        "account": cash_acct,
+        "debit_in_account_currency": 0,
+        "credit_in_account_currency": amt,
+    })
+    # Credit Receivable (reduce advance)
+    je.append("accounts", {
+        "account": debtors_acct,
+        "party_type": "Customer",
+        "party": customer,
+        "debit_in_account_currency": amt,
+        "credit_in_account_currency": 0,
+    })
 
-    # Log to folio payment lines
-    folio.reload()
-    line = folio.append("folio_payments", {})
-    line.payment_date = today()
-    line.payment_mode = payment_mode
-    line.description = "Deposit Return - {0}".format(pe.name)
-    line.amount = -amt  # Negative = money leaving
-    line.reference_number = reference_number
-    line.payment_entry = pe.name
-    line.posted_by = frappe.session.user
-    folio.save(ignore_permissions=True)
+    je.insert(ignore_permissions=True)
+    je.submit()
 
     frappe.msgprint(
-        _("Deposit return {0} created for {1}.").format(
-            pe.name, frappe.format_value(amt, {"fieldtype": "Currency"})),
+        _("Deposit return JE {0} created for {1}.").format(
+            je.name, frappe.format_value(amt, {"fieldtype": "Currency"})),
         alert=True)
-    return {"payment_entry": pe.name, "amount": amt}
+    return {"journal_entry": je.name, "amount": amt}
 
-
-# ─────────────────────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CHECKOUT VALIDATION — charges = invoices = payments
@@ -603,9 +591,8 @@ def validate_checkout_billing(guest_stay_name, force_checkout=False):
     Strict checkout:
       1. All charges must be billed (is_billed=1)
       2. All Sales Invoices must be fully paid (outstanding=0)
-      3. Excess deposit → block, return first
-    Bypass: Manager approved credit OR sponsored stay.
-    Also: auto-reconcile unallocated PEs with open SIs before checking.
+      3. If guest has excess deposit → block checkout, return deposit first
+    Exceptions: Sponsored stays pass with warnings.
     """
     stay = frappe.get_doc("Guest Stay", guest_stay_name)
     folio_name = stay.guest_folio
@@ -623,39 +610,46 @@ def validate_checkout_billing(guest_stay_name, force_checkout=False):
         billing_instr in ["Charge to Company", "Charge to Travel Agent", "Split Bill"]
     )
 
-    credit_approved = _is_credit_approved(folio_name, stay_name=guest_stay_name)
-
     is_early_checkout = (stay.departure_date and
                          getdate(str(stay.departure_date)) > getdate(today()))
     remaining_nights = date_diff(str(stay.departure_date), today()) if is_early_checkout else 0
 
-    # Auto-reconcile PEs with SIs before validation
-    customer = folio.billing_customer or folio.customer
-    company = (frappe.db.get_value("Property", folio.property, "company")
-               if folio.property else None) or frappe.defaults.get_defaults().get("company")
-    _auto_reconcile_payments(customer, company, folio_name)
-
-    # ── The three pillars (re-read after reconciliation) ──────────────────
+    # ── The three pillars ─────────────────────────────────────────────────
+    # 1. Charges
     total_charges = sum(flt(c.amount) for c in (folio.get("folio_charges") or [])
                         if not c.is_void)
     unbilled = [c for c in (folio.get("folio_charges") or [])
                 if not c.is_void and not c.is_billed]
     unbilled_total = sum(flt(c.amount) for c in unbilled)
 
+    # 2. Invoices (submitted, linked to this folio)
     all_sis = frappe.db.sql("""
-        SELECT name, grand_total, outstanding_amount, is_return
+        SELECT name, grand_total, outstanding_amount, is_return, docstatus
         FROM `tabSales Invoice`
         WHERE hotel_folio = %s AND docstatus = 1
     """, folio_name, as_dict=True)
     total_invoiced = sum(flt(si.grand_total) for si in all_sis if not si.is_return)
+    total_credit_notes = sum(abs(flt(si.grand_total)) for si in all_sis if si.is_return)
     total_outstanding = sum(flt(si.outstanding_amount) for si in all_sis if not si.is_return)
 
+    # 3. Payments
     total_paid = flt(frappe.db.sql("""
         SELECT COALESCE(SUM(pe.paid_amount), 0)
         FROM `tabPayment Entry` pe
-        WHERE pe.hotel_folio = %s AND pe.docstatus = 1 AND pe.payment_type = 'Receive'
+        WHERE pe.hotel_folio = %s AND pe.docstatus = 1
     """, folio_name)[0][0])
 
+    # JEs (charge-to-credit)
+    total_je = flt(frappe.db.sql("""
+        SELECT COALESCE(SUM(jea.debit_in_account_currency), 0)
+        FROM `tabJournal Entry Account` jea
+        JOIN `tabJournal Entry` je ON je.name = jea.parent
+        WHERE je.docstatus = 1 AND jea.party_type = 'Customer'
+        AND jea.party = %s AND je.user_remark LIKE %s
+    """, (folio.billing_customer or folio.customer,
+          "%Folio: {0}%".format(folio_name)))[0][0])
+
+    effective_paid = total_paid + total_je
     force = bool(int(force_checkout))
 
     if is_sponsored:
@@ -665,22 +659,22 @@ def validate_checkout_billing(guest_stay_name, force_checkout=False):
                 folio.billing_customer or "Sponsor"))
         if unbilled:
             warnings.append(_("{0} unbilled charge(s) for sponsor.").format(len(unbilled)))
-    elif credit_approved:
-        warnings.append(_("Manager approved credit checkout. Outstanding: {0}.").format(
-            frappe.format_value(total_outstanding, {"fieldtype": "Currency"})))
     else:
+        # Check 1: All charges invoiced
         if unbilled and not force:
-            issues.append(_("{0} charge(s) ({1}) not invoiced. Use 'Generate Invoice'.").format(
+            issues.append(_("{0} charge(s) ({1}) not invoiced. Use 'Generate Invoice' first.").format(
                 len(unbilled),
                 frappe.format_value(unbilled_total, {"fieldtype": "Currency"})))
 
+        # Check 2: All invoices paid
         if total_outstanding > 0.01 and not force:
             issues.append(_("Unpaid invoices: {0}. Settle payment or use 'Charge to Credit'.").format(
                 frappe.format_value(total_outstanding, {"fieldtype": "Currency"})))
 
-        if total_paid > total_invoiced + 0.01 and total_invoiced > 0:
-            excess = total_paid - total_invoiced
-            issues.append(_("Excess deposit {0}. Use 'Return Deposit' before checkout.").format(
+        # Check 3: Excess deposit — must return first
+        if effective_paid > total_invoiced + 0.01 and total_invoiced > 0:
+            excess = effective_paid - total_invoiced
+            issues.append(_("Guest has excess deposit of {0}. Use 'Return Deposit' before checkout.").format(
                 frappe.format_value(excess, {"fieldtype": "Currency"})))
 
     balance_due = flt(folio.balance_due)
@@ -701,128 +695,36 @@ def validate_checkout_billing(guest_stay_name, force_checkout=False):
     return {
         "can_checkout": len(issues) == 0,
         "is_sponsored": is_sponsored,
-        "credit_approved": credit_approved,
         "is_early_checkout": is_early_checkout,
         "early_checkout_info": early_checkout_info,
         "issues": issues, "warnings": warnings,
         "balance_due": balance_due,
         "total_charges": total_charges,
         "total_invoiced": total_invoiced,
-        "total_paid": total_paid,
+        "total_paid": effective_paid,
         "total_outstanding": total_outstanding,
         "invoice_status": get_invoice_billing_status(folio.sales_invoice)
                           if folio.sales_invoice else None
     }
 
 
-def _is_credit_approved(folio_name, stay_name=None):
-    """Check if Hotel Manager approved credit checkout via Activity Log."""
-    filters = {
-        "reference_doctype": "Guest Stay",
-        "subject": ["like", "%Credit Approved%"],
-    }
-    if stay_name:
-        filters["reference_name"] = stay_name
-    return bool(frappe.db.exists("Activity Log", filters))
-
-
-def _auto_reconcile_payments(customer, company, folio_name):
-    """Auto-reconcile unallocated PEs with outstanding SIs using Payment Reconciliation."""
-    try:
-        outstanding_sis = frappe.db.sql("""
-            SELECT name, outstanding_amount
-            FROM `tabSales Invoice`
-            WHERE hotel_folio = %s AND docstatus = 1
-              AND is_return = 0 AND outstanding_amount > 0.005
-            ORDER BY posting_date ASC
-        """, folio_name, as_dict=True)
-
-        if not outstanding_sis:
-            return
-
-        unallocated_pes = frappe.db.sql("""
-            SELECT name, unallocated_amount
-            FROM `tabPayment Entry`
-            WHERE party_type = 'Customer' AND party = %s
-              AND company = %s AND hotel_folio = %s
-              AND docstatus = 1 AND payment_type = 'Receive'
-              AND unallocated_amount > 0.005
-            ORDER BY posting_date ASC
-        """, (customer, company, folio_name), as_dict=True)
-
-        if not unallocated_pes:
-            return
-
-        receivable_account = frappe.db.get_value("Account",
-            {"company": company, "account_type": "Receivable", "is_group": 0}, "name")
-        if not receivable_account:
-            return
-
-        pr = frappe.new_doc("Payment Reconciliation")
-        pr.company = company
-        pr.party_type = "Customer"
-        pr.party = customer
-        pr.receivable_payable_account = receivable_account
-        pr.get_unreconciled_entries()
-
-        if not pr.get("invoices") or not pr.get("payments"):
-            return
-
-        # Build allocation table — match folio-linked PEs to folio-linked SIs
-        si_names = {si.name for si in outstanding_sis}
-        pe_names = {pe.name for pe in unallocated_pes}
-
-        for inv in pr.get("invoices") or []:
-            if inv.invoice_number not in si_names:
-                continue
-            inv_remaining = flt(inv.outstanding_amount)
-            if inv_remaining <= 0.005:
-                continue
-
-            for pay in pr.get("payments") or []:
-                if pay.reference_name not in pe_names:
-                    continue
-                pay_remaining = flt(pay.amount) - flt(pay.get("allocated_amount") or 0)
-                if pay_remaining <= 0.005:
-                    continue
-
-                allocate = min(inv_remaining, pay_remaining)
-                pr.append("allocation", {
-                    "reference_type": pay.reference_type,
-                    "reference_name": pay.reference_name,
-                    "invoice_type": "Sales Invoice",
-                    "invoice_number": inv.invoice_number,
-                    "allocated_amount": allocate,
-                })
-                inv_remaining -= allocate
-                if inv_remaining <= 0.005:
-                    break
-
-        if pr.get("allocation"):
-            pr.reconcile()
-
-    except Exception:
-        frappe.log_error(frappe.get_traceback(),
-            "Auto Reconcile Error: Folio {0}".format(folio_name))
-
-
 # ─────────────────────────────────────────────────────────────────────────────
-# CHARGE TO CREDIT — no accounting entries, just approval flag + audit trail
+# CHARGE TO CREDIT — uses real ERPNext outstanding
 # ─────────────────────────────────────────────────────────────────────────────
 
 @frappe.whitelist()
 def charge_to_credit(folio_name, reason=""):
     """
-    Hotel Manager: approve checkout with unpaid balance.
-    Does NOT create any JE or PE. Sales Invoices remain outstanding
-    (correctly showing the customer owes money). Logs an Activity Log
-    with "Credit Approved" so checkout validation passes.
+    Hotel Manager: allow checkout with unpaid balance.
+    Reads REAL outstanding from all submitted SIs linked to this folio.
+    Creates JE: Debit Receivable (customer owes), Credit Income (cash stays accurate).
     """
     if "Hotel Manager" not in frappe.get_roles():
         frappe.throw(_("Only Hotel Manager can authorize charge-to-credit."))
 
     folio = frappe.get_doc("Guest Folio", folio_name)
 
+    # Get REAL outstanding from ERPNext Sales Invoices
     all_sis = frappe.db.sql("""
         SELECT name, outstanding_amount
         FROM `tabSales Invoice`
@@ -834,52 +736,44 @@ def charge_to_credit(folio_name, reason=""):
         frappe.throw(_("No outstanding balance on invoices linked to this folio."))
 
     customer = folio.billing_customer or folio.customer
-    customer_name = frappe.db.get_value("Customer", customer, "customer_name") or customer
-    stay_name = folio.guest_stay
+    company, income_acct, debtors_acct, _ = _get_folio_accounts(folio)
 
-    # Log approval — this is what checkout validation checks
-    frappe.get_doc({
-        "doctype": "Activity Log",
-        "subject": "Credit Approved | Folio: {0} | Amount: {1}".format(
-            folio_name, total_outstanding),
-        "content": "Hotel Manager {0} approved credit checkout.\n"
-                   "Customer: {1} ({2})\n"
-                   "Outstanding: {3}\n"
-                   "Reason: {4}\n"
-                   "Invoices: {5}".format(
-                       frappe.session.user, customer_name, customer,
-                       frappe.format_value(total_outstanding, {"fieldtype": "Currency"}),
-                       reason or "Manager authorized",
-                       ", ".join([si.name for si in all_sis if flt(si.outstanding_amount) > 0.005])),
-        "reference_doctype": "Guest Stay",
-        "reference_name": stay_name,
-        "user": frappe.session.user,
-    }).insert(ignore_permissions=True)
+    if not debtors_acct or not income_acct:
+        frappe.throw(_("Cannot find Receivable or Income accounts for company."))
 
-    # Comment on folio for visibility
-    try:
-        frappe.get_doc({
-            "doctype": "Comment",
-            "comment_type": "Info",
-            "reference_doctype": "Guest Folio",
-            "reference_name": folio_name,
-            "content": "<b>Credit Approved by {0}</b><br>Outstanding: {1}<br>Reason: {2}".format(
-                frappe.session.user,
-                frappe.format_value(total_outstanding, {"fieldtype": "Currency"}),
-                reason or "Manager authorized"),
-        }).insert(ignore_permissions=True)
-    except Exception:
-        pass
+    je = frappe.new_doc("Journal Entry")
+    je.voucher_type = "Journal Entry"
+    je.company = company
+    je.posting_date = today()
+    je.user_remark = "Charge to Credit | Folio: {0} | Customer: {1} | Amount: {2} | Reason: {3}".format(
+        folio_name, customer, total_outstanding, reason or "Manager authorized")
+
+    je.append("accounts", {
+        "account": debtors_acct,
+        "party_type": "Customer",
+        "party": customer,
+        "debit_in_account_currency": flt(total_outstanding),
+        "credit_in_account_currency": 0,
+    })
+    je.append("accounts", {
+        "account": income_acct,
+        "debit_in_account_currency": 0,
+        "credit_in_account_currency": flt(total_outstanding),
+    })
+
+    je.insert(ignore_permissions=True)
+    je.submit()
 
     frappe.msgprint(
-        _("Credit approved. {0} owes {1}. Guest can now checkout.").format(
-            customer_name,
-            frappe.format_value(total_outstanding, {"fieldtype": "Currency"})),
+        _("JE {0}: {1} charged to credit for {2}.").format(
+            je.name,
+            frappe.format_value(total_outstanding, {"fieldtype": "Currency"}),
+            customer),
         alert=True)
+    return {"journal_entry": je.name, "amount": total_outstanding}
 
-    return {"approved": True, "amount": total_outstanding, "customer": customer}
 
-
+# ─────────────────────────────────────────────────────────────────────────────
 # HELPERS
 # ─────────────────────────────────────────────────────────────────────────────
 

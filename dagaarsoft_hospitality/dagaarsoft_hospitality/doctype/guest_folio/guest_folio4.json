@@ -245,34 +245,8 @@
   }
  ],
  "is_submittable": 1,
- "links": [
-  {
-   "group": "Invoices",
-   "link_doctype": "Sales Invoice",
-   "link_fieldname": "hotel_folio"
-  },
-  {
-   "group": "Payments",
-   "link_doctype": "Payment Entry",
-   "link_fieldname": "hotel_folio"
-  },
-  {
-   "group": "Journal Entries",
-   "link_doctype": "Journal Entry",
-   "link_fieldname": "guest_folio"
-  },
-  {
-   "group": "Stay",
-   "link_doctype": "Guest Stay",
-   "link_fieldname": "guest_folio"
-  },
-  {
-   "group": "Room Moves",
-   "link_doctype": "Room Move",
-   "link_fieldname": "guest_stay"
-  }
- ],
- "modified": "2026-03-31 13:33:45.513255",
+ "links": [],
+ "modified": "2026-03-23 00:03:34.535347",
  "modified_by": "Administrator",
  "module": "DagaarSoft Hospitality",
  "name": "Guest Folio",
@@ -304,7 +278,6 @@
   }
  ],
  "row_format": "Dynamic",
- "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

@@ -128,10 +128,8 @@ doc_events = {
 # ── Scheduler ─────────────────────────────────────────────────────────────────
 scheduler_events = {
     "cron": {
-        "0 15 * * *": [
-            "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.tasks.auto_post_room_charges",
-        ],
         "5 0 * * *": [
+            "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.tasks.auto_post_room_charges",
             "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.tasks.flag_no_shows",
             "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.tasks.auto_night_audit",
         ],
@@ -145,7 +143,7 @@ scheduler_events = {
         "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.tasks.update_maintenance_overdue",
         "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.tasks.update_housekeeping_overdue",
         "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.tasks.sync_folio_invoice_statuses",
-        "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.tasks.auto_invoice_pending_services",
+        "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.tasks.auto_generate_supplementary_invoices",
     ],
     "daily": [
         "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.tasks.auto_checkout_departed_guests",

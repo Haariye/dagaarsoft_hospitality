@@ -1,9 +1,10 @@
 import frappe
 from frappe import _
-from frappe.utils import date_diff, now_datetime, flt, today, getdate, cint
+from frappe.utils import date_diff, now_datetime, flt, today, getdate, add_days, cint
 from frappe.model.document import Document
 
 
+# ── Valid status transitions ──────────────────────────────────────────────────
 _VALID_TRANSITIONS = {
     "Expected":    ["Checked In", "Cancelled", "No Show"],
     "Checked In":  ["Checked Out"],
@@ -20,7 +21,8 @@ def _validate_status_transition(current, new_status):
             current, new_status, ", ".join(allowed) or "None"))
 
 
-def _log_audit(stay_name, action, details=""):
+def _log_audit(stay_name, action, details="", user=None):
+    """Log forced/important actions to Activity Log for audit trail."""
     try:
         frappe.get_doc({
             "doctype": "Activity Log",
@@ -28,10 +30,10 @@ def _log_audit(stay_name, action, details=""):
             "content": details or action,
             "reference_doctype": "Guest Stay",
             "reference_name": stay_name,
-            "user": frappe.session.user,
+            "user": user or frappe.session.user,
         }).insert(ignore_permissions=True)
     except Exception:
-        frappe.log_error(frappe.get_traceback(), "Audit Log Error")
+        frappe.log_error(frappe.get_traceback(), "Audit Log Error: {0}".format(action))
 
 
 class GuestStay(Document):
@@ -113,7 +115,8 @@ class GuestStay(Document):
         self.db_set("stay_status", "Expected")
         self._create_folio()
         frappe.db.set_value("Room", self.room, {
-            "current_guest": self.guest_name, "current_stay": self.name
+            "current_guest": self.guest_name,
+            "current_stay": self.name
         })
         if self.billing_instruction and self.guest_folio:
             frappe.db.set_value("Guest Folio", self.guest_folio, {
@@ -124,9 +127,11 @@ class GuestStay(Document):
     def on_cancel(self):
         self.db_set("stay_status", "Cancelled")
         if self.guest_folio:
-            frappe.db.set_value("Guest Folio", self.guest_folio, "folio_status", "Closed")
+            frappe.db.set_value("Guest Folio", self.guest_folio,
+                "folio_status", "Closed")
         if self.room:
-            frappe.db.set_value("Room", self.room, {"current_guest": "", "current_stay": ""})
+            frappe.db.set_value("Room", self.room,
+                {"current_guest": "", "current_stay": ""})
 
     def _create_folio(self):
         if frappe.db.exists("Guest Folio", {"guest_stay": self.name}):
@@ -171,8 +176,10 @@ def _push_reservation_deposit_to_folio(reservation_name, folio_name, stay_name):
             line.payment_entry    = dep.payment_entry
             line.posted_by        = "Administrator"
             folio.save(ignore_permissions=True)
-            frappe.db.set_value("Hotel Deposit", dep.name, "guest_stay", stay_name, update_modified=False)
-            frappe.db.set_value("Guest Stay", stay_name, "advance_deposit", dep.name, update_modified=False)
+            frappe.db.set_value("Hotel Deposit", dep.name, "guest_stay",
+                stay_name, update_modified=False)
+            frappe.db.set_value("Guest Stay", stay_name, "advance_deposit",
+                dep.name, update_modified=False)
 
 
 def validate(doc, method=None): doc.validate()
@@ -180,13 +187,19 @@ def on_submit(doc, method=None): doc.on_submit()
 def on_cancel(doc, method=None): doc.on_cancel()
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+#  CHECK-IN
+# ═══════════════════════════════════════════════════════════════════════════════
+
 @frappe.whitelist()
 def do_checkin(stay_name):
     stay = frappe.get_doc("Guest Stay", stay_name)
     _validate_status_transition(stay.stay_status, "Checked In")
+
     if not stay.room:
         frappe.throw(_("Room is mandatory for check-in."))
 
+    # Overlap check
     conflict = frappe.db.sql("""
         SELECT name, room FROM `tabGuest Stay`
         WHERE customer=%s AND stay_status='Checked In'
@@ -195,7 +208,8 @@ def do_checkin(stay_name):
     """, (stay.customer, stay_name, stay.departure_date, stay.arrival_date), as_dict=True)
     if conflict:
         frappe.throw(_(
-            "Customer {0} already checked in at Room {1}.").format(stay.guest_name, conflict[0].room))
+            "Customer {0} is already checked in at Room {1} for an overlapping period."
+        ).format(stay.guest_name, conflict[0].room))
 
     # Deposit check
     prop = frappe.db.get_value("Property", stay.property,
@@ -208,41 +222,42 @@ def do_checkin(stay_name):
 
     if deposit_required and not stay.deposit_waived:
         has_deposit = frappe.db.exists("Hotel Deposit",
-            {"guest_stay": stay_name, "deposit_status": ["in", ["Received", "Applied"]], "docstatus": 1})
+            {"guest_stay": stay_name, "deposit_status": ["in", ["Received", "Applied"]],
+             "docstatus": 1})
         if not has_deposit and stay.reservation:
             has_deposit = frappe.db.exists("Hotel Deposit",
-                {"reservation": stay.reservation, "deposit_status": ["in", ["Received", "Applied"]], "docstatus": 1})
+                {"reservation": stay.reservation,
+                 "deposit_status": ["in", ["Received", "Applied"]], "docstatus": 1})
         if not has_deposit and stay.guest_folio:
-            fp = frappe.db.sql("SELECT COUNT(*) FROM `tabFolio Payment Line` WHERE parent=%s AND amount>0",
+            fp = frappe.db.sql(
+                "SELECT COUNT(*) FROM `tabFolio Payment Line` WHERE parent=%s AND amount>0",
                 stay.guest_folio)[0][0]
             has_deposit = bool(fp)
         if not has_deposit:
             role = (prop.waive_deposit_role if prop else None) or "Hotel Manager"
-            frappe.throw(_("Advance deposit required. Collect or waive ({0}).").format(role))
+            frappe.throw(_(
+                "Advance deposit required before check-in. "
+                "Collect deposit on the Folio or Reservation, or waive ({0} role)."
+            ).format(role))
 
     frappe.db.set_value("Guest Stay", stay_name, {
-        "stay_status": "Checked In", "actual_checkin": now_datetime(),
+        "stay_status": "Checked In",
+        "actual_checkin": now_datetime(),
         "checked_in_by": frappe.session.user
     }, update_modified=False)
 
     frappe.db.set_value("Room", stay.room, {
-        "room_status": "Occupied", "current_guest": stay.guest_name, "current_stay": stay.name
+        "room_status": "Occupied",
+        "current_guest": stay.guest_name,
+        "current_stay": stay.name
     })
     if stay.reservation:
         frappe.db.set_value("Reservation", stay.reservation,
             "reservation_status", "Checked In", update_modified=False)
 
-    # Post first night room charge + invoice upon checkin
-    try:
-        from dagaarsoft_hospitality.dagaarsoft_hospitality.utils.billing import post_room_charge_with_invoice
-        post_room_charge_with_invoice(
-            stay.guest_folio, stay.name, today(),
-            flt(stay.nightly_rate), stay.room)
-    except Exception:
-        frappe.log_error(frappe.get_traceback(), "Checkin First Charge Error")
-
     _log_audit(stay_name, "Checked In", "Room: {0}".format(stay.room))
-    frappe.msgprint(_("Checked in: {0} to Room {1}.").format(stay.guest_name, stay.room), alert=True)
+    frappe.msgprint(
+        _("Checked in: {0} to Room {1}.").format(stay.guest_name, stay.room), alert=True)
     return stay_name
 
 
@@ -252,48 +267,78 @@ def waive_deposit(stay_name, reason):
     required_role = (frappe.db.get_value("Property", stay.property, "waive_deposit_role")
         if stay.property else None) or "Hotel Manager"
     if required_role not in frappe.get_roles():
-        frappe.throw(_("Only '{0}' can waive deposit.").format(required_role))
+        frappe.throw(_("Only '{0}' role can waive deposit.").format(required_role))
     frappe.db.set_value("Guest Stay", stay_name, {
-        "deposit_waived": 1, "deposit_waived_by": frappe.session.user,
+        "deposit_waived": 1,
+        "deposit_waived_by": frappe.session.user,
         "deposit_waiver_reason": reason
     }, update_modified=False)
     _log_audit(stay_name, "Deposit Waived", "Reason: {0}".format(reason))
-    frappe.msgprint(_("Deposit waived."), alert=True)
+    frappe.msgprint(_("Deposit requirement waived."), alert=True)
     return {"ok": True}
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+#  EXTEND STAY
+# ═══════════════════════════════════════════════════════════════════════════════
+
 @frappe.whitelist()
 def extend_stay(stay_name, new_departure_date, reason=""):
+    """Extend a checked-in guest's departure date. Updates stay, folio, num_nights."""
     stay = frappe.get_doc("Guest Stay", stay_name)
     if stay.stay_status != "Checked In":
-        frappe.throw(_("Can only extend a Checked In stay."))
+        frappe.throw(_("Can only extend a Checked In stay (current: {0}).").format(stay.stay_status))
+
     new_dep = getdate(new_departure_date)
     old_dep = getdate(stay.departure_date)
     if new_dep <= old_dep:
-        frappe.throw(_("New departure must be after current ({0}).").format(old_dep))
-    new_nights = date_diff(new_dep, getdate(stay.arrival_date))
-    added = new_nights - cint(stay.num_nights)
+        frappe.throw(_("New departure ({0}) must be after current departure ({1}).").format(
+            new_dep, old_dep))
 
+    old_nights = cint(stay.num_nights)
+    new_nights = date_diff(new_dep, getdate(stay.arrival_date))
+    added_nights = new_nights - old_nights
+
+    # Update stay
     frappe.db.set_value("Guest Stay", stay_name, {
-        "departure_date": str(new_dep), "num_nights": new_nights
+        "departure_date": str(new_dep),
+        "num_nights": new_nights,
     }, update_modified=False)
+
+    # Update folio
     if stay.guest_folio:
-        frappe.db.set_value("Guest Folio", stay.guest_folio,
-            {"num_nights": new_nights}, update_modified=False)
+        frappe.db.set_value("Guest Folio", stay.guest_folio, {
+            "num_nights": new_nights,
+        }, update_modified=False)
 
     _log_audit(stay_name, "Stay Extended",
-        "{0} → {1} (+{2}). Reason: {3}".format(old_dep, new_dep, added, reason or "N/A"))
-    frappe.msgprint(_("Extended +{0} nights → {1}.").format(added, new_dep), alert=True)
-    return {"old_departure": str(old_dep), "new_departure": str(new_dep),
-            "old_nights": cint(stay.num_nights), "new_nights": new_nights, "added_nights": added}
+        "Departure: {0} → {1} (+{2} nights). Reason: {3}".format(
+            old_dep, new_dep, added_nights, reason or "N/A"))
 
+    frappe.msgprint(
+        _("Stay extended: {0} → {1} ({2} → {3} nights, +{4}).").format(
+            old_dep, new_dep, old_nights, new_nights, added_nights), alert=True)
+
+    return {
+        "old_departure": str(old_dep),
+        "new_departure": str(new_dep),
+        "old_nights": old_nights,
+        "new_nights": new_nights,
+        "added_nights": added_nights,
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  CHECKOUT — strict validation: charges = invoices = payments
+# ═══════════════════════════════════════════════════════════════════════════════
 
 @frappe.whitelist()
 def do_checkout(stay_name, force_checkout=0, adjustment_note=None):
     stay = frappe.get_doc("Guest Stay", stay_name)
     _validate_status_transition(stay.stay_status, "Checked Out")
+
     if not stay.guest_folio:
-        frappe.throw(_("No Folio found."))
+        frappe.throw(_("No Folio found for this stay."))
 
     force = bool(int(force_checkout))
     from dagaarsoft_hospitality.dagaarsoft_hospitality.utils.billing import validate_checkout_billing
@@ -302,17 +347,23 @@ def do_checkout(stay_name, force_checkout=0, adjustment_note=None):
     if not check["can_checkout"] and not force:
         frappe.throw(_("Cannot check out:\n{0}").format("\n".join(check["issues"])))
 
+    # If forced early checkout by manager, void future room charges
     if check.get("is_early_checkout") and force:
         _void_future_room_charges(stay.guest_folio, stay_name)
         if adjustment_note:
             _post_adjustment_note(stay.guest_folio, stay_name, adjustment_note)
-        _log_audit(stay_name, "Forced Early Checkout", adjustment_note or "")
+        _log_audit(stay_name, "Forced Early Checkout",
+            "By: {0}. Note: {1}".format(frappe.session.user, adjustment_note or "N/A"))
 
     frappe.db.set_value("Guest Stay", stay_name, {
-        "stay_status": "Checked Out", "actual_checkout": now_datetime(),
+        "stay_status": "Checked Out",
+        "actual_checkout": now_datetime(),
         "checked_out_by": frappe.session.user
     }, update_modified=False)
 
+    # Folio stays readable — do NOT set folio_status to "Closed" here.
+    # The folio remains "Open" so the account statement is still accessible.
+    # Only close the folio if balance is zero.
     folio = frappe.get_doc("Guest Folio", stay.guest_folio)
     if flt(folio.balance_due) <= 0.005:
         frappe.db.set_value("Guest Folio", stay.guest_folio,
@@ -326,9 +377,11 @@ def do_checkout(stay_name, force_checkout=0, adjustment_note=None):
         frappe.db.set_value("Reservation", stay.reservation,
             "reservation_status", "Checked Out", update_modified=False)
 
+    # Auto housekeeping task
     try:
         if not frappe.db.exists("Housekeeping Task",
-                {"room": stay.room, "task_date": today(), "task_type": "Cleaning", "docstatus": ["!=", 2]}):
+                {"room": stay.room, "task_date": today(),
+                 "task_type": "Cleaning", "docstatus": ["!=", 2]}):
             t = frappe.new_doc("Housekeeping Task")
             t.property = stay.property; t.room = stay.room
             t.task_type = "Cleaning"; t.task_date = today()
@@ -339,7 +392,8 @@ def do_checkout(stay_name, force_checkout=0, adjustment_note=None):
         frappe.log_error(frappe.get_traceback(), "Checkout HK Error")
 
     _log_audit(stay_name, "Checked Out", "Room: {0}".format(stay.room))
-    frappe.msgprint(_("Checked out: {0} from Room {1}.").format(stay.guest_name, stay.room), alert=True)
+    frappe.msgprint(
+        _("Checked out: {0} from Room {1}.").format(stay.guest_name, stay.room), alert=True)
     return stay_name
 
 
@@ -347,10 +401,14 @@ def _void_future_room_charges(folio_name, stay_name):
     folio = frappe.get_doc("Guest Folio", folio_name)
     changed = False
     for line in folio.folio_charges:
-        if (line.charge_category == "Room Rate" and not line.is_void and not line.is_billed
-                and line.reference_name == stay_name and line.posting_date
-                and getdate(str(line.posting_date)) >= getdate(today())):
-            line.is_void = 1; line.void_reason = "Early checkout"; changed = True
+        if (line.charge_category == "Room Rate" and
+                not line.is_void and not line.is_billed and
+                line.reference_name == stay_name and
+                line.posting_date and
+                getdate(str(line.posting_date)) >= getdate(today())):
+            line.is_void = 1
+            line.void_reason = "Early checkout - future charge voided"
+            changed = True
     if changed:
         folio.save(ignore_permissions=True)
 
@@ -358,13 +416,110 @@ def _void_future_room_charges(folio_name, stay_name):
 def _post_adjustment_note(folio_name, stay_name, note):
     from dagaarsoft_hospitality.dagaarsoft_hospitality.utils.folio_utils import post_charge_to_folio
     try:
-        post_charge_to_folio(folio_name=folio_name,
-            description="Early Checkout: {0}".format(note),
+        post_charge_to_folio(
+            folio_name=folio_name,
+            description="Early Checkout Adjustment: {0}".format(note),
             amount=0, charge_category="Adjustment",
             reference_doctype="Guest Stay", reference_name=stay_name)
     except Exception:
         frappe.log_error(frappe.get_traceback(), "Adjustment Note Error")
 
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  CHARGE TO CREDIT — Hotel Manager allows guest to leave with unpaid bill
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@frappe.whitelist()
+def charge_to_credit(stay_name, reason=""):
+    """
+    Hotel Manager action: allow guest to checkout with unpaid balance.
+    Creates a Journal Entry that:
+      - Debits Accounts Receivable (customer owes us)
+      - Credits the Cash/Revenue account (daily cash stays accurate)
+    Then proceeds with checkout.
+    """
+    if "Hotel Manager" not in frappe.get_roles():
+        frappe.throw(_("Only Hotel Manager can authorize charge-to-credit."))
+
+    stay = frappe.get_doc("Guest Stay", stay_name)
+    if stay.stay_status != "Checked In":
+        frappe.throw(_("Guest must be Checked In."))
+    if not stay.guest_folio:
+        frappe.throw(_("No Folio found."))
+
+    folio = frappe.get_doc("Guest Folio", stay.guest_folio)
+    balance = flt(folio.balance_due)
+    if balance <= 0.005:
+        frappe.throw(_("No outstanding balance to charge to credit."))
+
+    # Ensure all charges are invoiced first
+    unbilled = [c for c in (folio.get("folio_charges") or [])
+                if not c.is_void and not c.is_billed]
+    if unbilled:
+        frappe.throw(_("{0} charge(s) not yet invoiced. Generate invoice first, then charge to credit.").format(
+            len(unbilled)))
+
+    # Get accounts
+    prop = None
+    if folio.property:
+        prop = frappe.db.get_value("Property", folio.property,
+            ["company", "debtors_account"], as_dict=True)
+    company = (prop.company if prop else None) or frappe.defaults.get_defaults().get("company")
+    receivable_acct = (prop.debtors_account if prop else None) or \
+        frappe.db.get_value("Account",
+            {"company": company, "account_type": "Receivable", "is_group": 0}, "name")
+    # Revenue/income account for the credit side
+    income_acct = frappe.db.get_value("Account",
+        {"company": company, "account_type": "Income Account", "is_group": 0, "disabled": 0}, "name")
+
+    if not receivable_acct or not income_acct:
+        frappe.throw(_("Cannot find Receivable or Income accounts for company {0}.").format(company))
+
+    customer = folio.billing_customer or folio.customer
+    customer_name = frappe.db.get_value("Customer", customer, "customer_name") or customer
+
+    # Create Journal Entry
+    je = frappe.new_doc("Journal Entry")
+    je.voucher_type = "Journal Entry"
+    je.company = company
+    je.posting_date = today()
+    je.user_remark = "Charge to Credit: {0} | Stay: {1} | Folio: {2} | Reason: {3}".format(
+        customer_name, stay_name, folio.name, reason or "Manager authorized")
+
+    # Debit: Receivable (customer owes us)
+    je.append("accounts", {
+        "account": receivable_acct,
+        "party_type": "Customer",
+        "party": customer,
+        "debit_in_account_currency": flt(balance),
+        "credit_in_account_currency": 0,
+    })
+    # Credit: Income (keeps daily cash accurate)
+    je.append("accounts", {
+        "account": income_acct,
+        "debit_in_account_currency": 0,
+        "credit_in_account_currency": flt(balance),
+    })
+
+    je.insert(ignore_permissions=True)
+    je.submit()
+
+    _log_audit(stay_name, "Charge to Credit",
+        "Amount: {0} | Customer: {1} | JE: {2} | Reason: {3}".format(
+            balance, customer_name, je.name, reason or "N/A"))
+
+    frappe.msgprint(
+        _("Journal Entry {0} created. {1} owes {2}. Guest can now checkout.").format(
+            je.name, customer_name,
+            frappe.format_value(balance, {"fieldtype": "Currency"})),
+        alert=True)
+
+    return {"journal_entry": je.name, "amount": balance, "customer": customer}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  TRANSFER BILLING + CHANGE CUSTOMER (preserved from original)
+# ═══════════════════════════════════════════════════════════════════════════════
 
 @frappe.whitelist()
 def transfer_billing(stay_name, billing_customer, transfer_mode="from_now"):
@@ -373,15 +528,24 @@ def transfer_billing(stay_name, billing_customer, transfer_mode="from_now"):
         "billing_customer": billing_customer,
         "billing_instruction": "Charge to Company" if billing_customer else "Charge to Room"
     }, update_modified=False)
+
     if stay.guest_folio:
-        frappe.db.set_value("Guest Folio", stay.guest_folio,
-            {"billing_customer": billing_customer}, update_modified=False)
+        frappe.db.set_value("Guest Folio", stay.guest_folio, {
+            "billing_customer": billing_customer
+        }, update_modified=False)
+
     if transfer_mode == "all" and stay.guest_folio:
         for si in frappe.get_all("Sales Invoice",
                 {"hotel_folio": stay.guest_folio, "docstatus": 0}, ["name"]):
             frappe.db.set_value("Sales Invoice", si.name, "customer", billing_customer)
-    _log_audit(stay_name, "Billing Transferred", "To: {0} ({1})".format(billing_customer, transfer_mode))
-    frappe.msgprint("Billing transferred.", alert=True)
+
+    _log_audit(stay_name, "Billing Transferred",
+        "To: {0} | Mode: {1}".format(billing_customer, transfer_mode))
+    frappe.msgprint(
+        "Billing transferred to {0} ({1}).".format(
+            frappe.db.get_value("Customer", billing_customer, "customer_name") or billing_customer,
+            "all pending charges" if transfer_mode == "all" else "future charges only"),
+        alert=True)
     return {"ok": True}
 
 
@@ -391,21 +555,53 @@ def update_customer_cascade(stay_name, new_customer):
     old_customer = stay.customer
     if old_customer == new_customer:
         return {"changed": 0}
+
     new_name = frappe.db.get_value("Customer", new_customer, "customer_name") or new_customer
     updated = []
-    frappe.db.set_value("Guest Stay", stay_name,
-        {"customer": new_customer, "guest_name": new_name}, update_modified=False)
+
+    frappe.db.set_value("Guest Stay", stay_name, {
+        "customer": new_customer, "guest_name": new_name
+    }, update_modified=False)
     updated.append("Guest Stay")
+
     if stay.guest_folio:
         folio = frappe.get_doc("Guest Folio", stay.guest_folio)
-        upd = {}
-        if folio.customer == old_customer: upd["customer"] = new_customer
+        update_data = {}
+        if folio.customer == old_customer:
+            update_data["customer"] = new_customer
         if not folio.billing_customer or folio.billing_customer == old_customer:
-            upd["billing_customer"] = new_customer
-        if upd:
-            frappe.db.set_value("Guest Folio", stay.guest_folio, upd, update_modified=False)
+            update_data["billing_customer"] = new_customer
+        if update_data:
+            frappe.db.set_value("Guest Folio", stay.guest_folio,
+                update_data, update_modified=False)
             updated.append("Guest Folio")
+
+    for dep in frappe.get_all("Hotel Deposit",
+            {"guest_stay": stay_name}, ["name", "customer"]):
+        if dep.customer == old_customer:
+            frappe.db.set_value("Hotel Deposit", dep.name,
+                "customer", new_customer, update_modified=False)
+            updated.append("Hotel Deposit: " + dep.name)
+
+    if stay.guest_folio:
+        for si in frappe.get_all("Sales Invoice",
+                {"hotel_folio": stay.guest_folio, "docstatus": 0,
+                 "customer": old_customer}, ["name"]):
+            frappe.db.set_value("Sales Invoice", si.name,
+                "customer", new_customer, update_modified=False)
+            updated.append("Draft SI: " + si.name)
+
+    for pe in frappe.get_all("Payment Entry",
+            {"hotel_stay": stay_name, "docstatus": 0,
+             "party": old_customer}, ["name"]):
+        frappe.db.set_value("Payment Entry", pe.name,
+            "party", new_customer, update_modified=False)
+        updated.append("Draft PE: " + pe.name)
+
     frappe.db.commit()
-    _log_audit(stay_name, "Customer Changed", "{0} → {1}".format(old_customer, new_customer))
-    frappe.msgprint("Customer updated to {0}.".format(new_name), alert=True)
+    _log_audit(stay_name, "Customer Changed",
+        "From: {0} → To: {1}".format(old_customer, new_customer))
+    frappe.msgprint(
+        "Customer updated to {0}. Updated: {1}".format(
+            new_name, ", ".join(updated)), alert=True)
     return {"changed": len(updated), "updated": updated}

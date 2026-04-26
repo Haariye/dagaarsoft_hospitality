@@ -198,7 +198,6 @@
    "reqd": 1
   },
   {
-   "allow_on_submit": 1,
    "fieldname": "departure_date",
    "fieldtype": "Date",
    "in_list_view": 1,
@@ -206,7 +205,6 @@
    "reqd": 1
   },
   {
-   "allow_on_submit": 1,
    "fieldname": "num_nights",
    "fieldtype": "Int",
    "label": "Nights"
@@ -394,8 +392,8 @@
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-28 17:45:20.205985",
- "modified_by": "sysadmin@naleye.dagaarsoft.app",
+ "modified": "2026-03-29 22:02:28.211857",
+ "modified_by": "Administrator",
  "module": "DagaarSoft Hospitality",
  "name": "Guest Stay",
  "naming_rule": "By \"Naming Series\" field",

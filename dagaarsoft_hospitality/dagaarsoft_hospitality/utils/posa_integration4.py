@@ -35,14 +35,14 @@ def get_all_restaurant_tables():
 
 def on_sales_invoice_submit(doc, method=None):
     """
-    When a POSA Sales Invoice with hotel_room is submitted:
-    - Create ONE summary charge line on the Guest Folio
-    - Link the Sales Invoice directly (reference_name = SI name)
-    - Mark as is_billed=1 (already invoiced by POS)
-    - Category = "Restaurant"
+    Post POSA/F&B charges to Guest Folio when a Sales Invoice with hotel_room
+    is submitted. Each invoice item becomes a separate Folio Charge Line with:
+      - charge_category = "Restaurant"
+      - description = item name from the SI
+      - is_billed = 1  (already invoiced by POSA)
+      - reference = Sales Invoice
 
-    This keeps the folio clean: one row per restaurant bill, not per item.
-    The original SI has the item detail — drill down from the charge line reference.
+    Skip if the SI was generated FROM the folio (to avoid double-posting).
     """
     if doc.docstatus != 1:
         return
@@ -50,7 +50,7 @@ def on_sales_invoice_submit(doc, method=None):
     room       = getattr(doc, "hotel_room", None)
     folio_name = getattr(doc, "hotel_folio", None)
 
-    # Skip if this SI was generated FROM the folio (not a POS sale)
+    # Skip if this SI was generated from the folio (primary or supplementary)
     if folio_name and frappe.db.exists("Guest Folio", folio_name):
         billing_instr = frappe.db.get_value("Sales Invoice", doc.name,
             "hotel_billing_instruction")
@@ -60,10 +60,11 @@ def on_sales_invoice_submit(doc, method=None):
         if folio_primary_si == doc.name:
             return
 
+    # If no hotel_room, not a hotel sale — skip
     if not room:
         return
 
-    # Resolve folio from room if not set
+    # Try to resolve folio from room if not already set
     if not folio_name:
         try:
             from dagaarsoft_hospitality.dagaarsoft_hospitality.utils.room_utils import get_billing_info_for_room
@@ -72,13 +73,12 @@ def on_sales_invoice_submit(doc, method=None):
             doc.db_set("hotel_folio", info.get("guest_folio"), update_modified=False)
             folio_name = info.get("guest_folio")
         except Exception:
-            frappe.log_error(frappe.get_traceback(), "POSA Room Resolve Error")
             return
 
     if not folio_name or not frappe.db.exists("Guest Folio", folio_name):
         return
 
-    # Dedup — never post same SI twice
+    # Absolute dedup — never post same SI twice
     if frappe.db.exists("Folio Charge Line", {
             "parent": folio_name,
             "reference_doctype": "Sales Invoice",
@@ -86,51 +86,90 @@ def on_sales_invoice_submit(doc, method=None):
             "is_void": 0}):
         return
 
-    # Determine category
+    # Determine charge category
     charge_cat = "Restaurant"
-    table = getattr(doc, "restaurant_table", "") or ""
+    if getattr(doc, "restaurant_table", None):
+        charge_cat = "Restaurant"
+    else:
+        try:
+            cfg = frappe.db.get_single_value("Hospitality Settings", "default_posa_charge_category")
+            if cfg:
+                charge_cat = cfg
+        except Exception:
+            pass
 
+    table = getattr(doc, "restaurant_table", "") or ""
+    guest_stay = getattr(doc, "hotel_stay", "") or ""
+
+    # Post each invoice item as a separate Folio Charge Line
     try:
         folio = frappe.get_doc("Guest Folio", folio_name)
-        if folio.folio_status != "Open" or folio.docstatus != 1:
+
+        if folio.folio_status != "Open":
+            frappe.log_error(
+                "Folio {0} is not Open — cannot post POSA charges".format(folio_name),
+                "POSA Folio Post Skipped")
             return
 
-        # Build summary description
-        item_count = len(doc.get("items") or [])
-        desc = "Restaurant - {0}".format(doc.name)
-        if table:
-            desc += " | Table: {0}".format(table)
-        if item_count > 0:
-            # Show first 2 items as preview
-            items = doc.get("items") or []
-            preview = ", ".join([
-                (i.item_name or i.item_code) for i in items[:2]
-            ])
-            if item_count > 2:
-                preview += " +{0} more".format(item_count - 2)
-            desc += " | {0}".format(preview)
+        if folio.docstatus != 1:
+            frappe.log_error(
+                "Folio {0} is not submitted — cannot post POSA charges".format(folio_name),
+                "POSA Folio Post Skipped")
+            return
 
-        # ONE charge line for the whole SI
-        line = folio.append("folio_charges", {})
-        line.posting_date      = doc.posting_date or today()
-        line.charge_category   = charge_cat
-        line.description       = desc
-        line.qty               = 1
-        line.rate              = flt(doc.grand_total)
-        line.amount            = flt(doc.grand_total)
-        line.reference_doctype = "Sales Invoice"
-        line.reference_name    = doc.name
-        line.guest_stay        = getattr(doc, "hotel_stay", "") or folio.guest_stay
-        line.posted_by         = frappe.session.user
-        line.is_billed         = 1  # Already invoiced by POS
+        items = doc.get("items") or []
+        if items:
+            # Post one charge line per invoice item
+            for item in items:
+                item_desc = "{0} x{1}".format(
+                    item.item_name or item.item_code,
+                    abs(flt(item.qty)) if flt(item.qty) != 1 else "")
+                if flt(item.qty) == 1:
+                    item_desc = item.item_name or item.item_code
+
+                # Append table info
+                if table:
+                    item_desc = "{0} | Table: {1}".format(item_desc, table)
+
+                line = folio.append("folio_charges", {})
+                line.posting_date      = doc.posting_date or today()
+                line.charge_category   = charge_cat
+                line.description       = item_desc
+                line.qty               = abs(flt(item.qty)) or 1
+                line.rate              = flt(item.rate)
+                line.amount            = flt(item.amount)
+                line.reference_doctype = "Sales Invoice"
+                line.reference_name    = doc.name
+                line.guest_stay        = guest_stay or folio.guest_stay
+                line.posted_by         = frappe.session.user
+                line.is_billed         = 1
+        else:
+            # Fallback: single line for the whole invoice
+            desc = "{0} - {1}{2}".format(
+                charge_cat, doc.name,
+                " | Table: {0}".format(table) if table else "")
+
+            line = folio.append("folio_charges", {})
+            line.posting_date      = doc.posting_date or today()
+            line.charge_category   = charge_cat
+            line.description       = desc
+            line.qty               = 1
+            line.rate              = flt(doc.grand_total)
+            line.amount            = flt(doc.grand_total)
+            line.reference_doctype = "Sales Invoice"
+            line.reference_name    = doc.name
+            line.guest_stay        = guest_stay or folio.guest_stay
+            line.posted_by         = frappe.session.user
+            line.is_billed         = 1
 
         folio.save(ignore_permissions=True)
 
+        # Update folio invoice status
         frappe.db.set_value("Guest Folio", folio_name,
-            "sales_invoice_status", "Has POS Invoices", update_modified=False)
+            "sales_invoice_status", doc.status, update_modified=False)
 
     except Exception:
-        frappe.log_error(frappe.get_traceback(), "POSA Folio Post Error: {0}".format(doc.name))
+        frappe.log_error(frappe.get_traceback(), "POSA Folio Post Error")
 
 
 def on_sales_invoice_cancel(doc, method=None):
@@ -158,6 +197,7 @@ def on_sales_invoice_cancel(doc, method=None):
             changed = True
     if changed:
         folio.save(ignore_permissions=True)
+    # Sync status
     folio_si = frappe.db.get_value("Guest Folio", folio_name, "sales_invoice")
     if folio_si == doc.name:
         frappe.db.set_value("Guest Folio", folio_name, {
@@ -170,6 +210,7 @@ def on_payment_entry_submit(doc, method=None):
     folio_name = getattr(doc, "hotel_folio", None)
     if not folio_name or not frappe.db.exists("Guest Folio", folio_name):
         return
+    # Dedup
     if frappe.db.exists("Folio Payment Line", {"parent": folio_name, "payment_entry": doc.name}):
         return
     folio = frappe.get_doc("Guest Folio", folio_name)
@@ -207,6 +248,7 @@ def on_payment_entry_cancel(doc, method=None):
 
 
 def _sync_folio_invoice_status(folio_name):
+    """Immediately sync invoice status on any payment change."""
     si = frappe.db.get_value("Guest Folio", folio_name, "sales_invoice")
     if not si:
         return

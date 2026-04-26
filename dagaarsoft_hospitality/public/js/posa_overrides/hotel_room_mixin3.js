@@ -430,8 +430,8 @@
 	}
 
 	if (typeof frappe !== "undefined" && frappe.after_ajax) {
-		frappe.after_ajax(function () { setTimeout(bootstrap, 1500); });
+		frappe.after_ajax(function () { setTimeout(bootstrap, 500); });
 	} else {
-		document.addEventListener("DOMContentLoaded", function () { setTimeout(bootstrap, 3000); });
+		document.addEventListener("DOMContentLoaded", function () { setTimeout(bootstrap, 1500); });
 	}
 })();
