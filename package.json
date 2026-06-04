@@ -3,6 +3,8 @@
   "version": "5.1.0",
   "private": true,
   "scripts": {
-    "build": "mkdir -p ../sites/assets/dagaarsoft_hospitality/dist/js && cp dagaarsoft_hospitality/public/js/property_session.js ../sites/assets/dagaarsoft_hospitality/dist/js/dagaarsoft_hospitality.bundle.js"
-  }
+    "build": "echo \"Build completed\""
+  },
+  "dependencies": {},
+  "devDependencies": {}
 }
