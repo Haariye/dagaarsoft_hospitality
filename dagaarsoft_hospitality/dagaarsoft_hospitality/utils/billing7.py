@@ -106,7 +106,7 @@ def post_room_charge_with_invoice(folio_name, stay_name, charge_date, rate, room
     si.customer = invoice_to
     si.company = company
     si.posting_date = str(charge_date)
-    si.due_date = str(max(getdate(charge_date), getdate(today())))
+    si.due_date = str(charge_date)
     si.debit_to = debtors_acct
     si.hotel_folio = folio_name
     si.hotel_stay = stay_name
@@ -172,10 +172,10 @@ def post_all_room_charges(guest_stay_name):
     if not rate:
         frappe.throw(_("No nightly rate set."))
 
-    # Charge from arrival to today. If overdue (past departure but still Checked In),
-    # charge all the way to today — they used the room, they pay.
+    # Charge from arrival to today (inclusive), never future
     today_date = getdate(today())
-    end_date = today_date
+    departure = getdate(stay.departure_date) if stay.departure_date else today_date
+    end_date = min(today_date, departure)
 
     posted = 0; skipped = 0
     cur = getdate(stay.arrival_date)
@@ -216,8 +216,8 @@ def calculate_room_charges_for_stay(guest_stay_name):
 
     charges = []
     today_date = getdate(today())
-    # If still Checked In past departure, show charges up to today
-    end_date = today_date
+    departure = getdate(stay.departure_date)
+    end_date = min(today_date, departure)
     cur = getdate(stay.arrival_date)
     while cur < end_date:
         ds = str(cur)
@@ -241,22 +241,18 @@ def calculate_room_charges_for_stay(guest_stay_name):
 
 def auto_daily_room_charge():
     """
-    Scheduler: runs at 15:00 daily.
-    1. For each checked-in stay within dates: post today's charge + invoice
-    2. For overdue stays (departure < today, still Checked In): keep charging + alert manager
-    Idempotent — never double-posts.
+    Scheduler: runs at 15:00 daily. For each checked-in stay, posts today's
+    room charge + creates a submitted Sales Invoice. Idempotent.
     """
     charge_date = today()
-    posted = 0
-
-    # Normal stays: arrival <= today < departure
-    normal_stays = frappe.get_all("Guest Stay",
+    stays = frappe.get_all("Guest Stay",
         {"stay_status": "Checked In", "docstatus": 1,
          "arrival_date": ["<=", charge_date],
          "departure_date": [">", charge_date]},
-        ["name", "guest_folio", "room", "room_type", "nightly_rate", "guest_name"])
+        ["name", "guest_folio", "room", "room_type", "nightly_rate"])
 
-    for s in normal_stays:
+    posted = 0
+    for s in stays:
         if not s.guest_folio:
             continue
         rate = flt(s.nightly_rate) or flt(
@@ -272,83 +268,9 @@ def auto_daily_room_charge():
             frappe.log_error(frappe.get_traceback(),
                 "Auto Room Charge Error: {0}".format(s.name))
 
-    # Overdue stays: departure <= today AND still Checked In — charge + alert
-    overdue_stays = frappe.get_all("Guest Stay",
-        {"stay_status": "Checked In", "docstatus": 1,
-         "departure_date": ["<=", charge_date]},
-        ["name", "guest_folio", "room", "room_type", "nightly_rate",
-         "guest_name", "departure_date", "property"])
-
-    overdue_alerts = []
-    for s in overdue_stays:
-        if not s.guest_folio:
-            continue
-        rate = flt(s.nightly_rate) or flt(
-            frappe.db.get_value("Room Type", s.room_type, "bar_rate") or 0)
-        if not rate:
-            continue
-
-        # Post overdue charge (they used the room, they pay)
-        try:
-            si = post_room_charge_with_invoice(
-                s.guest_folio, s.name, charge_date, rate, s.room)
-            if si:
-                posted += 1
-        except Exception:
-            frappe.log_error(frappe.get_traceback(),
-                "Overdue Room Charge Error: {0}".format(s.name))
-
-        days_overdue = date_diff(charge_date, str(s.departure_date))
-        overdue_alerts.append({
-            "stay": s.name, "room": s.room,
-            "guest": s.guest_name, "days_overdue": days_overdue,
-            "departure": str(s.departure_date), "property": s.property,
-        })
-
-    # Send alert to Hotel Managers for overdue stays
-    if overdue_alerts:
-        _alert_overdue_stays(overdue_alerts)
-
     if posted:
         frappe.logger("dagaarsoft_hospitality").info(
-            "Daily 15:00 room charges: {0} posted ({1} overdue)".format(
-                posted, len(overdue_alerts)))
-
-
-def _alert_overdue_stays(overdue_list):
-    """Send notification to Hotel Manager role about overdue stays."""
-    rows = ""
-    for o in overdue_list:
-        rows += "<tr><td>{room}</td><td>{guest}</td><td>{departure}</td><td><b>{days_overdue} day(s)</b></td></tr>".format(**o)
-
-    message = (
-        "<h4>Overdue Stays — Immediate Action Required</h4>"
-        "<p>The following guests are past their departure date but still checked in. "
-        "Room charges are being posted daily until checkout.</p>"
-        "<table border='1' cellpadding='6' cellspacing='0' style='border-collapse:collapse'>"
-        "<tr style='background:#f0f0f0'><th>Room</th><th>Guest</th><th>Departure</th><th>Overdue</th></tr>"
-        "{0}</table>"
-        "<p><b>Action needed:</b> Check out these guests or extend their stay.</p>"
-    ).format(rows)
-
-    # Get Hotel Manager emails
-    managers = frappe.get_all("Has Role",
-        {"role": "Hotel Manager", "parenttype": "User"},
-        ["parent"])
-    emails = []
-    for m in managers:
-        email = frappe.db.get_value("User", m.parent, "email")
-        if email and frappe.db.get_value("User", m.parent, "enabled"):
-            emails.append(email)
-
-    if emails:
-        try:
-            frappe.sendmail(
-                recipients=emails,
-                subject="⚠ Overdue Stays Alert — {0} guest(s)".format(len(overdue_list)),
-                message=message)
-        except Exception:
-            frappe.log_error(frappe.get_traceback(), "Overdue Stay Alert Email Error")
+            "Daily 15:00 room charges: {0} invoices created".format(posted))
 
 
 # ─────────────────────────────────────────────────────────────────────────────

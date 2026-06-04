@@ -113,13 +113,30 @@ def update_housekeeping_overdue():
 
 
 def auto_checkout_departed_guests():
-    """
-    DISABLED: No auto-checkout for overdue stays.
-    Overdue guests keep getting charged daily at 15:00 until Hotel Manager
-    manually checks them out or extends their stay.
-    Manager receives email alerts from the room charge scheduler.
-    """
-    pass
+    """Auto checkout only if fully settled (no outstanding)."""
+    for s in frappe.get_all("Guest Stay",
+        {"stay_status": "Checked In", "departure_date": ["<", today()]},
+        ["name", "guest_folio", "room", "guest_name", "property"]):
+        try:
+            if s.guest_folio:
+                # Check real outstanding from ERPNext
+                outstanding = flt(frappe.db.sql("""
+                    SELECT COALESCE(SUM(outstanding_amount), 0)
+                    FROM `tabSales Invoice`
+                    WHERE hotel_folio = %s AND docstatus = 1 AND is_return = 0
+                """, s.guest_folio)[0][0])
+                if outstanding > 0.01:
+                    continue  # Don't auto-checkout with unpaid bills
+            frappe.db.set_value("Guest Stay", s.name, {
+                "stay_status": "Checked Out", "actual_checkout": now_datetime()})
+            if s.guest_folio:
+                frappe.db.set_value("Guest Folio", s.guest_folio, "folio_status", "Closed")
+            if s.room:
+                frappe.db.set_value("Room", s.room, {
+                    "room_status": "Vacant Dirty", "housekeeping_status": "Dirty",
+                    "current_guest": "", "current_stay": ""})
+        except Exception:
+            frappe.log_error(frappe.get_traceback(), "Auto Checkout Error")
 
 
 def purge_old_audit_logs():
