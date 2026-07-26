@@ -43,29 +43,6 @@ frappe.ui.form.on("Guest Stay", {
         if (frm.doc.reservation)
             frm.add_custom_button(__("View Reservation"),
                 () => frappe.set_route("Form","Reservation",frm.doc.reservation), __("Links"));
-
-        // Cascade cancel — Hotel Manager only
-        if (isManager) {
-            frm.add_custom_button(__("Cancel All Linked"), () => {
-                frappe.confirm(
-                    __("This will cancel ALL linked Payment Entries, Sales Invoices, Deposits, Folio, and this Stay. This cannot be undone. Proceed?"),
-                    () => {
-                        frappe.call({
-                            method: "dagaarsoft_hospitality.dagaarsoft_hospitality.doctype.guest_stay.guest_stay.cascade_cancel_stay",
-                            args: {stay_name: frm.doc.name},
-                            freeze: true, freeze_message: __("Cancelling all linked documents..."),
-                            callback(r) {
-                                if (r.message) frappe.show_alert({
-                                    message: __("{0} documents cancelled.", [r.message.count]),
-                                    indicator: "orange"
-                                });
-                                frm.reload_doc();
-                            }
-                        });
-                    }
-                );
-            }, __("Actions")).addClass("btn-danger");
-        }
     },
     property(frm) { _set_filters(frm); _apply_prop_defaults(frm); },
     room_type(frm) { _set_filters(frm); _fetch_rate(frm); },
@@ -136,7 +113,24 @@ function _check_in(frm) {
         frappe.call({
             method:"dagaarsoft_hospitality.dagaarsoft_hospitality.doctype.guest_stay.guest_stay.do_checkin",
             args:{stay_name:frm.doc.name}, freeze:true, freeze_message:__("Checking in..."),
-            callback(){frm.reload_doc();}
+            callback(r) {
+                if (r.message && r.message.overlap) {
+                    frappe.confirm(
+                        "<b>⚠ Overlap Warning</b><br><br>" + r.message.message +
+                        "<br><br>Existing stay: <b>" + r.message.stay + "</b> in Room <b>" + r.message.room + "</b>",
+                        () => {
+                            frappe.call({
+                                method:"dagaarsoft_hospitality.dagaarsoft_hospitality.doctype.guest_stay.guest_stay.do_checkin",
+                                args:{stay_name:frm.doc.name, force_overlap:1},
+                                freeze:true, freeze_message:__("Checking in..."),
+                                callback(){frm.reload_doc();}
+                            });
+                        }
+                    );
+                } else {
+                    frm.reload_doc();
+                }
+            }
         });
     });
 }

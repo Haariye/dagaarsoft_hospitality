@@ -1,176 +1,220 @@
 {
-  "name": "Room",
-  "doctype": "DocType",
-  "module": "DagaarSoft Hospitality",
-  "naming_rule": "By fieldname",
-  "autoname": "field:room_number",
-  "is_submittable": 0,
-  "track_changes": 1,
-  "fields": [
-    {
-      "fieldname": "room_number",
-      "fieldtype": "Data",
-      "label": "Room Number",
-      "reqd": 1,
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "property",
-      "fieldtype": "Link",
-      "label": "Property",
-      "options": "Property",
-      "reqd": 1,
-      "in_list_view": 1,
-      "in_standard_filter": 1
-    },
-    {
-      "fieldname": "room_type",
-      "fieldtype": "Link",
-      "label": "Room Type",
-      "options": "Room Type",
-      "reqd": 1,
-      "in_list_view": 1,
-      "in_standard_filter": 1
-    },
-    {
-      "fieldname": "col_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "floor",
-      "fieldtype": "Data",
-      "label": "Floor"
-    },
-    {
-      "fieldname": "wing",
-      "fieldtype": "Data",
-      "label": "Wing / Block"
-    },
-    {
-      "fieldname": "building",
-      "fieldtype": "Data",
-      "label": "Building"
-    },
-    {
-      "fieldname": "sec_status",
-      "fieldtype": "Section Break",
-      "label": "Status"
-    },
-    {
-      "fieldname": "room_status",
-      "fieldtype": "Select",
-      "label": "Room Status",
-      "options": "Vacant Clean\nVacant Dirty\nOccupied\nOut of Order\nOut of Service\nOn Change\nInspection",
-      "default": "Vacant Clean",
-      "in_list_view": 1,
-      "in_standard_filter": 1
-    },
-    {
-      "fieldname": "housekeeping_status",
-      "fieldtype": "Select",
-      "label": "Housekeeping Status",
-      "options": "Clean\nDirty\nInspected\nSkipped\nDo Not Disturb",
-      "default": "Clean"
-    },
-    {
-      "fieldname": "col_2",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "is_out_of_order",
-      "fieldtype": "Check",
-      "label": "Out of Order"
-    },
-    {
-      "fieldname": "ooo_reason",
-      "fieldtype": "Data",
-      "label": "OOO Reason",
-      "depends_on": "eval:doc.is_out_of_order"
-    },
-    {
-      "fieldname": "ooo_from",
-      "fieldtype": "Date",
-      "label": "OOO From",
-      "depends_on": "eval:doc.is_out_of_order"
-    },
-    {
-      "fieldname": "ooo_to",
-      "fieldtype": "Date",
-      "label": "OOO To",
-      "depends_on": "eval:doc.is_out_of_order"
-    },
-    {
-      "fieldname": "sec_config",
-      "fieldtype": "Section Break",
-      "label": "Configuration"
-    },
-    {
-      "fieldname": "is_smoking",
-      "fieldtype": "Check",
-      "label": "Smoking Room"
-    },
-    {
-      "fieldname": "is_accessible",
-      "fieldtype": "Check",
-      "label": "Accessible"
-    },
-    {
-      "fieldname": "has_balcony",
-      "fieldtype": "Check",
-      "label": "Has Balcony"
-    },
-    {
-      "fieldname": "col_3",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "current_guest",
-      "fieldtype": "Data",
-      "label": "Current Guest",
-      "read_only": 1
-    },
-    {
-      "fieldname": "current_stay",
-      "fieldtype": "Link",
-      "label": "Current Stay",
-      "options": "Guest Stay",
-      "read_only": 1
-    },
-    {
-      "fieldname": "connecting_room",
-      "fieldtype": "Link",
-      "label": "Connecting Room",
-      "options": "Room"
-    },
-    {
-      "fieldname": "notes",
-      "fieldtype": "Small Text",
-      "label": "Notes"
-    },
-    {
-      "fieldname": "is_active",
-      "fieldtype": "Check",
-      "label": "Is Active",
-      "default": "1"
-    }
-  ],
-  "permissions": [
-    {
-      "role": "Hotel Manager",
-      "read": 1,
-      "write": 1,
-      "create": 1,
-      "delete": 1
-    },
-    {
-      "role": "Hotel Receptionist",
-      "read": 1,
-      "write": 1
-    },
-    {
-      "role": "Housekeeping Staff",
-      "read": 1,
-      "write": 1
-    }
-  ]
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "field:room_number",
+ "creation": "2026-06-05 02:35:47.203101",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "room_number",
+  "property",
+  "room_type",
+  "col_1",
+  "floor",
+  "wing",
+  "building",
+  "sec_status",
+  "room_status",
+  "housekeeping_status",
+  "col_2",
+  "is_out_of_order",
+  "ooo_reason",
+  "ooo_from",
+  "ooo_to",
+  "sec_config",
+  "is_smoking",
+  "is_accessible",
+  "has_balcony",
+  "col_3",
+  "current_guest",
+  "current_stay",
+  "connecting_room",
+  "notes",
+  "is_active"
+ ],
+ "fields": [
+  {
+   "fieldname": "room_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Room Number",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Property",
+   "options": "Property",
+   "reqd": 1
+  },
+  {
+   "fieldname": "room_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Room Type",
+   "options": "Room Type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "floor",
+   "fieldtype": "Data",
+   "label": "Floor"
+  },
+  {
+   "fieldname": "wing",
+   "fieldtype": "Data",
+   "label": "Wing / Block"
+  },
+  {
+   "fieldname": "building",
+   "fieldtype": "Data",
+   "label": "Building"
+  },
+  {
+   "fieldname": "sec_status",
+   "fieldtype": "Section Break",
+   "label": "Status"
+  },
+  {
+   "default": "Vacant Clean",
+   "fieldname": "room_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Room Status",
+   "options": "Vacant Clean\nVacant Dirty\nOccupied\nOut of Order\nOut of Service\nOn Change\nInspection"
+  },
+  {
+   "default": "Clean",
+   "fieldname": "housekeeping_status",
+   "fieldtype": "Select",
+   "label": "Housekeeping Status",
+   "options": "Clean\nDirty\nInspected\nSkipped\nDo Not Disturb"
+  },
+  {
+   "fieldname": "col_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_out_of_order",
+   "fieldtype": "Check",
+   "label": "Out of Order"
+  },
+  {
+   "depends_on": "eval:doc.is_out_of_order",
+   "fieldname": "ooo_reason",
+   "fieldtype": "Data",
+   "label": "OOO Reason"
+  },
+  {
+   "depends_on": "eval:doc.is_out_of_order",
+   "fieldname": "ooo_from",
+   "fieldtype": "Date",
+   "label": "OOO From"
+  },
+  {
+   "depends_on": "eval:doc.is_out_of_order",
+   "fieldname": "ooo_to",
+   "fieldtype": "Date",
+   "label": "OOO To"
+  },
+  {
+   "fieldname": "sec_config",
+   "fieldtype": "Section Break",
+   "label": "Configuration"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_smoking",
+   "fieldtype": "Check",
+   "label": "Smoking Room"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_accessible",
+   "fieldtype": "Check",
+   "label": "Accessible"
+  },
+  {
+   "default": "0",
+   "fieldname": "has_balcony",
+   "fieldtype": "Check",
+   "label": "Has Balcony"
+  },
+  {
+   "fieldname": "col_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "current_guest",
+   "fieldtype": "Data",
+   "label": "Current Guest",
+   "read_only": 1
+  },
+  {
+   "fieldname": "current_stay",
+   "fieldtype": "Link",
+   "label": "Current Stay",
+   "options": "Guest Stay",
+   "read_only": 1
+  },
+  {
+   "fieldname": "connecting_room",
+   "fieldtype": "Link",
+   "label": "Connecting Room",
+   "options": "Room"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active"
+  }
+ ],
+ "links": [],
+ "modified": "2026-06-06 18:07:21.681935",
+ "modified_by": "sysadmin@dagaarsoft.app",
+ "module": "DagaarSoft Hospitality",
+ "name": "Room",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "Hotel Manager",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Hotel Receptionist",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Housekeeping Staff",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
 }

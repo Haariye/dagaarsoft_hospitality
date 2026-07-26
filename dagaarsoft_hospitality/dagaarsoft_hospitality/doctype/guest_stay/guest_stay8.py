@@ -409,10 +409,10 @@ def update_customer_cascade(stay_name, new_customer):
 def cascade_cancel_stay(stay_name):
     """
     Hotel Manager: cancel a Guest Stay and ALL linked documents in correct order.
-    Order: Payment Entries → Sales Invoices → Deposits → Folio → Stay → Reservation
+    Order: Payment Entries → Sales Invoices → Guest Folio → Guest Stay
     """
     if "Hotel Manager" not in frappe.get_roles():
-        frappe.throw(_("You are not a Hotel Manager. Only Hotel Manager role can cancel all linked documents."))
+        frappe.throw(_("Only Hotel Manager can cascade cancel."))
 
     stay = frappe.get_doc("Guest Stay", stay_name)
     if stay.docstatus != 1:
@@ -422,32 +422,27 @@ def cascade_cancel_stay(stay_name):
     folio_name = stay.guest_folio
 
     if folio_name and frappe.db.exists("Guest Folio", folio_name):
-        # 1. Cancel Payment Entries linked to this folio
+        # 1. Cancel Payment Entries
         for pe in frappe.get_all("Payment Entry",
                 {"hotel_folio": folio_name, "docstatus": 1}, ["name"]):
             try:
                 doc = frappe.get_doc("Payment Entry", pe.name)
                 doc.flags.ignore_links = True
-                doc.flags.ignore_validate_update_after_submit = True
                 doc.cancel()
                 cancelled.append("PE: " + pe.name)
             except Exception as e:
-                frappe.log_error(str(e)[:120], "Cascade PE")
+                frappe.log_error(str(e), "Cascade Cancel PE Error")
 
-        # 2. Cancel Sales Invoices linked to this folio
+        # 2. Cancel Sales Invoices
         for si in frappe.get_all("Sales Invoice",
-                {"hotel_folio": folio_name, "docstatus": 1}, ["name"],
-                order_by="posting_date desc"):
+                {"hotel_folio": folio_name, "docstatus": 1}, ["name"]):
             try:
                 doc = frappe.get_doc("Sales Invoice", si.name)
                 doc.flags.ignore_links = True
-                doc.flags.ignore_validate_update_after_submit = True
-                # Skip posa_integration hook during cascade
-                doc.flags.from_cascade_cancel = True
                 doc.cancel()
                 cancelled.append("SI: " + si.name)
             except Exception as e:
-                frappe.log_error(str(e)[:120], "Cascade SI")
+                frappe.log_error(str(e), "Cascade Cancel SI Error")
 
         # 3. Cancel Hotel Deposits
         for dep in frappe.get_all("Hotel Deposit",
@@ -458,7 +453,7 @@ def cascade_cancel_stay(stay_name):
                 doc.cancel()
                 cancelled.append("DEP: " + dep.name)
             except Exception as e:
-                frappe.log_error(str(e)[:120], "Cascade DEP")
+                frappe.log_error(str(e), "Cascade Cancel Deposit Error")
 
         # 4. Cancel Guest Folio
         try:
@@ -467,7 +462,7 @@ def cascade_cancel_stay(stay_name):
             folio.cancel()
             cancelled.append("Folio: " + folio_name)
         except Exception as e:
-            frappe.log_error(str(e)[:120], "Cascade Folio")
+            frappe.log_error(str(e), "Cascade Cancel Folio Error")
 
     # 5. Cancel Guest Stay
     stay.reload()
@@ -480,23 +475,6 @@ def cascade_cancel_stay(stay_name):
         frappe.db.set_value("Room", stay.room, {
             "room_status": "Vacant Clean", "current_guest": "", "current_stay": ""
         })
-
-    # 7. Cancel Reservation (if linked and no other active stays depend on it)
-    if stay.reservation and frappe.db.exists("Reservation", stay.reservation):
-        other_stays = frappe.db.count("Guest Stay", {
-            "reservation": stay.reservation,
-            "docstatus": 1,
-            "name": ["!=", stay_name]
-        })
-        if other_stays == 0:
-            try:
-                res = frappe.get_doc("Reservation", stay.reservation)
-                if res.docstatus == 1:
-                    res.flags.ignore_links = True
-                    res.cancel()
-                    cancelled.append("Reservation: " + stay.reservation)
-            except Exception as e:
-                frappe.log_error(str(e)[:120], "Cascade Reservation")
 
     _log_audit(stay_name, "Cascade Cancelled",
         "Cancelled {0} documents: {1}".format(len(cancelled), ", ".join(cancelled)))

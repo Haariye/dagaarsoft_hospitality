@@ -11,7 +11,8 @@ required_apps   = ["frappe", "erpnext"]
 
 # ── Global JS (loaded on every page) ─────────────────────────────────────────
 app_include_js = [
-    "/assets/dagaarsoft_hospitality/dist/js/dagaarsoft_hospitality.bundle.js"
+    "/assets/dagaarsoft_hospitality/dist/js/dagaarsoft_hospitality.bundle.js",
+    "/assets/dagaarsoft_hospitality/js/posa_overrides/hotel_room_mixin.js"
 ]
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────

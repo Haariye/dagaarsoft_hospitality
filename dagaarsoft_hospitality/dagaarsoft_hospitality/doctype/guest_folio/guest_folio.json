@@ -257,11 +257,6 @@
    "link_fieldname": "hotel_folio"
   },
   {
-   "group": "Journal Entries",
-   "link_doctype": "Journal Entry",
-   "link_fieldname": "guest_folio"
-  },
-  {
    "group": "Stay",
    "link_doctype": "Guest Stay",
    "link_fieldname": "guest_folio"
@@ -272,7 +267,7 @@
    "link_fieldname": "guest_stay"
   }
  ],
- "modified": "2026-03-31 13:33:45.513255",
+ "modified": "2026-06-07 16:07:47.711172",
  "modified_by": "Administrator",
  "module": "DagaarSoft Hospitality",
  "name": "Guest Folio",

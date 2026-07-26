@@ -36,9 +36,7 @@ class NightAuditRun(Document):
         )
 
     def _preview_and_post_rates(self):
-        # Room charge posting is disabled — handled by the 15:00 daily scheduler
-        # in billing.auto_daily_room_charge() which creates both charge line + invoice atomically.
-        # Night audit only handles no-shows and summary reporting.
+        from dagaarsoft_hospitality.dagaarsoft_hospitality.utils.folio_utils import post_charge_to_folio
         stays = frappe.get_all("Guest Stay",
             filters={
                 "property": self.property,
@@ -53,21 +51,41 @@ class NightAuditRun(Document):
         total = 0
         charge_log = []
         for s in stays:
+            if not s.guest_folio:
+                continue
+            # Check if already charged for this night
+            already = frappe.db.sql("""
+                SELECT COUNT(*) FROM `tabFolio Charge Line`
+                WHERE parent=%s AND charge_category='Room Rate'
+                AND posting_date=%s AND is_void=0
+            """, (s.guest_folio, self.audit_date))[0][0]
+            if already:
+                continue
+
             rate = flt(s.nightly_rate) or flt(
                 frappe.db.get_value("Room Type", s.room_type, "bar_rate") or 0
             )
-            charge_log.append({
-                "room": s.room,
-                "guest": s.guest_name,
-                "folio": s.guest_folio,
-                "amount": rate,
-                "note": "Charged by 15:00 scheduler"
-            })
-            count += 1
-            total += rate
+            if rate:
+                post_charge_to_folio(
+                    s.guest_folio,
+                    "Room Charge — {0} — {1}".format(s.room, self.audit_date),
+                    rate,
+                    "Room Rate",
+                    "Night Audit Run",
+                    self.name
+                )
+                count += 1
+                total += rate
+                charge_log.append({
+                    "room": s.room,
+                    "guest": s.guest_name,
+                    "folio": s.guest_folio,
+                    "amount": rate
+                })
 
         self.db_set("rooms_charged", count)
         self.db_set("total_revenue", total)
+        # Store log as JSON for transparency dashboard
         import json
         self.db_set("charge_log", json.dumps(charge_log))
 

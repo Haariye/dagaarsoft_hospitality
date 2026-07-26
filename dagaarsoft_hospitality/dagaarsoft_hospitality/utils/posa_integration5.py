@@ -134,9 +134,6 @@ def on_sales_invoice_submit(doc, method=None):
 
 
 def on_sales_invoice_cancel(doc, method=None):
-    # Skip during cascade cancel — cascade handles cleanup directly
-    if getattr(doc.flags, "from_cascade_cancel", False):
-        return
     try:
         cascade = frappe.db.get_single_value("Hospitality Settings",
             "cascade_cancel_linked_transactions")
@@ -160,7 +157,6 @@ def on_sales_invoice_cancel(doc, method=None):
             row.void_reason = "Auto-voided: SI {0} cancelled".format(doc.name)
             changed = True
     if changed:
-        folio.flags.ignore_links = True
         folio.save(ignore_permissions=True)
     folio_si = frappe.db.get_value("Guest Folio", folio_name, "sales_invoice")
     if folio_si == doc.name:

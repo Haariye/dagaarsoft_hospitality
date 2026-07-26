@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Hotel Front Desk",
  "links": [],
- "modified": "2026-05-10 14:15:24.796807",
+ "modified": "2026-06-17 16:54:00.947779",
  "modified_by": "Administrator",
  "module": "DagaarSoft Hospitality",
  "name": "Hotel Front Desk",
@@ -33,7 +33,7 @@
    "role": "All"
   }
  ],
- "sequence_id": 9.0,
+ "sequence_id": 8.0,
  "shortcuts": [
   {
    "doc_view": "",
@@ -49,7 +49,7 @@
   },
   {
    "doc_view": "",
-   "label": "Guest Folio",
+   "label": "Invoice",
    "link_to": "Guest Folio",
    "type": "DocType"
   },

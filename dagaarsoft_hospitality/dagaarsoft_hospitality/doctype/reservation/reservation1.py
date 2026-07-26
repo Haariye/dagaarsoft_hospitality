@@ -43,27 +43,7 @@ class Reservation(Document):
             frappe.throw(_("Property is not active."))
         if not self.get("reservation_rooms"):
             frappe.throw(_("At least one room line is required."))
-        self._validate_customer_overlap()
         self._validate_room_lines()
-
-    def _validate_customer_overlap(self):
-        """Block if this customer already has an active stay overlapping these dates."""
-        if self.allow_overlap:
-            return
-        conflict = frappe.db.sql("""
-            SELECT gs.name, gs.room FROM `tabGuest Stay` gs
-            WHERE gs.customer = %s
-            AND gs.stay_status IN ('Expected', 'Checked In')
-            AND gs.docstatus = 1
-            AND gs.arrival_date < %s AND gs.departure_date > %s
-            AND gs.reservation != %s
-        """, (self.customer, self.departure_date, self.arrival_date,
-              self.name or ""), as_dict=True)
-        if conflict:
-            frappe.throw(_(
-                "Customer {0} already has an active stay in Room {1} ({2}) "
-                "overlapping these dates. Check 'Allow Overlapping Stay' to proceed."
-            ).format(self.customer, conflict[0].room, conflict[0].name))
 
     def _validate_room_lines(self):
         seen = []

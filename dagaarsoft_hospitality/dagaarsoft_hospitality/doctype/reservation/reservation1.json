@@ -73,7 +73,7 @@
    "in_standard_filter": 1,
    "label": "Status",
    "options": "Draft\nConfirmed\nChecked In\nChecked Out\nCancelled\nNo Show",
-   "allow_on_submit": 1
+   "read_only": 1
   },
   {
    "fieldname": "col_1",
@@ -158,18 +158,18 @@
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "rate_plan",
    "fieldtype": "Link",
    "label": "Rate Plan",
-   "options": "Rate Plan",
-   "allow_on_submit": 1
+   "options": "Rate Plan"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "vip_status",
    "fieldtype": "Select",
    "label": "VIP Status",
-   "options": "\nVIP\nVVIP\nHonorary",
-   "allow_on_submit": 1
+   "options": "\nVIP\nVVIP\nHonorary"
   },
   {
    "fieldname": "sec_deposit",
@@ -213,25 +213,17 @@
    "label": "Notes & Audit"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "special_requests",
    "fieldtype": "Text",
-   "label": "Special Requests",
-   "allow_on_submit": 1
+   "label": "Special Requests"
   },
   {
-   "fieldname": "allow_overlap",
-   "fieldtype": "Check",
-   "label": "Allow Overlapping Stay",
-   "default": "0",
-   "insert_after": "special_requests",
-   "description": "Check this if the customer intentionally has multiple rooms/stays at the same time."
-  },
-  {
+   "allow_on_submit": 1,
    "fieldname": "billing_instruction",
    "fieldtype": "Select",
    "label": "Billing Instruction",
-   "options": "Charge to Room\nCharge to Company\nCharge to Travel Agent\nSplit Bill\nPrepaid",
-   "allow_on_submit": 1
+   "options": "Charge to Room\nCharge to Company\nCharge to Travel Agent\nSplit Bill\nPrepaid"
   },
   {
    "fieldname": "col_4",
@@ -264,10 +256,10 @@
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "cancellation_reason",
    "fieldtype": "Data",
-   "label": "Cancellation Reason",
-   "allow_on_submit": 1
+   "label": "Cancellation Reason"
   },
   {
    "fieldname": "amended_from",
@@ -277,18 +269,17 @@
    "print_hide": 1
   },
   {
-   "fieldname": "billing_customer",
-   "label": "Bill To (if different)",
-   "fieldtype": "Link",
-   "options": "Customer",
-   "insert_after": "billing_instruction",
+   "allow_on_submit": 1,
    "description": "If set, invoice goes to this customer (company/travel agent)",
-   "allow_on_submit": 1
+   "fieldname": "billing_customer",
+   "fieldtype": "Link",
+   "label": "Bill To (if different)",
+   "options": "Customer"
   }
  ],
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-22 01:44:07.256783",
+ "modified": "2026-06-07 15:04:25.473537",
  "modified_by": "Administrator",
  "module": "DagaarSoft Hospitality",
  "name": "Reservation",

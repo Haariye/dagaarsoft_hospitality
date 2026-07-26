@@ -193,9 +193,7 @@ def after_migrate():
     frappe.db.commit()
 
 def _install_realestate_custom_fields():
-    """Add RE fields to ERPNext Payment Entry and Sales Invoice — only if RE doctypes exist."""
-    if not frappe.db.exists("DocType", "RE Lease"):
-        return
+    """Add RE fields to ERPNext Payment Entry and Sales Invoice."""
     from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
     fields = {
         "Payment Entry": [

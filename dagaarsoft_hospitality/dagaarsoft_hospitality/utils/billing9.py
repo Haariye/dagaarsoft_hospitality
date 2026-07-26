@@ -436,7 +436,7 @@ def _create_service_invoice(folio_name):
         r.qty = flt(c.qty) or 1; r.uom = uom; r.stock_uom = uom; r.conversion_factor = 1
         r.rate = flt(c.rate) or flt(c.amount); r.amount = flt(c.amount)
         r.income_account = income_acct
-        r.cost_center = cost_center
+    r.cost_center = cost_center
 
     if tax_template:
         si.taxes_and_charges = tax_template
@@ -525,7 +525,7 @@ def generate_folio_invoice(folio_name, discount_pct=0, discount_amount=0):
         r.qty = nights or 1; r.uom = uom; r.stock_uom = uom; r.conversion_factor = 1
         r.rate = rate; r.amount = total_room
         r.income_account = income_acct
-        r.cost_center = cost_center
+    r.cost_center = cost_center
 
     for c in other_charges:
         ic = _get_item(c.charge_category)
@@ -536,7 +536,7 @@ def generate_folio_invoice(folio_name, discount_pct=0, discount_amount=0):
         r.qty = flt(c.qty) or 1; r.uom = uom; r.stock_uom = uom; r.conversion_factor = 1
         r.rate = flt(c.rate) or flt(c.amount); r.amount = flt(c.amount)
         r.income_account = income_acct
-        r.cost_center = cost_center
+    r.cost_center = cost_center
 
     if flt(discount_pct) > 0:
         si.additional_discount_percentage = flt(discount_pct)

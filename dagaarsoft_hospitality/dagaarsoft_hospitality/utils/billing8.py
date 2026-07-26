@@ -68,19 +68,17 @@ def get_invoice_billing_status(sales_invoice_name):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _get_folio_accounts(folio):
-    """Get company, income, debtors, tax template, and cost center for a folio."""
+    """Get company, income and debtors accounts for a folio."""
     prop = None
     if folio.property:
         prop = frappe.db.get_value("Property", folio.property,
-            ["company", "income_account", "debtors_account", "default_tax_template", "cost_center"],
+            ["company", "income_account", "debtors_account", "default_tax_template"],
             as_dict=True)
     company = (prop.company if prop else None) or frappe.defaults.get_defaults().get("company")
     income_acct = (getattr(prop, "income_account", None) if prop else None) or _default_income(company)
     debtors_acct = (getattr(prop, "debtors_account", None) if prop else None) or _default_debtors(company)
     tax_template = getattr(prop, "default_tax_template", None) if prop else None
-    cost_center = (getattr(prop, "cost_center", None) if prop else None) or \
-        frappe.db.get_value("Company", company, "cost_center")
-    return company, income_acct, debtors_acct, tax_template, cost_center
+    return company, income_acct, debtors_acct, tax_template
 
 
 def post_room_charge_with_invoice(folio_name, stay_name, charge_date, rate, room, guest_stay_ref=None):
@@ -101,7 +99,7 @@ def post_room_charge_with_invoice(folio_name, stay_name, charge_date, rate, room
         frappe.log_error("No customer on folio {0}".format(folio_name), "Room Charge Error")
         return None
 
-    company, income_acct, debtors_acct, tax_template, cost_center = _get_folio_accounts(folio)
+    company, income_acct, debtors_acct, tax_template = _get_folio_accounts(folio)
 
     # 1. Create Sales Invoice
     si = frappe.new_doc("Sales Invoice")
@@ -125,7 +123,6 @@ def post_room_charge_with_invoice(folio_name, stay_name, charge_date, rate, room
     r.qty = 1; r.uom = uom; r.stock_uom = uom; r.conversion_factor = 1
     r.rate = flt(rate); r.amount = flt(rate)
     r.income_account = income_acct
-    r.cost_center = cost_center
 
     if tax_template:
         si.taxes_and_charges = tax_template
@@ -413,7 +410,7 @@ def _create_service_invoice(folio_name):
     if not invoice_to:
         return None
 
-    company, income_acct, debtors_acct, tax_template, cost_center = _get_folio_accounts(folio)
+    company, income_acct, debtors_acct, tax_template = _get_folio_accounts(folio)
 
     si = frappe.new_doc("Sales Invoice")
     si.customer = invoice_to
@@ -436,7 +433,6 @@ def _create_service_invoice(folio_name):
         r.qty = flt(c.qty) or 1; r.uom = uom; r.stock_uom = uom; r.conversion_factor = 1
         r.rate = flt(c.rate) or flt(c.amount); r.amount = flt(c.amount)
         r.income_account = income_acct
-        r.cost_center = cost_center
 
     if tax_template:
         si.taxes_and_charges = tax_template
@@ -475,7 +471,7 @@ def generate_folio_invoice(folio_name, discount_pct=0, discount_amount=0):
     if not invoice_to:
         frappe.throw(_("No customer linked to folio."))
 
-    company, income_acct, debtors_acct, tax_template, cost_center = _get_folio_accounts(folio)
+    company, income_acct, debtors_acct, tax_template = _get_folio_accounts(folio)
 
     # Discount validation
     if flt(discount_pct) > 0 or flt(discount_amount) > 0:
@@ -525,7 +521,6 @@ def generate_folio_invoice(folio_name, discount_pct=0, discount_amount=0):
         r.qty = nights or 1; r.uom = uom; r.stock_uom = uom; r.conversion_factor = 1
         r.rate = rate; r.amount = total_room
         r.income_account = income_acct
-        r.cost_center = cost_center
 
     for c in other_charges:
         ic = _get_item(c.charge_category)
@@ -536,7 +531,6 @@ def generate_folio_invoice(folio_name, discount_pct=0, discount_amount=0):
         r.qty = flt(c.qty) or 1; r.uom = uom; r.stock_uom = uom; r.conversion_factor = 1
         r.rate = flt(c.rate) or flt(c.amount); r.amount = flt(c.amount)
         r.income_account = income_acct
-        r.cost_center = cost_center
 
     if flt(discount_pct) > 0:
         si.additional_discount_percentage = flt(discount_pct)
@@ -621,7 +615,7 @@ def return_excess_deposit(folio_name, amount, payment_mode="Cash", reference_num
         frappe.throw(_("Amount must be greater than zero."))
 
     customer = folio.billing_customer or folio.customer
-    company, income_acct, debtors_acct, _tax_tpl, cost_center = _get_folio_accounts(folio)
+    company, income_acct, debtors_acct, _tax_tpl = _get_folio_accounts(folio)
 
     # paid_from = cash/bank account (money leaving)
     paid_from = (
