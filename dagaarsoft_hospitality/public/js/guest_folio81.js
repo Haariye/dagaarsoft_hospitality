@@ -22,7 +22,6 @@ frappe.ui.form.on("Guest Folio", {
                 }
                 _add_sync_deposits_btn(frm);
                 _add_void_charge_btn(frm);
-                _add_reverse_transaction_btn(frm);
             }
         }
 
@@ -145,7 +144,8 @@ function _add_settle_payment_btn(frm) {
             title: __("Settle Payment — Outstanding: {0}", [fc(bal)]),
             fields: [
                 {fieldname:"amount", fieldtype:"Currency", label:__("Amount"), reqd:1, default:bal},
-                {fieldname:"payment_mode", fieldtype:"Link", options:"Mode of Payment", label:__("Payment Mode"), reqd:1},
+                {fieldname:"payment_mode", fieldtype:"Select", label:__("Payment Mode"), reqd:1,
+                 options:"Cash\nCard\nBank Transfer\nOnline\nCity Ledger\nCheque"},
                 {fieldname:"reference_number", fieldtype:"Data", label:__("Reference")}
             ],
             primary_action_label: __("Confirm Payment"),
@@ -169,7 +169,8 @@ function _add_collect_deposit_btn(frm) {
             title: __("Collect Deposit"),
             fields: [
                 {fieldname:"amount", fieldtype:"Currency", label:__("Amount"), reqd:1},
-                {fieldname:"payment_mode", fieldtype:"Link", options:"Mode of Payment", label:__("Payment Mode"), reqd:1},
+                {fieldname:"payment_mode", fieldtype:"Select", label:__("Payment Mode"), reqd:1,
+                 options:"Cash\nCard\nBank Transfer\nOnline\nCheque"},
                 {fieldname:"reference_number", fieldtype:"Data", label:__("Reference")}
             ],
             primary_action_label: __("Collect"),
@@ -192,7 +193,8 @@ function _add_return_deposit_btn(frm) {
             title: __("Return Excess Deposit"),
             fields: [
                 {fieldname:"amount", fieldtype:"Currency", label:__("Return Amount"), reqd:1},
-                {fieldname:"payment_mode", fieldtype:"Link", options:"Mode of Payment", label:__("Payment Mode"), reqd:1},
+                {fieldname:"payment_mode", fieldtype:"Select", label:__("Payment Mode"), reqd:1,
+                 options:"Cash\nBank Transfer\nCard"},
                 {fieldname:"reference_number", fieldtype:"Data", label:__("Reference")}
             ],
             primary_action_label: __("Process Return"),
@@ -262,71 +264,6 @@ function _add_void_charge_btn(frm) {
             }
         });
         d.show();
-    }, __("Billing"));
-}
-
-// ── Reverse Transaction — clean reversal for SI or PE ────────────────────
-function _add_reverse_transaction_btn(frm) {
-    frm.add_custom_button(__("Reverse Transaction"), function() {
-        frappe.call({
-            method: "dagaarsoft_hospitality.dagaarsoft_hospitality.doctype.guest_folio.guest_folio.get_reversible_transactions",
-            args: {folio_name: frm.doc.name},
-            callback: function(r) {
-                if (!r.message || !r.message.transactions.length) {
-                    frappe.msgprint(__("No reversible transactions found."));
-                    return;
-                }
-                var txns = r.message.transactions;
-                var options = txns.map(function(t) { return t.label; });
-
-                var d = new frappe.ui.Dialog({
-                    title: __("Reverse Financial Transaction"),
-                    fields: [
-                        {fieldtype:"HTML", options:
-                            "<div style='background:#fff5f5;border:1px solid #fc8181;padding:10px;border-radius:6px;margin-bottom:10px'>"
-                            + "<b>Sales Invoice</b> → creates a Return/Credit Note (standard ERPNext reversal). GL entries reversed cleanly.<br>"
-                            + "<b>Payment Entry</b> → cancels the payment + linked Hotel Deposit. Customer balance restored."
-                            + "</div>"
-                        },
-                        {fieldname:"transaction", fieldtype:"Select", label:__("Select Transaction to Reverse"), reqd:1,
-                         options: options.join("\n")},
-                        {fieldname:"reason", fieldtype:"Small Text", label:__("Reason for Reversal (required)"), reqd:1}
-                    ],
-                    primary_action_label: __("Reverse"),
-                    primary_action: function(v) {
-                        var idx = options.indexOf(v.transaction);
-                        var txn = txns[idx];
-                        if (!txn) return;
-
-                        frappe.confirm(
-                            __("Reverse <b>{0}</b>: {1} ({2})?<br><br>This cannot be undone.",
-                                [txn.type, txn.name, fc(txn.amount)]),
-                            function() {
-                                frappe.call({
-                                    method: "dagaarsoft_hospitality.dagaarsoft_hospitality.doctype.guest_folio.guest_folio.reverse_transaction",
-                                    args: {folio_name: frm.doc.name,
-                                           transaction_type: txn.type,
-                                           transaction_name: txn.name,
-                                           reason: v.reason},
-                                    freeze: true, freeze_message: __("Reversing..."),
-                                    callback: function(r2) {
-                                        d.hide();
-                                        if (r2.message) {
-                                            frappe.show_alert({
-                                                message: __("Reversed: {0}", [r2.message.reversed.join(", ")]),
-                                                indicator: "orange"
-                                            });
-                                        }
-                                        frm.reload_doc();
-                                    }
-                                });
-                            }
-                        );
-                    }
-                });
-                d.show();
-            }
-        });
     }, __("Billing"));
 }
 

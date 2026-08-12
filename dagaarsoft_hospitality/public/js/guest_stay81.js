@@ -16,15 +16,13 @@ frappe.ui.form.on("Guest Stay", {
 
         if (s === "Expected") {
             frm.add_custom_button(__("✅ Check In"), () => _check_in(frm)).addClass("btn-success");
-            frm.add_custom_button(__("Collect Deposit"), () => _collect_deposit_stay(frm), __("Billing"));
             frm.add_custom_button(__("Waive Deposit"), () => _waive_deposit(frm), __("Actions"));
         }
         if (s === "Checked In") {
             frm.add_custom_button(__("🧾 View Folio"), () =>
                 frappe.set_route("Form","Guest Folio",frm.doc.guest_folio)).addClass("btn-primary");
 
-            // Billing buttons
-            frm.add_custom_button(__("Collect Deposit"), () => _collect_deposit_stay(frm), __("Billing"));
+            // Hotel Manager only buttons
             if (isManager) {
                 frm.add_custom_button(__("Post Room Charges"), () => _post_room_charges(frm), __("Billing"));
                 frm.add_custom_button(__("Generate Invoice"), () => _generate_invoice(frm), __("Billing"));
@@ -249,7 +247,8 @@ function _return_deposit(frm) {
         title: __("Return Excess Deposit"),
         fields: [
             {fieldname:"amount", fieldtype:"Currency", label:__("Return Amount"), reqd:1},
-            {fieldname:"payment_mode", fieldtype:"Link", options:"Mode of Payment", label:__("Payment Mode"), reqd:1},
+            {fieldname:"payment_mode", fieldtype:"Select", label:__("Payment Mode"), reqd:1,
+             options:"Cash\nBank Transfer\nCard"},
             {fieldname:"reference_number", fieldtype:"Data", label:__("Reference")}
         ],
         primary_action_label: __("Process Return"),
@@ -427,26 +426,3 @@ function _do_checkout(stay_name, force, adjustment_note, frm) {
 }
 
 function fc(v) { return parseFloat(v||0).toLocaleString("en",{minimumFractionDigits:2}); }
-
-// ── Collect Deposit on Guest Stay ────────────────────────────────────────
-function _collect_deposit_stay(frm) {
-    var d = new frappe.ui.Dialog({
-        title: __("Collect Deposit"),
-        fields: [
-            {fieldname:"amount", fieldtype:"Currency", label:__("Amount"), reqd:1},
-            {fieldname:"payment_mode", fieldtype:"Link", options:"Mode of Payment", label:__("Payment Mode"), reqd:1},
-            {fieldname:"reference_number", fieldtype:"Data", label:__("Reference")}
-        ],
-        primary_action_label: __("Collect"),
-        primary_action: function(v) {
-            frappe.call({
-                method: "dagaarsoft_hospitality.dagaarsoft_hospitality.doctype.guest_stay.guest_stay.collect_deposit_on_stay",
-                args: {stay_name: frm.doc.name, amount: v.amount,
-                       payment_mode: v.payment_mode, reference_number: v.reference_number || ""},
-                freeze: true,
-                callback: function(r) { d.hide(); frm.reload_doc(); }
-            });
-        }
-    });
-    d.show();
-}

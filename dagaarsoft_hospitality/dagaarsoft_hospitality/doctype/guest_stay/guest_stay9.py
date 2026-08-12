@@ -36,18 +36,12 @@ def _log_audit(stay_name, action, details=""):
 
 class GuestStay(Document):
     def validate(self):
-        self._require_reservation()
         self._auto_fill_property()
         self._validate_dates()
         self._validate_room()
         self._set_computed_fields()
         self._fetch_rate_from_plan()
         self._sync_reservation_deposit()
-
-    def _require_reservation(self):
-        if not self.reservation:
-            frappe.throw(_("Guest Stay must be created from a Reservation. "
-                           "Please create a Reservation first, then use 'Create Guest Stay' from there."))
 
     def _auto_fill_property(self):
         if not self.property:
@@ -193,19 +187,6 @@ def do_checkin(stay_name):
     if not stay.room:
         frappe.throw(_("Room is mandatory for check-in."))
 
-    # Room occupancy check — block if another guest is still checked in to this room
-    occupied_by = frappe.db.sql("""
-        SELECT name, guest_name FROM `tabGuest Stay`
-        WHERE room = %s AND stay_status = 'Checked In'
-        AND docstatus = 1 AND name != %s
-        LIMIT 1
-    """, (stay.room, stay_name), as_dict=True)
-    if occupied_by:
-        frappe.throw(_(
-            "Room {0} is still occupied by {1} (Stay: {2}). "
-            "Check out the previous guest first."
-        ).format(stay.room, occupied_by[0].guest_name, occupied_by[0].name))
-
     # Deposit check
     prop = frappe.db.get_value("Property", stay.property,
         ["deposit_required", "waive_deposit_role"], as_dict=True) if stay.property else None
@@ -241,10 +222,10 @@ def do_checkin(stay_name):
         frappe.db.set_value("Reservation", stay.reservation,
             "reservation_status", "Checked In", update_modified=False)
 
-    # Post first night room charge to folio (no invoice — invoiced at checkout)
+    # Post first night room charge + invoice upon checkin
     try:
-        from dagaarsoft_hospitality.dagaarsoft_hospitality.utils.billing import post_room_charge_to_folio
-        post_room_charge_to_folio(
+        from dagaarsoft_hospitality.dagaarsoft_hospitality.utils.billing import post_room_charge_with_invoice
+        post_room_charge_with_invoice(
             stay.guest_folio, stay.name, today(),
             flt(stay.nightly_rate), stay.room)
     except Exception:
@@ -524,59 +505,3 @@ def cascade_cancel_stay(stay_name):
         _("Cancelled {0} documents: {1}").format(len(cancelled), ", ".join(cancelled)),
         alert=True)
     return {"cancelled": cancelled, "count": len(cancelled)}
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  COLLECT DEPOSIT ON GUEST STAY (before folio exists)
-# ═══════════════════════════════════════════════════════════════════════════════
-
-@frappe.whitelist()
-def collect_deposit_on_stay(stay_name, amount, payment_mode="Cash", reference_number=None):
-    """
-    Collect deposit on Guest Stay. Works whether folio exists or not.
-    If folio exists: creates Hotel Deposit linked to both stay and folio.
-    If folio doesn't exist yet: creates Hotel Deposit linked to stay only.
-    When folio is created later (on submit), _push_reservation_deposit_to_folio syncs it.
-    """
-    stay = frappe.get_doc("Guest Stay", stay_name)
-    customer = stay.billing_customer or stay.customer
-    if not customer:
-        frappe.throw(_("No customer on this stay."))
-
-    dep = frappe.new_doc("Hotel Deposit")
-    dep.guest_stay       = stay_name
-    dep.reservation      = stay.reservation
-    dep.customer         = customer
-    dep.deposit_amount   = flt(amount)
-    dep.payment_mode     = payment_mode
-    dep.reference_number = reference_number
-    dep.deposit_status   = "Received"
-    dep.property         = stay.property
-    dep.deposit_date     = today()
-    dep.insert(ignore_permissions=True)
-    dep.submit()
-
-    # If folio already exists, sync the deposit payment line to it
-    if stay.guest_folio and frappe.db.exists("Guest Folio", stay.guest_folio):
-        folio = frappe.get_doc("Guest Folio", stay.guest_folio)
-        if dep.payment_entry and not frappe.db.exists("Folio Payment Line",
-                {"parent": stay.guest_folio, "payment_entry": dep.payment_entry}):
-            line = folio.append("folio_payments", {})
-            line.payment_date     = today()
-            line.payment_mode     = payment_mode
-            line.description      = "Deposit - {0}".format(dep.name)
-            line.amount           = flt(amount)
-            line.reference_number = reference_number
-            line.payment_entry    = dep.payment_entry
-            line.posted_by        = frappe.session.user
-            folio.save(ignore_permissions=True)
-
-    # Link deposit to stay
-    if not stay.advance_deposit:
-        frappe.db.set_value("Guest Stay", stay_name, "advance_deposit", dep.name)
-
-    frappe.msgprint(
-        _("Deposit {0} collected ({1}).").format(
-            dep.name, frappe.format_value(flt(amount), {"fieldtype": "Currency"})),
-        alert=True)
-    return dep.name

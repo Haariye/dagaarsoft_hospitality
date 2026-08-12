@@ -264,7 +264,8 @@ function _deposit_dialog(frm) {
                     `<div style="background:#f0fff4;padding:8px;border-radius:6px;margin-bottom:10px">Deposit is optional for this property.</div>`
                 },
                 { fieldname:"deposit_amount", fieldtype:"Currency", label:__("Deposit Amount"), reqd:1, default:suggested },
-                { fieldname:"payment_mode", fieldtype:"Link", options:"Mode of Payment", label:__("Payment Mode"), reqd:1 },
+                { fieldname:"payment_mode", fieldtype:"Select", label:__("Payment Mode"), reqd:1,
+                  options:"Cash\nCard\nBank Transfer\nOnline\nCheque" },
                 { fieldname:"reference_number", fieldtype:"Data", label:__("Receipt / Reference No") },
                 { fieldname:"no_deposit", fieldtype:"Check", label:__("Proceed Without Deposit (waive)") }
             ],

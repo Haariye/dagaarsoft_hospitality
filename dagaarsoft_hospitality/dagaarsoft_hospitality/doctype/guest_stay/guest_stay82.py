@@ -193,19 +193,6 @@ def do_checkin(stay_name):
     if not stay.room:
         frappe.throw(_("Room is mandatory for check-in."))
 
-    # Room occupancy check — block if another guest is still checked in to this room
-    occupied_by = frappe.db.sql("""
-        SELECT name, guest_name FROM `tabGuest Stay`
-        WHERE room = %s AND stay_status = 'Checked In'
-        AND docstatus = 1 AND name != %s
-        LIMIT 1
-    """, (stay.room, stay_name), as_dict=True)
-    if occupied_by:
-        frappe.throw(_(
-            "Room {0} is still occupied by {1} (Stay: {2}). "
-            "Check out the previous guest first."
-        ).format(stay.room, occupied_by[0].guest_name, occupied_by[0].name))
-
     # Deposit check
     prop = frappe.db.get_value("Property", stay.property,
         ["deposit_required", "waive_deposit_role"], as_dict=True) if stay.property else None

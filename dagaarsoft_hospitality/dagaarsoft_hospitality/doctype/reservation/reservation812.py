@@ -145,11 +145,10 @@ class Reservation(Document):
 
 @frappe.whitelist()
 def get_available_rooms(property, room_type, arrival_date, departure_date, exclude_reservation=None):
-    """Return available rooms for date range. Excludes occupied rooms."""
+    """Return available rooms for date range."""
     rooms = frappe.get_all("Room",
         filters={"property": property, "room_type": room_type,
-                 "is_active": 1, "is_out_of_order": 0,
-                 "room_status": ["not in", ["Occupied"]]},
+                 "is_active": 1, "is_out_of_order": 0},
         fields=["name", "room_number", "floor", "wing", "room_status", "housekeeping_status"]
     )
     available = []

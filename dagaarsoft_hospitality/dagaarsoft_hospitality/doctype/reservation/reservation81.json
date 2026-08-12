@@ -74,8 +74,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Status",
-   "options": "Draft\nConfirmed\nChecked In\nChecked Out\nCancelled\nNo Show",
-   "read_only": 1
+   "options": "Draft\nConfirmed\nChecked In\nChecked Out\nCancelled\nNo Show"
   },
   {
    "fieldname": "col_1",
@@ -287,25 +286,9 @@
   }
  ],
  "is_submittable": 1,
- "links": [
-  {
-   "group": "Stay",
-   "link_doctype": "Guest Stay",
-   "link_fieldname": "reservation"
-  },
-  {
-   "group": "Folio",
-   "link_doctype": "Guest Folio",
-   "link_fieldname": "reservation"
-  },
-  {
-   "group": "Deposits",
-   "link_doctype": "Hotel Deposit",
-   "link_fieldname": "reservation"
-  }
- ],
- "modified": "2026-08-02 15:09:23.807482",
- "modified_by": "sysadmin@dagaarsoft.app",
+ "links": [],
+ "modified": "2026-07-26 16:21:29.087831",
+ "modified_by": "Administrator",
  "module": "DagaarSoft Hospitality",
  "name": "Reservation",
  "naming_rule": "By \"Naming Series\" field",
@@ -334,7 +317,6 @@
   }
  ],
  "row_format": "Dynamic",
- "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

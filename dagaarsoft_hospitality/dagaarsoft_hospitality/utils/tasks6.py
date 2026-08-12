@@ -4,8 +4,8 @@ from frappe.utils import today, add_days, now_datetime, flt
 
 def auto_post_room_charges():
     """
-    13:00 daily: Post today's room charge to FOLIO only (no Sales Invoice).
-    Invoice is generated at checkout. Delegates to billing.auto_daily_room_charge().
+    15:00 daily: Post today's room charge + create Sales Invoice for each checked-in stay.
+    Delegates to billing.auto_daily_room_charge() which is fully idempotent.
     """
     from dagaarsoft_hospitality.dagaarsoft_hospitality.utils.billing import auto_daily_room_charge
     auto_daily_room_charge()
@@ -106,26 +106,9 @@ def update_maintenance_overdue():
 
 
 def update_housekeeping_overdue():
-    from frappe.utils import now_datetime as _now
-    # Auto-complete pending/in-progress cleaning tasks and set room to Vacant Clean
     for t in frappe.get_all("Housekeeping Task",
-        {"task_status": ["in", ["Pending", "In Progress"]], "task_type": "Cleaning",
-         "docstatus": 1}, ["name", "room"]):
-        frappe.db.set_value("Housekeeping Task", t.name, {
-            "task_status": "Completed",
-            "completed_at": _now(),
-            "completed_by": "Administrator"
-        })
-        if t.room:
-            frappe.db.set_value("Room", t.room, {
-                "room_status": "Vacant Clean",
-                "housekeeping_status": "Clean"
-            })
-
-    # Mark non-cleaning overdue tasks as Urgent
-    for t in frappe.get_all("Housekeeping Task",
-        {"task_status": ["in", ["Pending", "In Progress"]], "task_type": ["!=", "Cleaning"],
-         "task_date": ["<", today()], "docstatus": 1}, ["name"]):
+        {"task_status": ["in", ["Pending", "In Progress"]], "task_date": ["<", today()],
+         "docstatus": 1}, ["name"]):
         frappe.db.set_value("Housekeeping Task", t.name, "priority", "Urgent")
 
 

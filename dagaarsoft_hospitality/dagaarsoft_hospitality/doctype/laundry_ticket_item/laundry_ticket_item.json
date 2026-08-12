@@ -1,41 +1,61 @@
 {
-  "name": "Laundry Ticket Item",
-  "doctype": "DocType",
-  "module": "DagaarSoft Hospitality",
-  "istable": 1,
-  "editable_grid": 1,
-  "fields": [
-    {
-      "fieldname": "item_name",
-      "fieldtype": "Data",
-      "label": "Item",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "qty",
-      "fieldtype": "Int",
-      "label": "Qty",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "service_type",
-      "fieldtype": "Select",
-      "label": "Service",
-      "options": "Wash\nDry Clean\nIron\nWash & Iron\nExpress",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "rate",
-      "fieldtype": "Currency",
-      "label": "Rate",
-      "in_list_view": 1
-    },
-    {
-      "fieldname": "amount",
-      "fieldtype": "Currency",
-      "label": "Amount",
-      "in_list_view": 1
-    }
-  ],
-  "permissions": []
+ "actions": [],
+ "creation": "2026-06-05 02:35:46.260809",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_name",
+  "qty",
+  "service_type",
+  "rate",
+  "amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item"
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Qty"
+  },
+  {
+   "fieldname": "service_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Service",
+   "options": "Wash\nDry Clean\nIron\nWash & Iron\nExpress"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Amount",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-07-26 18:28:19.892620",
+ "modified_by": "sysadmin@dagaarsoft.app",
+ "module": "DagaarSoft Hospitality",
+ "name": "Laundry Ticket Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
 }

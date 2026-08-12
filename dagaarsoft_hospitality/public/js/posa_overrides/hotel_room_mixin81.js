@@ -30,7 +30,7 @@
 
 	// ── frappe.call interceptor ──────────────────────────────────────────────
 	// Patch frappe.call to inject hotel/table fields into POSA invoice payloads
-	// and force credit (no payment) when a room is selected.
+	// before they go to the server.
 	var _originalFrappeCall = frappe.call;
 	frappe.call = function (opts) {
 		if (opts && opts.method && opts.args) {
@@ -212,7 +212,6 @@
 					hotel_room: "", hotel_stay: "", hotel_folio: "", hotel_guest_name: ""
 				});
 			}
-			_enableChargeToRoomMode(false);
 		}
 
 		select.addEventListener("change", function () {
@@ -256,9 +255,7 @@
 					if (info.guest_folio) { linkFolio.href = frappe.utils.get_url_to_form("Guest Folio", info.guest_folio); linkFolio.style.display = "inline-block"; }
 					else { linkFolio.style.display = "none"; }
 					clearBtn.style.display = "inline-block";
-					frappe.show_alert({ message: "Room " + select.value + ": " + (info.guest_name || "") + " — Charge to Room", indicator: "green" });
-					// Show Charge to Room mode — disable POS cash payments
-					_enableChargeToRoomMode(true);
+					frappe.show_alert({ message: "Room " + select.value + ": " + (info.guest_name || ""), indicator: "green" });
 				},
 				error: function () {
 					select.value = ""; clearRoom();
@@ -384,27 +381,6 @@
 
 		loadTables();
 		setInterval(loadTables, 120000);
-	}
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	//  CHARGE TO ROOM MODE — visual banner (server forces credit on validate)
-	// ═══════════════════════════════════════════════════════════════════════════
-	function _enableChargeToRoomMode(enable) {
-		var existingBanner = document.getElementById("dg-charge-to-room-banner");
-		if (enable) {
-			if (!existingBanner) {
-				var banner = document.createElement("div");
-				banner.id = "dg-charge-to-room-banner";
-				banner.style.cssText = "background:#ebf8ff;border:2px solid #4299e1;border-radius:8px;padding:10px 16px;margin:8px 12px;text-align:center;font-size:14px;font-weight:bold;color:#2b6cb0;";
-				banner.innerHTML = "\ud83c\udfe8 CHARGE TO ROOM \u2014 Invoice will be charged to guest folio (unpaid).";
-				var ref = document.getElementById("dg-hotel-room-widget");
-				if (ref && ref.parentNode) {
-					ref.parentNode.insertBefore(banner, ref.nextSibling);
-				}
-			}
-		} else {
-			if (existingBanner) existingBanner.remove();
-		}
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════

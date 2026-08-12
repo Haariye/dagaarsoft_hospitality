@@ -83,11 +83,10 @@ def _get_folio_accounts(folio):
     return company, income_acct, debtors_acct, tax_template, cost_center
 
 
-def post_room_charge_to_folio(folio_name, stay_name, charge_date, rate, room):
+def post_room_charge_with_invoice(folio_name, stay_name, charge_date, rate, room, guest_stay_ref=None):
     """
-    Post a room charge to the Guest Folio ONLY (no Sales Invoice).
-    The charge stays unbilled (is_billed=0) until checkout when one consolidated SI is created.
-    Returns True if posted, None if already exists (dedup).
+    Atomic: creates BOTH a folio charge line AND a submitted Sales Invoice for one night.
+    Returns the SI name or None if already posted.
     """
     # Dedup check
     if _room_charge_exists_for_date(folio_name, stay_name, charge_date):
@@ -97,22 +96,62 @@ def post_room_charge_to_folio(folio_name, stay_name, charge_date, rate, room):
     if folio.folio_status != "Open" or folio.docstatus != 1:
         return None
 
-    folio.reload()
+    invoice_to = folio.billing_customer or folio.customer
+    if not invoice_to:
+        frappe.log_error("No customer on folio {0}".format(folio_name), "Room Charge Error")
+        return None
+
+    company, income_acct, debtors_acct, tax_template, cost_center = _get_folio_accounts(folio)
+
+    # 1. Create Sales Invoice
+    si = frappe.new_doc("Sales Invoice")
+    si.customer = invoice_to
+    si.company = company
+    si.posting_date = str(charge_date)
+    si.due_date = str(max(getdate(charge_date), getdate(today())))
+    si.debit_to = debtors_acct
+    si.hotel_folio = folio_name
+    si.hotel_stay = stay_name
+    si.hotel_room = room
+    si.hotel_billing_instruction = "Folio Invoice"
+    si.remarks = "Room Charge - Room {0} - {1}".format(room, charge_date)
+
+    ic = _get_item("Room Rate")
+    uom = frappe.db.get_value("Item", ic, "stock_uom") or "Nos"
+    r = si.append("items", {})
+    r.item_code = ic
+    r.item_name = "Room Charge - {0} - {1}".format(room, charge_date)
+    r.description = r.item_name
+    r.qty = 1; r.uom = uom; r.stock_uom = uom; r.conversion_factor = 1
+    r.rate = flt(rate); r.amount = flt(rate)
+    r.income_account = income_acct
+    r.cost_center = cost_center
+
+    if tax_template:
+        si.taxes_and_charges = tax_template
+
+    si.set_missing_values()
+    si.calculate_taxes_and_totals()
+    si.insert(ignore_permissions=True)
+    si.submit()
+
+    # 2. Create folio charge line (already billed, linked to SI)
+    folio.reload()  # Reload to avoid stale doc
     line = folio.append("folio_charges", {})
     line.description = "Room Charge - {0} - {1}".format(room, charge_date)
     line.qty = 1; line.rate = flt(rate); line.amount = flt(rate)
     line.charge_category = "Room Rate"
     line.posting_date = str(charge_date)
     line.posting_time = nowtime()
-    line.reference_doctype = "Guest Stay"
-    line.reference_name = stay_name
+    line.reference_doctype = "Sales Invoice"
+    line.reference_name = si.name
     line.posted_by = frappe.session.user or "Administrator"
     line.is_read_only = 1
     line.guest_stay = stay_name
-    line.is_billed = 0  # Unbilled — invoiced at checkout
+    line.is_billed = 1
     folio.save(ignore_permissions=True)
 
-    return True
+    return si.name
 
 
 @frappe.whitelist()
@@ -136,26 +175,18 @@ def post_all_room_charges(guest_stay_name):
     if not rate:
         frappe.throw(_("No nightly rate set."))
 
-    # Chargeable stay_dates: arrival_date through departure_date-1 (standard hotel night billing).
-    # If overdue (still Checked In past departure), charge through today inclusive.
-    # Example: July 20 12:00 → July 26 11:00 = nights 20,21,22,23,24,25 = 6 nights.
+    # Charge from arrival to today. If overdue (past departure but still Checked In),
+    # charge all the way to today — they used the room, they pay.
     today_date = getdate(today())
-    departure = getdate(stay.departure_date) if stay.departure_date else add_days(today_date, 1)
-    # Last chargeable night = min(today, departure - 1 day), but if overdue charge through today
-    if today_date >= departure:
-        # Overdue: charge up to and including today
-        last_night = today_date
-    else:
-        # Normal: charge up to and including today (but never past departure-1)
-        last_night = min(today_date, add_days(departure, -1))
+    end_date = today_date
 
     posted = 0; skipped = 0
     cur = getdate(stay.arrival_date)
-    while cur <= last_night:
+    while cur < end_date:
         ds = str(cur)
-        result = post_room_charge_to_folio(
+        si = post_room_charge_with_invoice(
             stay.guest_folio, stay.name, ds, rate, stay.room)
-        if result:
+        if si:
             posted += 1
         else:
             skipped += 1
@@ -164,7 +195,7 @@ def post_all_room_charges(guest_stay_name):
     return {
         "posted": posted, "skipped": skipped,
         "total_amount": rate * posted,
-        "message": _("{0} night(s) charged to folio. {1} already existed.").format(
+        "message": _("{0} night(s) charged with invoices. {1} already existed.").format(
             posted, skipped)
     }
 
@@ -188,19 +219,13 @@ def calculate_room_charges_for_stay(guest_stay_name):
 
     charges = []
     today_date = getdate(today())
-    departure = getdate(stay.departure_date)
-    # Same logic as post_all_room_charges: stay_dates = arrival through min(today, departure-1)
-    if today_date >= departure:
-        last_night = today_date
-    else:
-        last_night = min(today_date, add_days(departure, -1))
-
+    # If still Checked In past departure, show charges up to today
+    end_date = today_date
     cur = getdate(stay.arrival_date)
-    while cur <= last_night:
+    while cur < end_date:
         ds = str(cur)
         charges.append({"date": ds,
-                        "description": "Night {0} - {1} - {2}".format(
-                            len(charges) + 1, stay.room, ds),
+                        "description": "Room Charge - {0} - {1}".format(stay.room, ds),
                         "amount": rate, "already_posted": ds in posted_dates})
         cur = add_days(cur, 1)
 
@@ -219,10 +244,10 @@ def calculate_room_charges_for_stay(guest_stay_name):
 
 def auto_daily_room_charge():
     """
-    Scheduler: runs at 13:00 daily.
-    1. For each checked-in stay within dates: post today's room charge to FOLIO only (no SI)
+    Scheduler: runs at 15:00 daily.
+    1. For each checked-in stay within dates: post today's charge + invoice
     2. For overdue stays (departure < today, still Checked In): keep charging + alert manager
-    Idempotent — never double-posts. Invoice is created at checkout.
+    Idempotent — never double-posts.
     """
     charge_date = today()
     posted = 0
@@ -242,9 +267,9 @@ def auto_daily_room_charge():
         if not rate:
             continue
         try:
-            result = post_room_charge_to_folio(
+            si = post_room_charge_with_invoice(
                 s.guest_folio, s.name, charge_date, rate, s.room)
-            if result:
+            if si:
                 posted += 1
         except Exception:
             frappe.log_error(frappe.get_traceback(),
@@ -266,10 +291,11 @@ def auto_daily_room_charge():
         if not rate:
             continue
 
+        # Post overdue charge (they used the room, they pay)
         try:
-            result = post_room_charge_to_folio(
+            si = post_room_charge_with_invoice(
                 s.guest_folio, s.name, charge_date, rate, s.room)
-            if result:
+            if si:
                 posted += 1
         except Exception:
             frappe.log_error(frappe.get_traceback(),
@@ -727,25 +753,10 @@ def validate_checkout_billing(guest_stay_name, force_checkout=False):
         warnings.append(_("Manager approved credit checkout. Outstanding: {0}.").format(
             frappe.format_value(total_outstanding, {"fieldtype": "Currency"})))
     else:
-        # Check for unbilled ROOM charges — must be invoiced before checkout
-        unbilled_room = [c for c in unbilled if c.charge_category in
-                         ("Room Rate", "Room Rate Adjustment", "Room Rate Credit")]
-        unbilled_room_total = sum(flt(c.amount) for c in unbilled_room)
-        unbilled_room_nights = len([c for c in unbilled_room if c.charge_category == "Room Rate"])
-
-        # Check for other unbilled charges (non-room)
-        unbilled_other = [c for c in unbilled if c not in unbilled_room]
-        unbilled_other_total = sum(flt(c.amount) for c in unbilled_other)
-
-        if unbilled_room and not force:
-            issues.append(_("{0} unbilled room night(s) ({1}). Bill room charges before checkout.").format(
-                unbilled_room_nights,
-                frappe.format_value(unbilled_room_total, {"fieldtype": "Currency"})))
-
-        if unbilled_other and not force:
-            issues.append(_("{0} unbilled service charge(s) ({1}). Use 'Generate Invoice'.").format(
-                len(unbilled_other),
-                frappe.format_value(unbilled_other_total, {"fieldtype": "Currency"})))
+        if unbilled and not force:
+            issues.append(_("{0} charge(s) ({1}) not invoiced. Use 'Generate Invoice'.").format(
+                len(unbilled),
+                frappe.format_value(unbilled_total, {"fieldtype": "Currency"})))
 
         if total_outstanding > 0.01 and not force:
             issues.append(_("Unpaid invoices: {0}. Settle payment or use 'Charge to Credit'.").format(
@@ -771,13 +782,6 @@ def validate_checkout_billing(guest_stay_name, force_checkout=False):
             "message": _("Early checkout: {0} night(s) remain.").format(remaining_nights)
         }
 
-    # Count unbilled room charges for the bill_first flow
-    all_unbilled_room = [c for c in (folio.get("folio_charges") or [])
-                         if not c.is_void and not c.is_billed
-                         and c.charge_category in ("Room Rate", "Room Rate Adjustment", "Room Rate Credit")]
-    unbilled_room_count = len([c for c in all_unbilled_room if c.charge_category == "Room Rate"])
-    unbilled_room_amount = sum(flt(c.amount) for c in all_unbilled_room)
-
     return {
         "can_checkout": len(issues) == 0,
         "is_sponsored": is_sponsored,
@@ -790,9 +794,6 @@ def validate_checkout_billing(guest_stay_name, force_checkout=False):
         "total_invoiced": total_invoiced,
         "total_paid": total_paid,
         "total_outstanding": total_outstanding,
-        "has_unbilled_room_charges": unbilled_room_count > 0,
-        "unbilled_room_nights": unbilled_room_count,
-        "unbilled_room_amount": unbilled_room_amount,
         "invoice_status": get_invoice_billing_status(folio.sales_invoice)
                           if folio.sales_invoice else None
     }

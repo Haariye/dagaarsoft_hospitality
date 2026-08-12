@@ -33,23 +33,6 @@ def get_all_restaurant_tables():
     return result
 
 
-def on_sales_invoice_validate(doc, method=None):
-    """
-    When a POS invoice has hotel_room set, force it to credit (no POS payment).
-    The charge goes to the folio and gets settled at checkout.
-    """
-    if not getattr(doc, "hotel_room", None):
-        return
-    if not doc.is_pos:
-        return
-    # Force credit sale — clear POS payments and set is_pos = 0
-    doc.is_pos = 0
-    for payment in doc.get("payments") or []:
-        payment.amount = 0
-    # Ensure it stays as a regular Sales Invoice (not POS Invoice)
-    doc.update_stock = 0
-
-
 def on_sales_invoice_submit(doc, method=None):
     """
     When a POSA Sales Invoice with hotel_room is submitted:

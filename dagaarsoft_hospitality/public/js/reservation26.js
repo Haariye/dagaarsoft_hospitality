@@ -5,29 +5,16 @@ frappe.ui.form.on("Reservation", {
         _set_status(frm);
         if (frm.doc.docstatus === 1) {
             let s = frm.doc.reservation_status;
-
-            // Always show View Guest Stay button for submitted reservations
-            frm.add_custom_button(__("🛏 View Guest Stay"), () => {
-                frappe.call({
-                    method: "frappe.client.get_value",
-                    args: {doctype: "Guest Stay", filters: {reservation: frm.doc.name, docstatus: 1}, fieldname: "name"},
-                    callback(r) {
-                        if (r.message && r.message.name) {
-                            frappe.set_route("Form", "Guest Stay", r.message.name);
-                        } else {
-                            frappe.msgprint(__("No Guest Stay found for this reservation."));
-                        }
-                    }
-                });
-            }).css("background","#48bb78").css("color","white").css("font-weight","bold");
-
             if (s === "Confirmed") {
-                // Show create stay button only if no stay yet
+                // Show check-in button only if no stay yet
+                let has_stay = false;
                 frappe.db.get_value("Guest Stay", {reservation: frm.doc.name, stay_status: ["!=","Cancelled"]}, "name", r => {
-                    if (!r || !r.name) {
+                    if (r && r.name) {
+                        frm.page.set_indicator(__("Stay Created"), "green");
+                    } else {
                         frm.add_custom_button(__("✅ Create Guest Stay & Check In"), () => {
                             _create_stay(frm);
-                        }).css("background","#4299e1").css("color","white").css("font-weight","bold");
+                        }).css("background","#48bb78").css("color","white").css("font-weight","bold");
                     }
                 });
                 frm.add_custom_button(__("💰 Record / Add Deposit"), () => {
@@ -264,7 +251,8 @@ function _deposit_dialog(frm) {
                     `<div style="background:#f0fff4;padding:8px;border-radius:6px;margin-bottom:10px">Deposit is optional for this property.</div>`
                 },
                 { fieldname:"deposit_amount", fieldtype:"Currency", label:__("Deposit Amount"), reqd:1, default:suggested },
-                { fieldname:"payment_mode", fieldtype:"Link", options:"Mode of Payment", label:__("Payment Mode"), reqd:1 },
+                { fieldname:"payment_mode", fieldtype:"Select", label:__("Payment Mode"), reqd:1,
+                  options:"Cash\nCard\nBank Transfer\nOnline\nCheque" },
                 { fieldname:"reference_number", fieldtype:"Data", label:__("Receipt / Reference No") },
                 { fieldname:"no_deposit", fieldtype:"Check", label:__("Proceed Without Deposit (waive)") }
             ],

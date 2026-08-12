@@ -5,23 +5,28 @@
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
+ "for_user": "",
  "hide_custom": 0,
  "icon": "stock",
  "idx": 0,
  "is_hidden": 0,
  "label": "Restaurant POS Workspace",
  "links": [],
- "modified": "2026-05-10 14:15:24.688470",
- "modified_by": "Administrator",
+ "modified": "2026-07-30 18:33:41.928744",
+ "modified_by": "sysadmin@dagaarsoft.app",
  "module": "DagaarSoft Hospitality",
  "name": "Restaurant POS Workspace",
  "number_cards": [],
  "owner": "Administrator",
- "parent_page": "Hotel Info System",
+ "parent_page": "Hotel Front Desk",
  "public": 1,
  "quick_lists": [],
- "roles": [],
- "sequence_id": 5.0,
+ "roles": [
+  {
+   "role": "Sales Master Manager"
+  }
+ ],
+ "sequence_id": 4.0,
  "shortcuts": [
   {
    "doc_view": "List",

@@ -106,7 +106,6 @@ doc_events = {
         "on_submit": "dagaarsoft_hospitality.dagaarsoft_hospitality.doctype.web_booking.web_booking.on_submit",
     },
     "Sales Invoice": {
-        "validate":  "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.posa_integration.on_sales_invoice_validate",
         # FIX 5: on_submit only posts F&B charge to folio for non-folio invoices
         "on_submit": "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.posa_integration.on_sales_invoice_submit",
         "on_cancel": "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.posa_integration.on_sales_invoice_cancel",
@@ -123,10 +122,6 @@ doc_events = {
         # FIX 11: Immediately sync folio invoice status on payment
         "on_submit": "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.posa_integration.on_payment_entry_submit",
         "on_cancel": "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.posa_integration.on_payment_entry_cancel",
-    },
-    # Protect Property from accidental deletion (including ERPNext Delete Company Transactions)
-    "Property": {
-        "on_trash": "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.admin_utils.block_property_deletion",
     },
 }
 

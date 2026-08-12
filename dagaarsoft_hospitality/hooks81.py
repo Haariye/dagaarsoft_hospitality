@@ -106,7 +106,6 @@ doc_events = {
         "on_submit": "dagaarsoft_hospitality.dagaarsoft_hospitality.doctype.web_booking.web_booking.on_submit",
     },
     "Sales Invoice": {
-        "validate":  "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.posa_integration.on_sales_invoice_validate",
         # FIX 5: on_submit only posts F&B charge to folio for non-folio invoices
         "on_submit": "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.posa_integration.on_sales_invoice_submit",
         "on_cancel": "dagaarsoft_hospitality.dagaarsoft_hospitality.utils.posa_integration.on_sales_invoice_cancel",
